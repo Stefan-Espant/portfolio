@@ -1,24 +1,24 @@
 # Mijn portfolio
 
-## Inhoudsopgave
+## 📚 Inhoudsopgave
 
-* Beschrijving
-* Gebruik
-* Kenmerken
-* Installatie
-* Bronnen
-* Licentie
+* 📜 Beschrijving
+* 🛠️ Gebruik
+* 🧬 Kenmerken
+* ⚙️ Installatie
+* 🔗 Bronnen
+* 💎 Licentie
 
-## Beschrijving
+## 📜 Beschrijving
 
-## Gebruik
+## 🛠️ Gebruik
 
-## Kenmerken
+## 🧬 Kenmerken
 
-## Installatie
+## ⚙️ Installatie
 
-## Bronnen
+## 🔗 Bronnen
 
-## Licentie
+## 💎 Licentie
 
 Dit project valt onder de voorwaarden van de [MIT licentie](./LICENSE).
