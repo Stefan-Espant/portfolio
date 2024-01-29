@@ -1,8 +1,26 @@
+# Mijn portfolio
+
+## 📚 Inhoudsopgave
+
+* 📜 Beschrijving
+* 🛠️ Gebruik
+* 🧬 Kenmerken
+* ⚙️ Installatie
+* 🔗 Bronnen
+* 💎 Licentie
+
+## 📜 Beschrijving
+
+## 🛠️ Gebruik
+
+## 🧬 Kenmerken
+
+## ⚙️ Installatie
 # Nuxt 3 Minimal Starter
 
 Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 
-## Setup
+### Setup
 
 Make sure to install the dependencies:
 
@@ -20,7 +38,7 @@ yarn install
 bun install
 ```
 
-## Development Server
+### Development Server
 
 Start the development server on `http://localhost:3000`:
 
@@ -38,7 +56,7 @@ yarn dev
 bun run dev
 ```
 
-## Production
+### Production
 
 Build the application for production:
 
@@ -73,3 +91,10 @@ bun run preview
 ```
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+
+## 🔗 Bronnen
+
+## 💎 Licentie
+
+Dit project valt onder de voorwaarden van de [MIT licentie](./LICENSE).
+>>>>>>> 11c433ce9fd416519608bc6ed550b8d1204ecb84
