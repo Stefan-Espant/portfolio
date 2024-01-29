@@ -97,4 +97,3 @@ Check out the [deployment documentation](https://nuxt.com/docs/getting-started/d
 ## 💎 Licentie
 
 Dit project valt onder de voorwaarden van de [MIT licentie](./LICENSE).
->>>>>>> 11c433ce9fd416519608bc6ed550b8d1204ecb84
