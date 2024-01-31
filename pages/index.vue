@@ -1,14 +1,17 @@
+<template>
+    <div>
+        <slot />
+    </div>
+</template>
+
 <script>
     // Import the global stylesheet
     import '~/assets/styles/global.css'
+
+    definePageMeta({
+        layout: 'default'
+    })  
 </script>
-
-
-<template>
-    <div>
-        <h1>test</h1>
-    </div>
-</template>
 
 <style scoped>
 
