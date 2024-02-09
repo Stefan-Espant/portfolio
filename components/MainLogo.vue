@@ -148,16 +148,17 @@
 </template>
 
 <style scoped>
-
 svg {
-    width: 12.25rem;
+	width: 7.5rem;
+	height: fit-content;
+	padding: 8px;
 }
 
 .cls-1,
 .cls-2,
 .cls-3 {
 	stroke-width: 0px;
-    mix-blend-mode: color-burn;
+	mix-blend-mode: color-burn;
 }
 
 .cls-1 {
@@ -166,11 +167,17 @@ svg {
 
 .cls-2 {
 	fill: #0e3196;
-    mix-blend-mode: color-burn;
+	mix-blend-mode: color-burn;
 }
 
 .cls-3 {
 	fill: #0f40ec;
-    mix-blend-mode: color-burn;
+	mix-blend-mode: color-burn;
+}
+
+@media (min-width: 30rem) {
+	svg {
+		width: 12.25rem;
+	}
 }
 </style>

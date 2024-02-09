@@ -1,5 +1,124 @@
+/* Import lettertypes */
+@import url('https://fonts.googleapis.com/css2?family=Germania+One&family=Vollkorn&display=swap');
+
+/* Custom properties */
+:root {
+	/* Animaties */
+	--animation-quick: 0.2s;
+	--animation-default: 0.3s;
+
+	/* Kleuren */
+	--color-default: ;
+	--color-primary-red: #c11b1b;
+	--color-primary-red-enhanced: oklch(43.24% 0.198 27.73);
+	--color-primary-blue: #0f40ec;
+	--color-primary-blue-enhanced: oklch(48.23% 0.258 264.52);
+	--color-primary-yellow: #be4610;
+	--color-primary-yellow-enhanced: oklch(55.31% 0.165 40.2);
+
+	/* Grijswaardes */
+	--color-default-0: #f8f8f8;
+	--color-default-10: #e1e1e1;
+	--color-default-20: #cacaca;
+	--color-default-30: #b3b3b3;
+	--color-default-40: #9c9c9c;
+	--color-default-50: #858585;
+	--color-default-60: #6e6e6e;
+	--color-default-70: #575757;
+	--color-default-80: #404040;
+	--color-default-90: #292929;
+	--color-default-100: #121212;
+
+	/* Waardes */
+	--unit-micro: 0.25rem;
+	--unit-small: 0.5rem;
+	--unit-default: 1rem;
+	--unit-large: 2rem;
+}
+
+/* Reset instellingen */
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+::selection {
+	background-color: var(--color-primary-blue);
+	color: var(--color-default-0);
+}
+
+body {
+	width: 100%;
+	height: 100vh;
+	background-color: #f8f8f8;
+	font-family: 'Vollkorn', serif;
+	position: relative;
+}
+
+a {
+	color: #0f40ec;
+	@supports (color: oklch(48.23% 0.258 264.52)) {
+		color: oklch(48.23% 0.258 264.52);
+	}
+	text-decoration: none;
+	mix-blend-mode: color-burn;
+	font-size: 24px;
+	transition: 0.3s ease-in-out;
+}
+
+li {
+	list-style: none;
+}
+
+/* Layout */
+section {
+	height: 100vh;
+}
+
+/* Typografie */
+h1,
+h2,
+h3 {
+	font-family: 'Germania One', Arial, Helvetica, sans-serif;
+	mix-blend-mode: color-burn;
+	line-height: 100%;
+}
+
+h1 {
+	font-size: 54px;
+}
+
+h2 {
+	font-size: 4.5rem;
+}
+
+h3 {
+	font-size: 3rem;
+}
+
+@media (min-width: 40rem) {
+	h1 {
+		font-size: 72px;
+	}
+}
+
+/* Standaard animaties */
+.fade-left-to-right {
+	width: inherit;
+	height: inherit;
+	opacity: 0;
+	position: absolute;
+	animation: fadeLeftToRight 0.3s ease-in-out forwards;
+}
+
+@keyframes fadeLeftToRight {
+	0% {
+		transform: translate(-10rem);
+	}
+
+	100% {
+		transform: translate(0rem);
+		opacity: 1;
+	}
 }

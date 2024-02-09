@@ -1,13 +1,15 @@
 <template>
-	<div>
-		<slot :data="data" />
+	<div v-for="mainimage in data.allMainimages" :key="mainimage.id">
+		<img
+			:src="mainimage.image.url"
+			:width="mainimage.image.width"
+			:height="mainimage.image.height"
+			:alt="mainimage.image.alt"
+		/>
 	</div>
 </template>
 
 <script setup>
-// Import the global stylesheet
-import '~/assets/styles/global.css';
-
 const QUERY = `
 {
   _allRolesMeta {
@@ -19,7 +21,7 @@ const QUERY = `
     _status
     _firstPublishedAt
   }
-  mainimage {
+  allMainimages {
     id
     image {
       url
@@ -29,7 +31,7 @@ const QUERY = `
       alt
     }
   }
-  quote {
+  allQuotes {
     id
     message
     author
@@ -56,8 +58,22 @@ const { data, error } = await useFetch('https://graphql.datocms.com', {
 definePageMeta({
 	layout: 'default'
 });
-
-console.log(data);
 </script>
 
-<style scoped></style>
+<style scoped>
+img {
+	width: 20rem;
+	height: 20rem;
+	aspect-ratio: 1/1;
+	object-fit: cover;
+	display: block;
+	border-radius: 16px;
+}
+
+@media (min-width: 40rem) {
+	img {
+		width: 25rem;
+		height: 25rem;
+	}
+}
+</style>

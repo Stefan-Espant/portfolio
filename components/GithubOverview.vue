@@ -1,12 +1,3 @@
-<template>
-	<div>
-		<NuxtLayout>
-			<NuxtPage :data="data" />
-			<GithubOverview :githubData="githubData" />
-		</NuxtLayout>
-	</div>
-</template>
-
 <script setup>
 import axios from 'axios';
 
@@ -64,7 +55,7 @@ const getDatoCmsData = async () => {
 // Functie om GitHub-gegevens op te halen
 const getGitHubData = async () => {
 	try {
-		const response = await axios.get('https://api.github.com/users/your-github-username');
+		const response = await axios.get('https://api.github.com/users/stefan-espant');
 		return response.data;
 	} catch (error) {
 		console.error('Error fetching GitHub data:', error.response || error.message);
@@ -79,5 +70,13 @@ definePageMeta({
 	layout: 'default'
 });
 </script>
+
+<template>
+	<div>
+		<section>
+			<h3 hidden>Wat informatie over mijn github</h3>
+		</section>
+	</div>
+</template>
 
 <style scoped></style>
