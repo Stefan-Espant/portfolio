@@ -10,4 +10,9 @@
 
 <script></script>
 
-<style scoped></style>
+<style scoped>
+h2,
+h3 {
+	color: var(--color-primary-red);
+}
+</style>

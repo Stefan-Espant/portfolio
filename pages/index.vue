@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<slot :data="data" />
+		<slot :data="data" :githubData="githubData" />
 	</div>
 </template>
 
@@ -29,10 +29,19 @@ const QUERY = `
       alt
     }
   }
-  quote {
+  allQuotes {
     id
     message
     author
+  }
+  aboutme {
+    id
+    age
+    paragraph
+    based {
+      latitude
+      longitude
+    }
   }
 }
 `;

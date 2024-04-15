@@ -2,7 +2,6 @@
 	<div>
 		<NuxtLayout>
 			<NuxtPage :data="data" />
-			<GithubOverview :githubData="githubData" />
 		</NuxtLayout>
 	</div>
 </template>
@@ -61,15 +60,40 @@ const getDatoCmsData = async () => {
 	return data;
 };
 
-// Functie om GitHub-gegevens op te halen
+// Functie om GitHub-gegevens op te halen met back-off-strategie
 const getGitHubData = async () => {
-	try {
-		const response = await axios.get('https://api.github.com/users/your-github-username');
-		return response.data;
-	} catch (error) {
-		console.error('Error fetching GitHub data:', error.response || error.message);
-		throw error;
-	}
+	const accessToken = `Bearer  process.env.GITHUB_TOKEN`;
+	const url = 'https://api.github.com/users/stefan-espant';
+
+	const makeGitHubRequest = async () => {
+		try {
+			const response = await axios.get(url, {
+				headers: {
+					Authorization: `Bearer ${accessToken}`
+				}
+			});
+
+			if (response.status === 200) {
+				return response.data;
+			} else {
+				console.error(`GitHub API request failed with status code ${response.status}`);
+				return null;
+			}
+		} catch (error) {
+			if (error.response && error.response.status === 403) {
+				// Implementeer een back-off-strategie
+				const waitTime = 2000; // wacht 2 seconden
+				console.log(`Rate limit exceeded. Waiting for ${waitTime / 1000} seconds before retrying.`);
+				await new Promise((resolve) => setTimeout(resolve, waitTime));
+				return makeGitHubRequest(); // probeer het opnieuw na de wachttijd
+			} else {
+				console.error('An unexpected error occurred:', error.message);
+				return null;
+			}
+		}
+	};
+
+	return await makeGitHubRequest();
 };
 
 // Wacht tot beide datasets beschikbaar zijn
@@ -78,6 +102,8 @@ const [datoCmsData, githubData] = await Promise.all([getDatoCmsData(), getGitHub
 definePageMeta({
 	layout: 'default'
 });
+
+console.log(githubData);
 </script>
 
 <style scoped></style>

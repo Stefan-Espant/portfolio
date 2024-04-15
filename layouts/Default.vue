@@ -1,6 +1,6 @@
 <script>
 // Import the global stylesheet
-import '~/assets/styles/global.css';
+import './assets/styles/global.css';
 </script>
 
 <template>
@@ -15,10 +15,12 @@ import '~/assets/styles/global.css';
 			<!-- Main sectie -->
 			<IntroSection :data="data" />
 
+			<!-- <QuoteBar {{ data.quotes }} /> -->
 			<!-- Portfolio sectie -->
 			<PortfolioSection />
 
 			<!-- Over mij sectie -->
+			<AboutMeSection :data="data" />
 
 			<!-- Blog sectie -->
 

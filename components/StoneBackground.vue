@@ -95,7 +95,7 @@ picture {
 picture img {
 	position: fixed;
 	width: 100%;
-	height: 100vh;
+	height: 105vh;
 	z-index: -1;
 	top: 0;
 	left: 0;

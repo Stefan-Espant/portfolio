@@ -15,7 +15,9 @@
     "vue-router": "^4.2.5"
   },
   "dependencies": {
+    "@tabler/icons": "^2.47.0",
     "axios": "^1.6.7",
-    "gsap": "^3.12.5"
+    "gsap": "^3.12.5",
+    "vite": "^5.2.8"
   }
 }

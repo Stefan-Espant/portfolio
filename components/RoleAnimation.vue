@@ -35,7 +35,7 @@ h1 {
 
 	h1 div div {
 		position: absolute;
-		transform: translateX(-80rem); /* Initially position elements outside the view */
+		transform: translateX(-80rem);
 	}
 
 	h1 div div:nth-of-type(1) {
