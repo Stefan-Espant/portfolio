@@ -25,6 +25,7 @@ import './assets/styles/global.css';
 			<!-- Blog sectie -->
 
 			<!-- Contact sectie -->
+			<Contact />
 		</main>
 
 		<StoneBackground />
