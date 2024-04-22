@@ -11,6 +11,10 @@
 <script></script>
 
 <style scoped>
+section {
+	padding: 1rem;
+}
+
 h2,
 h3 {
 	color: var(--color-primary-red);

@@ -83,6 +83,9 @@ h3 {
 	font-family: 'Germania One', Arial, Helvetica, sans-serif;
 	mix-blend-mode: color-burn;
 	line-height: 100%;
+	letter-spacing: -2px;
+	color: var(--color-primary-blue);
+	mix-blend-mode: color-burn;
 }
 
 h1 {

@@ -66,12 +66,19 @@ console.log(data);
 <template>
     <div>
         <h2 id="AboutMe">Over mij</h2>
-        <h3>Wie is Stefan?</h3>
         <p>{{ data.aboutme.paragraph }}</p>
     </div>
 </template>
 
 <style scoped>
+section {
+	padding: 1rem;
+}
+
+    h2 {
+      margin-bottom: 1rem;
+    }
+
     p {
         max-width: 75ch;
     }

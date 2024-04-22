@@ -20,7 +20,7 @@ const QUERY = `
     _status
     _firstPublishedAt
   }
-  allMainimages {
+  mainimage {
     id
     image {
       url
@@ -34,6 +34,20 @@ const QUERY = `
     id
     message
     author
+  }
+  aboutme {
+    id
+    age
+    paragraph
+    based {
+      latitude
+      longitude
+    }
+  }
+  allSocialLinks {
+    id
+    title
+    url
   }
 }
 `;
@@ -102,8 +116,6 @@ const [datoCmsData, githubData] = await Promise.all([getDatoCmsData(), getGitHub
 definePageMeta({
 	layout: 'default'
 });
-
-console.log(githubData);
 </script>
 
 <style scoped></style>

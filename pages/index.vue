@@ -43,6 +43,11 @@ const QUERY = `
       longitude
     }
   }
+  allSocialLinks {
+    id
+    title
+    url
+  }
 }
 `;
 

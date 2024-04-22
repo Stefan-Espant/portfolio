@@ -1,6 +1,7 @@
 <script>
 // Import the global stylesheet
 import './assets/styles/global.css';
+
 </script>
 
 <template>
@@ -25,7 +26,7 @@ import './assets/styles/global.css';
 			<!-- Blog sectie -->
 
 			<!-- Contact sectie -->
-			<Contact />
+			<Contact :data="data" />
 		</main>
 
 		<StoneBackground />
