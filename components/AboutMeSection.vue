@@ -64,10 +64,10 @@ console.log(data);
 </script>
 
 <template>
-    <div>
+    <section>
         <h2 id="AboutMe">Over mij</h2>
         <p>{{ data.aboutme.paragraph }}</p>
-    </div>
+    </section>
 </template>
 
 <style scoped>

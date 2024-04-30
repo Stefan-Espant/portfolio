@@ -1,6 +1,4 @@
 <script setup>
-// Import the global stylesheet
-import '~/assets/styles/global.css';
 
 const QUERY = `
 {
