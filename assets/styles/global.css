@@ -57,6 +57,8 @@ body {
 }
 
 a {
+	display: flex;
+	width: fit-content;
 	color: #0f40ec;
 	@supports (color: oklch(48.23% 0.258 264.52)) {
 		color: oklch(48.23% 0.258 264.52);

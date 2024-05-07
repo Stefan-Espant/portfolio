@@ -114,8 +114,8 @@ console.log(data);
     </div>
     <div>
         <h3>Of volg mij op deze platformen</h3>
-        <div v-for="socialLink in data.allSocialLinks" :key="socialLink.id">
-            <a :href="socialLink.url" target="_blank">
+        <div>
+            <a v-for="socialLink in data.allSocialLinks" :key="socialLink.id" :href="socialLink.url" target="_blank">
                 {{ socialLink.title }}
             </a>
         </div>
