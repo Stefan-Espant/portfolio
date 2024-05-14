@@ -34,6 +34,9 @@
 	--unit-small: 0.5rem;
 	--unit-default: 1rem;
 	--unit-large: 2rem;
+
+	/* Schaduwen */
+	--shadow-default: 0 2px 4px 0 #11111180;
 }
 
 /* Reset instellingen */
