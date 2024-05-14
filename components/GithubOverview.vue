@@ -13,7 +13,7 @@ export default {
 	},
 	async created() {
 		try {
-			const response = await fetch('https://api.github.com/users/Stefan-Espant/repos');
+			const response = await fetch('https://api.github.com/users/stefan-espant/repos?page=1&per_page=100');
 			this.githubData = await response.json();
 		} catch (error) {
 			console.error('Error fetching GitHub repos:', error);
