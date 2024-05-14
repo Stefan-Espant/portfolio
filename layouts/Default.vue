@@ -14,19 +14,17 @@ import './assets/styles/global.css';
 		</header>
 		<main>
 			<!-- Main sectie -->
-			<!-- <IntroSection :data="data" /> -->
+			<IntroSection :data="data" />
 
 			<!-- <QuoteBar {{ data.quotes }} /> -->
 			<!-- Portfolio sectie -->
-			<!-- <PortfolioSection />
+			<PortfolioSection />
 
 			<!-- Over mij sectie -->
-			<!-- <AboutMeSection :data="data" /> -->
-
-			<!-- Blog sectie -->
+			<AboutMeSection :data="data" />
 
 			<!-- Contact sectie -->
-			<!-- <Contact :data="data" /> -->
+			<Contact :data="data" />
 		</main>
 
 		<StoneBackground />

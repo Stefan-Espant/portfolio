@@ -59,8 +59,6 @@ const { data, error } = await useFetch('https://graphql.datocms.com', {
 definePageMeta({
 	layout: 'default'
 });
-
-console.log(data);
 </script>
 
 <template>

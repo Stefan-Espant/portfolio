@@ -86,7 +86,6 @@ section {
     grid-template-columns: 1fr;
     gap: 1rem;
     padding: 1rem;
-
 }
 
 section div {

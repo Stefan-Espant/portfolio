@@ -79,7 +79,7 @@
 							<a href="#AboutMe"> wie is stefan </a>
 						</li>
 						<li>
-							<a href="#Blog"> blog </a>
+							<a href="https://i-love-web-app-alpha.vercel.app/"> blog </a>
 						</li>
 						<li>
 							<a href="#Contact"> contact </a>
@@ -96,7 +96,7 @@
 						<a href="#AboutMe"> wie is stefan </a>
 					</li>
 					<li>
-						<a href="#Blog"> blog </a>
+						<a href="https://i-love-web-app-alpha.vercel.app/"> blog </a>
 					</li>
 					<li>
 						<a href="#Contact"> contact </a>
