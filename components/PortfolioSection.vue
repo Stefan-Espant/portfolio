@@ -13,6 +13,7 @@
 <style scoped>
 section {
 	padding: 1rem;
+	height: fit-content;
 }
 
 h2,

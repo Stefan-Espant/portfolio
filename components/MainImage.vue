@@ -64,6 +64,7 @@ definePageMeta({
 img {
 	width: 20rem;
 	height: 20rem;
+	margin: auto;
 	aspect-ratio: 1/1;
 	object-fit: cover;
 	display: block;
@@ -74,6 +75,12 @@ img {
 	img {
 		width: 25rem;
 		height: 25rem;
+	}
+}
+
+@media (min-width: 60rem) {
+	img {
+		margin: 0;
 	}
 }
 </style>

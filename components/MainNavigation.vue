@@ -115,6 +115,10 @@ summary {
 	font-family: 'Germania One', Helvetica, Arial, sans-serif;
 }
 
+nav .dropdown-navigation ul {
+	position: absolute;
+}
+
 li {
 	padding: 0.5rem;
 }

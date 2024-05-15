@@ -1,30 +1,31 @@
 <script>
 export default {
-	data() {
-		return {
-			githubData: []
-		};
-	},
-	computed: {
-		// Alleen repositories met ten minste één ster
-		filteredRepositories() {
-			return this.githubData.filter((repo) => repo.stargazers_count > 0);
-		}
-	},
-	async created() {
-		try {
-			const response = await fetch('https://api.github.com/users/stefan-espant/repos?page=1&per_page=100');
-			this.githubData = await response.json();
-		} catch (error) {
-			console.error('Error fetching GitHub repos:', error);
-		}
-	}
+  data() {
+    return {
+      githubData: []
+    };
+  },
+  computed: {
+    filteredRepositories() {
+      return this.githubData
+        .filter((repo) => repo.stargazers_count > 0)
+        .sort((a, b) => b.stargazers_count - a.stargazers_count);
+    }
+  },
+  async created() {
+    try {
+      const response = await fetch('https://api.github.com/users/stefan-espant/repos?page=1&per_page=100');
+      this.githubData = await response.json();
+    } catch (error) {
+      console.error('Error fetching GitHub repos:', error);
+    }
+  }
 };
 </script>
 
 <template>
 	<div>
-		<section>
+		<section class="portfolio-overview">
 			<h3 hidden>Wat informatie over mijn github</h3>
 			<div class="github-info">
 				<div>
@@ -205,8 +206,7 @@ section {
 
 section .github-info {
 	display: grid;
-	grid-template-columns: 1fr 1fr 1fr;
-	padding: 2rem;
+	grid-template-columns: 1fr;
 }
 
 .github-info div {
@@ -231,14 +231,15 @@ section .github-info {
 	grid-auto-flow: column;
 	scroll-snap-type: x mandatory;
 	padding: 1rem;
+	overflow: auto;
 }
 
 .github-repo-overview article {
 	width: 75vw;
-	border: 2px solid var(--color-default-0);
+	height: initial;
+	border: 8px ridge var(--color-default-10);
 	border-radius: var(--unit-default);
 	padding: var(--unit-small);
-	display: grid;
 	grid-template-columns: 1fr;
 	scroll-snap-align: center;
 	box-shadow: var(--shadow-default);
@@ -304,8 +305,18 @@ section .github-info {
 }
 
 @media (min-width: 30rem) {
+	section .github-info {
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+		padding: 1rem;
+	}
+
 	.github-repo-overview {
 		grid-template-columns: 1fr;
+	}
+
+	.github-repo-overview article {
+		display: grid;
 	}
 }
 

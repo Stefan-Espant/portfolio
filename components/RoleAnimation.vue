@@ -13,8 +13,6 @@
 	</div>
 </template>
 
-<script></script>
-
 <style scoped>
 h1 {
 	color: var(--color-primary-red);
@@ -23,19 +21,7 @@ h1 {
 
 h1 div {
 		width: 20rem;
-		height: 15rem;
-		position: relative;
-	}
-
-@media (min-width: 40rem) {
-	h1 {
-		text-align: right;
-		font-size: 4rem;
-	}
-
-	h1 div {
-		width: 40rem;
-		height: 15rem;
+		height: 7.5rem;
 		position: relative;
 	}
 
@@ -54,6 +40,17 @@ h1 div {
 
 	h1 div div:nth-of-type(3) {
 		animation: slide-in 10s calc(10s / 3 * 2) cubic-bezier(0.075, 0.82, 0.165, 1) infinite;
+	}
+
+@media (min-width: 40rem) {
+	h1 {
+		text-align: right;
+		font-size: 4rem;
+	}
+
+	h1 div {
+		width: 40rem;
+		position: relative;
 	}
 }
 
