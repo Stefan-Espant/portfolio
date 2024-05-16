@@ -5,12 +5,6 @@ export default defineNuxtConfig({
 			githubToken: process.env.GITHUB_TOKEN
 		}
 	},
-	routeRules: {
-		'/**': { isr: 60 },
-		'/static': { isr: true },
-		'/prerendered': { prerender: true },
-		'/dynamic': { isr: false },
-	  },
 	app: {
 		head: {
 			htmlAttrs: {
