@@ -61,6 +61,12 @@ h1 div {
 	}
 }
 
+@media (min-width: 70rem){
+	h1 div {
+		width: 40rem;
+	}
+}
+
 @keyframes slide-in {
 	0% {
 		transform: translateX(-80rem);
