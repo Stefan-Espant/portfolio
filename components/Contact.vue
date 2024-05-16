@@ -75,6 +75,7 @@ console.log(data);
             <a v-for="socialLink in data.allSocialLinks" :key="socialLink.id" :href="socialLink.url" target="_blank">
                 {{ socialLink.title }}
             </a>
+            <a href="mailto:stefan.van.der.kort@hva.nl">Verstuur een mail</a>
         </div>
         </div>
     </section>
@@ -91,7 +92,7 @@ section {
 section div {
     display: flex;
     flex-direction: column;
-    gap: 1rem;;
+    gap: 1rem;
 }
 
 form {
@@ -121,6 +122,7 @@ a {
 
 button,
 a {
+    width: max-content;
     cursor: pointer;
     display: flex;
     flex-direction: row;
@@ -136,7 +138,16 @@ button {
 
 @media (min-width: 40rem) {
     section {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr;
+    }
+
+    section div div {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    section div div a {
+      width: auto;
     }
 }
 </style>

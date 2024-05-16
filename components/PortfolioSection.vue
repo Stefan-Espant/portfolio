@@ -5,9 +5,9 @@
 			<h3>Bekijk mijn Github projecten</h3>
 			<GithubOverview :githubData="githubData" />
 
-			<MediaVormgeving />
+			<!-- <MediaVormgeving />
 
-			<EspantDesign />
+			<EspantDesign /> -->
 		</section>
 	</div>
 </template>
