@@ -2,22 +2,34 @@
 export default {
   data() {
     return {
-      githubData: []
+      githubData: {
+        followers: null,
+        following: null,
+        repositories: []
+      }
     };
   },
   computed: {
     filteredRepositories() {
-      return this.githubData
+      return this.githubData.repositories
         .filter((repo) => repo.stargazers_count > 0)
         .sort((a, b) => b.stargazers_count - a.stargazers_count);
     }
   },
   async created() {
     try {
-      const response = await fetch('https://api.github.com/users/stefan-espant/repos?page=1&per_page=100');
-      this.githubData = await response.json();
+      const reposResponse = await fetch('https://api.github.com/users/stefan-espant/repos?page=1&per_page=100');
+      this.githubData.repositories = await reposResponse.json();
+      
+      const followersResponse = await fetch('https://api.github.com/users/Stefan-Espant/followers');
+      const followersData = await followersResponse.json();
+      this.githubData.followers = followersData.length;
+      
+      const followingResponse = await fetch('https://api.github.com/users/Stefan-Espant/following');
+      const followingData = await followingResponse.json();
+      this.githubData.following = followingData.length;
     } catch (error) {
-      console.error('Error fetching GitHub repos:', error);
+      console.error('Error fetching GitHub data:', error);
     }
   }
 };
@@ -40,7 +52,7 @@ export default {
 							<g style="mix-blend-mode: color-burn" clip-path="url(#clip0_23_149)">
 								<path
 									d="M6.66667 5.33331H12L16 9.33331H25.3333C26.0406 9.33331 26.7189 9.61426 27.219 10.1144C27.719 10.6145 28 11.2927 28 12V22.6666C28 23.3739 27.719 24.0522 27.219 24.5523C26.7189 25.0524 26.0406 25.3333 25.3333 25.3333H6.66667C5.95942 25.3333 5.28115 25.0524 4.78105 24.5523C4.28095 24.0522 4 23.3739 4 22.6666V7.99998C4 7.29274 4.28095 6.61446 4.78105 6.11436C5.28115 5.61426 5.95942 5.33331 6.66667 5.33331Z"
-									stroke="#730F01"
+									stroke="var(--color-primary-blue)"
 									stroke-width="4"
 									stroke-linecap="round"
 									stroke-linejoin="round"
@@ -53,7 +65,7 @@ export default {
 							</defs>
 						</svg>
 						repositories:
-						<span>0</span>
+						<span>{{ githubData.repositories.length }}</span>
 					</p>
 				</div>
 				<div>
@@ -68,28 +80,28 @@ export default {
 							<g style="mix-blend-mode: color-burn" clip-path="url(#clip0_23_152)">
 								<path
 									d="M6.66666 9.33333C6.66666 10.7478 7.22856 12.1044 8.22875 13.1046C9.22895 14.1048 10.5855 14.6667 12 14.6667C13.4145 14.6667 14.771 14.1048 15.7712 13.1046C16.7714 12.1044 17.3333 10.7478 17.3333 9.33333C17.3333 7.91885 16.7714 6.56229 15.7712 5.5621C14.771 4.5619 13.4145 4 12 4C10.5855 4 9.22895 4.5619 8.22875 5.5621C7.22856 6.56229 6.66666 7.91885 6.66666 9.33333Z"
-									stroke="#730F01"
+									stroke="var(--color-primary-blue)"
 									stroke-width="4"
 									stroke-linecap="round"
 									stroke-linejoin="round"
 								/>
 								<path
 									d="M4 28V25.3333C4 23.9188 4.5619 22.5623 5.5621 21.5621C6.56229 20.5619 7.91885 20 9.33333 20H14.6667C16.0812 20 17.4377 20.5619 18.4379 21.5621C19.4381 22.5623 20 23.9188 20 25.3333V28"
-									stroke="#730F01"
+									stroke="var(--color-primary-blue)"
 									stroke-width="4"
 									stroke-linecap="round"
 									stroke-linejoin="round"
 								/>
 								<path
 									d="M21.3333 4.17334C22.4806 4.46707 23.4974 5.13427 24.2235 6.06975C24.9497 7.00523 25.3438 8.15578 25.3438 9.34001C25.3438 10.5242 24.9497 11.6748 24.2235 12.6103C23.4974 13.5457 22.4806 14.2129 21.3333 14.5067"
-									stroke="#730F01"
+									stroke="var(--color-primary-blue)"
 									stroke-width="4"
 									stroke-linecap="round"
 									stroke-linejoin="round"
 								/>
 								<path
 									d="M28 28V25.3333C27.9932 24.1562 27.5972 23.0144 26.8737 22.0859C26.1502 21.1574 25.1398 20.4943 24 20.2"
-									stroke="#730F01"
+									stroke="var(--color-primary-blue)"
 									stroke-width="4"
 									stroke-linecap="round"
 									stroke-linejoin="round"
@@ -117,14 +129,14 @@ export default {
 							<g style="mix-blend-mode: color-burn" clip-path="url(#clip0_23_158)">
 								<path
 									d="M10.6667 9.33333C10.6667 10.7478 11.2286 12.1044 12.2288 13.1046C13.229 14.1048 14.5855 14.6667 16 14.6667C17.4145 14.6667 18.771 14.1048 19.7712 13.1046C20.7714 12.1044 21.3333 10.7478 21.3333 9.33333C21.3333 7.91885 20.7714 6.56229 19.7712 5.5621C18.771 4.5619 17.4145 4 16 4C14.5855 4 13.229 4.5619 12.2288 5.5621C11.2286 6.56229 10.6667 7.91885 10.6667 9.33333Z"
-									stroke="#730F01"
+									stroke="var(--color-primary-blue)"
 									stroke-width="4"
 									stroke-linecap="round"
 									stroke-linejoin="round"
 								/>
 								<path
 									d="M8 28V25.3333C8 23.9188 8.5619 22.5623 9.5621 21.5621C10.5623 20.5619 11.9188 20 13.3333 20H18.6667C20.0812 20 21.4377 20.5619 22.4379 21.5621C23.4381 22.5623 24 23.9188 24 25.3333V28"
-									stroke="#730F01"
+									stroke="var(--color-primary-blue)"
 									stroke-width="4"
 									stroke-linecap="round"
 									stroke-linejoin="round"
@@ -137,7 +149,7 @@ export default {
 							</defs>
 						</svg>
 						volgend:
-						<span>15</span>
+						<span>{{ githubData.following }}</span>
 					</p>
 				</div>
 			</div>
@@ -210,7 +222,7 @@ section .github-info {
 }
 
 .github-info div {
-	width: 33vw;
+	width: 100%;
 }
 
 .github-info div p {
@@ -248,7 +260,7 @@ section .github-info {
 .github-repo-overview article h4 {
 	font-family: 'Germania one';
 	font-size: calc(1rem * 3);
-	color: var(--color-primary-red);
+	color: var(--color-primary-blue);
 	mix-blend-mode: color-burn;
 }
 
@@ -307,7 +319,7 @@ section .github-info {
 @media (min-width: 30rem) {
 	section .github-info {
 		display: grid;
-		grid-template-columns: 1fr 1fr 1fr;
+		grid-template-columns: 1fr;
 		padding: 1rem;
 	}
 
@@ -321,6 +333,11 @@ section .github-info {
 }
 
 @media (min-width: 60rem) {
+	section .github-info {
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+	}
+
 	.github-repo-overview {
 		grid-template-rows: 1fr;
 		grid-auto-flow: column;

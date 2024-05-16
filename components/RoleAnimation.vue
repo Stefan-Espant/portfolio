@@ -15,7 +15,7 @@
 
 <style scoped>
 h1 {
-	color: var(--color-primary-red);
+	color: var(--color-primary-blue);
 	line-height: 1;
 }
 
@@ -49,7 +49,7 @@ h1 div {
 	}
 
 	h1 div {
-		width: 40rem;
+		width: auto;
 		position: relative;
 	}
 }

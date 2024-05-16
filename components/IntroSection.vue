@@ -17,7 +17,7 @@
 
 <style scoped>
 section {
-	grid-auto-columns: 1fr;
+	grid-template-columns: 1fr;
 }
 
 section div:first-child {
@@ -28,10 +28,19 @@ section .image {
 	grid-area: 'image';
 }
 
-@media (min-width: 70rem) {
+@media (min-width: 60rem){
 	section {
 		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 1rem;
+		margin: 5rem 0;
+	}
+}
+
+@media (min-width: 70rem) {
+	section {
 		grid-template-areas: 'title image';
+		margin: 0;
 	}
 
 	section div {
