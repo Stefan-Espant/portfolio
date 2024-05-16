@@ -70,7 +70,6 @@ console.log(data);
     <section>
     <div>
         <h2>Contact</h2>
-        <h3>Volg mij op deze platformen</h3>
         <div>
             <a v-for="socialLink in data.allSocialLinks" :key="socialLink.id" :href="socialLink.url" target="_blank">
                 {{ socialLink.title }}
