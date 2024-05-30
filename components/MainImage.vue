@@ -1,11 +1,15 @@
 <template>
 	<div v-for="mainimage in data.allMainimages" :key="mainimage.id">
-		<img
-			:src="mainimage.image.url"
-			:width="mainimage.image.width"
-			:height="mainimage.image.height"
-			:alt="mainimage.image.alt"
-		/>
+		<picture>
+			<source :srcset="mainimage.image.responsiveImage.webpSrcSet" type="image/webp" />
+			<source :srcset="mainimage.image.responsiveImage.srcSet" type="image/png" />
+			<img
+				:src="mainimage.image.responsiveImage.src"
+				:width="mainimage.image.responsiveImage.width"
+				:height="mainimage.image.responsiveImage.height"
+				:alt="mainimage.image.responsiveImage.alt"
+			/>
+		</picture>
 	</div>
 </template>
 
@@ -29,12 +33,25 @@ const QUERY = `
       height
       size
       alt
+      responsiveImage(imgixParams: { fit: crop, w: 300, h: 300, auto: format }) {
+        src
+        width
+        height
+        alt
+        webpSrcSet
+        srcSet
+      }
     }
   }
   allQuotes {
     id
     message
     author
+  }
+  allSocialLinks {
+    id
+    title
+    url
   }
 }
 `;

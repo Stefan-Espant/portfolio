@@ -27,6 +27,13 @@ const QUERY = `
       height
       size
       alt
+      responsiveImage(imgixParams: { fit: crop, w: 300, h: 300, auto: format }) {
+        width
+        height
+        src
+        alt
+        webpSrcSet
+      }
     }
   }
   allQuotes {
