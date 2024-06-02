@@ -1,17 +1,27 @@
 <template>
-	<div v-for="mainimage in data.allMainimages" :key="mainimage.id">
-		<picture>
-			<source :srcset="mainimage.image.responsiveImage.webpSrcSet" type="image/webp" />
-			<source :srcset="mainimage.image.responsiveImage.srcSet" type="image/png" />
-			<img
-				:src="mainimage.image.responsiveImage.src"
-				:width="mainimage.image.responsiveImage.width"
-				:height="mainimage.image.responsiveImage.height"
-				:alt="mainimage.image.responsiveImage.alt"
-			/>
-		</picture>
+	<div>
+	  <picture>
+		<!-- .webp versies van de Stefan afbeeldingen -->
+		<source srcset="/assets/images/stefan/webp/stefan-200.webp 200w" media="(max-width: 200px)" type="image/webp" />
+		<source srcset="/assets/images/stefan/webp/stefan-299.webp 299w" media="(max-width: 299px)" type="image/webp" />
+		<source srcset="/assets/images/stefan/webp/stefan-376.webp 376w" media="(max-width: 376px)" type="image/webp" />
+
+		<!-- .png versies van de Stefan afbeeldingen -->
+		<source srcset="/assets/images/stefan/png/stefan-200.png 200w" media="(max-width: 200px)" type="image/png" />
+		<source srcset="/assets/images/stefan/png/stefan-299.png 299w" media="(max-width: 299px)" type="image/png" />
+		<source srcset="/assets/images/stefan/png/stefan-376.png 376w" media="(max-width: 376px)" type="image/png" />
+
+		<!-- Fallback afbeelding voor browsers die <picture> niet ondersteunen -->
+		<img
+		  src="/assets/images/stefan/webp/stefan-376.webp"
+		  alt="Hoofdfoto van Stefan"
+		  width="376"
+		  height="376"
+		/>
+	  </picture>
 	</div>
 </template>
+
 
 <script setup>
 const QUERY = `
