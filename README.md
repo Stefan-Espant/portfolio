@@ -10,6 +10,7 @@
 * 💎 Licentie
 
 ## 📜 Beschrijving
+Deze repository toont 
 
 ## 🛠️ Gebruik
 
@@ -93,6 +94,9 @@ bun run preview
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
 
 ## 🔗 Bronnen
+https://docs.github.com/en/rest
+
+https://developer.mozilla.org/en-US/docs/Web/CSS/mix-blend-mode 
 
 ## 💎 Licentie
 
