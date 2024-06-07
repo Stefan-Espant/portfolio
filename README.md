@@ -10,11 +10,13 @@
 * 💎 Licentie
 
 ## 📜 Beschrijving
-Deze repository toont 
+Deze repository toont al mijn  Github repositories en gemaakte werk.
 
 ## 🛠️ Gebruik
+In dit portfolio kan de gebruiker al mijn werk vinden en in contact komen met mij.
 
 ## 🧬 Kenmerken
+Dit portfolio is gebouwd door middel van html, css, javascript, nodeJS, NuxtJS & Datocms.
 
 ## ⚙️ Installatie
 # Nuxt 3 Minimal Starter
