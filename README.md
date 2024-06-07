@@ -1,5 +1,7 @@
 # Mijn portfolio
 
+<img width="1440" alt="Scherm­afbeelding 2024-06-07 om 11 24 37" src="https://github.com/Stefan-Espant/portfolio/assets/89298385/f651432d-a7f1-46b6-8bfa-a3566be8d999">
+
 ## 📚 Inhoudsopgave
 
 * 📜 Beschrijving
