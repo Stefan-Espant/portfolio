@@ -7,7 +7,5 @@ img {
 	width: 15rem;
 	height: fit-content;
 	fill: var(--color-primary-blue);
-	mix-blend-mode: hard-light;
-
 }
 </style>
