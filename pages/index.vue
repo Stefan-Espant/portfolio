@@ -13,12 +13,6 @@ const QUERY = `
   _allRolesMeta {
     count
   }
-  allRoles {
-    id
-    roleTitle
-    _status
-    _firstPublishedAt
-  }
   mainimage {
     id
     image {
@@ -27,7 +21,7 @@ const QUERY = `
       height
       size
       alt
-      responsiveImage(imgixParams: { fit: crop, w: 300, h: 300, auto: format }) {
+      responsiveImage(imgixParams: {fit: crop, w: 300, h: 300, auto: format}) {
         width
         height
         src
@@ -36,24 +30,30 @@ const QUERY = `
       }
     }
   }
-  allQuotes {
-    id
-    message
-    author
-  }
-  aboutme {
-    id
-    age
-    paragraph
-    based {
-      latitude
-      longitude
+  allProjects {
+    image {
+      width
+      height
+      url
+      title
+      responsiveImage {
+        width
+        src
+        sizes
+        height
+        alt
+        srcSet
+        webpSrcSet
+      }
+      height
+      alt
     }
-  }
-  allSocialLinks {
+    heading
+    client
+    date
     id
-    title
     url
+    urlDesign
   }
 }
 `;

@@ -63,13 +63,22 @@ a {
 	display: flex;
 	width: fit-content;
 	color: #0f40ec;
-	@supports (color: oklch(48.23% 0.258 264.52)) {
-		color: oklch(48.23% 0.258 264.52);
-	}
 	text-decoration: none;
 	mix-blend-mode: color-burn;
 	font-size: 24px;
 	transition: 0.3s ease-in-out;
+	cursor: pointer;
+	@supports (color: oklch(48.23% 0.258 264.52)) {
+		color: oklch(48.23% 0.258 264.52);
+	}
+}
+
+a:hover {
+	color: #f8f8f8;
+	background-color: #0f40ec;
+	@supports (background-color: oklch(48.23% 0.258 264.52)) {
+		background-color: oklch(48.23% 0.258 264.52);
+	}
 }
 
 li {
@@ -83,8 +92,7 @@ section {
 
 /* Typografie */
 h1,
-h2,
-h3 {
+h2 {
 	font-family: 'Germania One', Arial, Helvetica, sans-serif;
 	mix-blend-mode: color-burn;
 	line-height: 100%;
@@ -102,6 +110,7 @@ h2 {
 }
 
 h3 {
+
 	font-size: 3rem;
 }
 

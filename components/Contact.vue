@@ -63,7 +63,6 @@ definePageMeta({
     layout: 'default'
 });
 
-console.log(data);
 </script>
 
 <template>
@@ -128,6 +127,14 @@ a {
     gap: var(--unit-small);
     justify-content: center;
     align-items: center;
+    background-color: rgba(255, 255, 255, 0.4);
+    mix-blend-mode: hard-light;
+}
+
+a:hover {
+  background-color: rgba(15, 64, 236, 0.4);
+  border: 2px solid var(--color-primary-blue);
+  color: #f8f8f8;
 }
 
 button {
@@ -148,5 +155,9 @@ button {
     section div div a {
       width: auto;
     }
-}
+
+    section div div a:last-of-type {
+      grid-column: 1/3;
+    }
+  }
 </style>

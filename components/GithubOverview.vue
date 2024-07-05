@@ -214,6 +214,7 @@ a figure {
 
 section {
 	height: fit-content;
+	margin-bottom: 4rem;
 }
 
 section .github-info {

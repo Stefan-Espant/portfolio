@@ -5,9 +5,11 @@
 			<h3>Bekijk mijn Github projecten</h3>
 			<GithubOverview :githubData="githubData" />
 
-			<!-- <MediaVormgeving />
+			<h3>Of bekijk direct deze projecten</h3>
+			<ProjectOverview />
+			
 
-			<EspantDesign /> -->
+			<!-- <EspantDesign /> -->
 		</section>
 	</div>
 </template>
@@ -23,5 +25,6 @@ section {
 h2,
 h3 {
 	color: var(--color-primary-blue);
+	mix-blend-mode: color-burn;
 }
 </style>
