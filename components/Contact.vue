@@ -73,7 +73,7 @@ definePageMeta({
             <a v-for="socialLink in data.allSocialLinks" :key="socialLink.id" :href="socialLink.url" target="_blank">
                 {{ socialLink.title }}
             </a>
-            <a href="mailto:stefan.van.der.kort@hva.nl">Verstuur een mail</a>
+            <a href="mailto:info@espant.com">Verstuur een mail</a>
         </div>
         </div>
     </section>
