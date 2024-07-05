@@ -12,8 +12,11 @@ export default defineNuxtConfig({
 			},
 			title: 'Portfolio van Stefan',
 			charset: 'utf-8',
-			viewport: 'width=device-width, initial-scale=1'
-		}
+			viewport: 'width=device-width, initial-scale=1',
+			link: [
+				{ rel: "icon", type: "image/png", href: "/assets/images/favicon.png" }
+			  ]
+		},
 	},
 	nitro: {
 		static: true,
