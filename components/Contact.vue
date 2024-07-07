@@ -36,9 +36,13 @@ const QUERY = `
     }
   }
   allSocialLinks {
-    id
     title
     url
+    icon {
+      url
+      width
+      height
+    }
   }
 }
 `;
@@ -71,9 +75,9 @@ definePageMeta({
         <h2>Contact</h2>
         <div>
             <a v-for="socialLink in data.allSocialLinks" :key="socialLink.id" :href="socialLink.url" target="_blank">
+                <img :src="socialLink.icon.url" :alt="socialLink.title" :width="socialLink.icon.width" :height="socialLink.icon.height" />
                 {{ socialLink.title }}
             </a>
-            <a href="mailto:info@espant.com">Verstuur een mail</a>
         </div>
         </div>
     </section>
@@ -112,7 +116,7 @@ textarea,
 button,
 a {
     background-color: #f8f8f8;
-    border: 2px solid #f8f8f8;
+    border: 8px ridge #f8f8f8;
     border-radius: 8px;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     padding: 0.5rem 1rem;
@@ -133,13 +137,20 @@ a {
 
 a:hover {
   background-color: rgba(15, 64, 236, 0.4);
-  border: 2px solid var(--color-primary-blue);
+  border: 8px ridge var(--color-primary-blue);
   color: #f8f8f8;
 }
 
 button {
     font-family: 'Germania One', Arial, Helvetica, sans-serif;
     font-size: var(--unit-default);
+}
+
+a img {
+  width: 2rem;
+  height: 2rem;
+  aspect-ratio: 1/1;
+  mix-blend-mode: initial;
 }
 
 @media (min-width: 40rem) {
