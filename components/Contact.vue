@@ -151,6 +151,7 @@ a img {
   height: 2rem;
   aspect-ratio: 1/1;
   mix-blend-mode: initial;
+  filter: drop-shadow(0px 4px 4px #525252);
 }
 
 @media (min-width: 40rem) {

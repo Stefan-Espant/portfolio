@@ -126,6 +126,7 @@ li {
 a {
 	padding: 0.25rem 0.5rem;
 	border-radius: var(--unit-micro);
+	mix-blend-mode: color-burn;
 }
 
 a:hover {
@@ -134,6 +135,10 @@ a:hover {
 	@supports (background-color: oklch(48.23% 0.258 264.52)) {
 		background-color: oklch(48.23% 0.258 264.52);
 	}
+}
+
+summary::-webkit-details-marker {
+	font-size: 0rem;
 }
 
 details figure svg:first-child {
