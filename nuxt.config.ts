@@ -1,8 +1,7 @@
 export default defineNuxtConfig({
 	runtimeConfig: {
 		public: {
-			datoCmsToken: process.env.DATO_CMS_TOKEN,
-			githubToken: process.env.GITHUB_TOKEN
+			datoCmsToken: process.env.DATO_CMS_TOKEN
 		}
 	},
 	app: {

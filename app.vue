@@ -83,16 +83,11 @@ const getDatoCmsData = async () => {
 
 // Functie om GitHub-gegevens op te halen met back-off-strategie
 const getGitHubData = async () => {
-	const accessToken = `Bearer  process.env.GITHUB_TOKEN`;
 	const url = 'https://api.github.com/users/stefan-espant';
 
 	const makeGitHubRequest = async () => {
 		try {
-			const response = await axios.get(url, {
-				headers: {
-					Authorization: `Bearer ${accessToken}`
-				}
-			});
+			const response = await axios.get(url);
 
 			if (response.status === 200) {
 				return response.data;
