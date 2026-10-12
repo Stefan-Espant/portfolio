@@ -1,21 +1,18 @@
-# Nuxt dev/build outputs
-.output
-.data
-.nuxt
-.nitro
-.cache
-dist
-
-# Node dependencies
+# Node
 node_modules
 
+# WaldJS / Vercel build-output
+.vercel
+dist
+
+# Gekopieerd door wald.config.ts (GSAP e.d.)
+public/vendor
+
 # Logs
-logs
 *.log
 
 # Misc
 .DS_Store
-.fleet
 .idea
 
 # Local env files
@@ -23,4 +20,5 @@ logs
 .env.*
 !.env.example
 
+# Brainstorm-mockups
 .superpowers/
