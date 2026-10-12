@@ -1,0 +1,71 @@
+---
+import { langSwitchHref, localePath, otherLocale, t, type Locale, type MessageKey } from '../lib/i18n'
+type NavRoute = 'work' | 'blog' | 'about' | 'contact'
+type Props = {
+  locale: Locale
+  /** Dezelfde pagina in andere talen; de taalwissel linkt daarheen. */
+  alternates: Partial<Record<Locale, string>>
+  current?: 'work' | 'blog' | 'about' | 'contact'
+}
+const { locale, alternates, current } = $$props
+const routes: Array<[NavRoute, MessageKey]> = [['work', 'nav.work'], ['blog', 'nav.blog'], ['about', 'nav.about'], ['contact', 'nav.contact']]
+const items = routes.map(([route, label]) => {
+  const ariaCurrent = new SafeHtml(route === current ? ' aria-current="page"' : '')
+  return renderTemplate`<li><a class="nav__link" href="${localePath(route, locale)}"${ariaCurrent}>${t(label, locale)}</a></li>`
+}).join('')
+const other = otherLocale(locale)
+const langSwitch = renderTemplate`<a class="nav__lang" href="${langSwitchHref(alternates, locale)}" hreflang="${other}" lang="${other}">${t('lang.switch', locale)}</a>`
+---
+<header class="nav container">
+  <a class="nav__home" href={localePath('home', locale)}>~/steefan</a>
+  <nav aria-label={t('nav.label', locale)}>
+    <ul class="nav__list" role="list">{new SafeHtml(items)}</ul>
+  </nav>
+  {new SafeHtml(langSwitch)}
+</header>
+
+<style>
+/* Links en taalwissel worden in de frontmatter gebouwd: genest onder .nav gestyled. */
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-8);
+  padding-block: var(--space-6);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+
+  & .nav__home {
+    margin-right: auto;
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 700;
+  }
+  & .nav__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-6);
+    padding: 0;
+    list-style: none;
+  }
+  & .nav__link,
+  & .nav__lang {
+    color: var(--text-muted);
+    text-decoration: none;
+  }
+  & .nav__link:hover,
+  & .nav__lang:hover,
+  & .nav__link[aria-current='page'] {
+    color: var(--text);
+  }
+  & .nav__link[aria-current='page'] {
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+  }
+  & .nav__lang {
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+  }
+}
+</style>

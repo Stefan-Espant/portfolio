@@ -1,0 +1,77 @@
+---
+import Nav from '../components/Nav.wald'
+import Footer from '../components/Footer.wald'
+import { readFileSync } from 'node:fs'
+import { getSiteSettings } from '../lib/cms'
+import { t, type Locale } from '../lib/i18n'
+import { absoluteUrl } from '../lib/site'
+type Props = {
+  title: string
+  /** true: titel zoals hij is, zonder " — Steefan" (de home). */
+  fullTitle?: boolean
+  description?: string
+  /** Pad van deze pagina, bv. "/werk": voor canonical en og:url. */
+  path: string
+  locale: Locale
+  /** Deze pagina in elke taal waarin hij bestaat: voor hreflang en de taalwissel. */
+  alternates?: Partial<Record<Locale, string>>
+  current?: 'work' | 'blog' | 'about' | 'contact'
+  noindex?: boolean
+  pond?: unknown
+}
+const { title, fullTitle = false, description = '', path, locale, alternates = {}, current, noindex = false, pond } = $$props
+const site = await getSiteSettings()
+const siteName = site?.siteName || 'Steefan'
+const documentTitle = fullTitle ? title : `${title} — ${siteName}`
+const canonical = absoluteUrl(path)
+
+const hreflang = Object.entries(alternates).map(([lang, href]) =>
+  renderTemplate`<link rel="alternate" hreflang="${lang}" href="${absoluteUrl(String(href))}">`)
+if (alternates.nl) hreflang.push(renderTemplate`<link rel="alternate" hreflang="x-default" href="${absoluteUrl(alternates.nl)}">`)
+
+const headTags = [
+  description ? renderTemplate`<meta name="description" content="${description}">` : '',
+  noindex ? '<meta name="robots" content="noindex, follow">' : '',
+  renderTemplate`<link rel="canonical" href="${canonical}">`,
+  renderTemplate`<meta property="og:title" content="${documentTitle}">`,
+  description ? renderTemplate`<meta property="og:description" content="${description}">` : '',
+  renderTemplate`<meta property="og:url" content="${canonical}">`,
+  renderTemplate`<meta property="og:locale" content="${locale === 'nl' ? 'nl_NL' : 'en_GB'}">`,
+  ...hreflang
+].filter(Boolean).join('\n    ')
+
+// Fonts, tokens en basis-CSS zijn klein: inline in <head> in plaats van een blokkerende stylesheet.
+// "</" escapen zodat CSS de <style> nooit kan sluiten.
+const inlineCss = `<style data-wald-no-hoist>${['src/styles/fonts.css', 'src/styles/tokens.css', 'src/styles/base.css']
+  .map(file => readFileSync(file, 'utf8')).join('\n').replace(/<\//g, '<\\/')}</style>`
+
+const nav = await Nav.render({ locale, alternates, current })
+const footer = await Footer.render({ locale })
+---
+<!DOCTYPE html>
+<html lang={locale}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{documentTitle}</title>
+    {new SafeHtml(headTags)}
+    <link rel="icon" href="/favicon.png" type="image/png" />
+    <link rel="preload" href="/fonts/fraunces-latin.woff2" as="font" type="font/woff2" crossorigin />
+    {new SafeHtml(inlineCss)}
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{t('skip', locale)}</a>
+    <img
+      class="stone"
+      src="/images/stone/stone-1400.webp"
+      srcset="/images/stone/stone-489.webp 489w, /images/stone/stone-857.webp 857w, /images/stone/stone-1400.webp 1400w"
+      sizes="100vw"
+      alt=""
+      decoding="async"
+      data-motion="parallax"
+    />
+    {new SafeHtml(nav)}
+    {pond}
+    {new SafeHtml(footer)}
+  </body>
+</html>
