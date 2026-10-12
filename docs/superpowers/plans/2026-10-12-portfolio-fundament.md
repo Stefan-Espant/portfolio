@@ -184,7 +184,7 @@ import { defineConfig, vercelAdapter } from '@waldjs/cli'
 // Lokaal staan de Centaur- en GitHub-gegevens in .env; op Vercel komen ze uit de project-env
 // vars (die winnen, vandaar ??=). BOM strippen: sommige editors zetten er een voor.
 if (existsSync('.env')) {
-  const env = parseEnv(readFileSync('.env', 'utf8').replace(/^﻿/, ''))
+  const env = parseEnv(readFileSync('.env', 'utf8').replace(/^\uFEFF/, ''))
   for (const [key, value] of Object.entries(env)) process.env[key] ??= value
 }
 
@@ -1679,7 +1679,7 @@ export type EntryData = Record<string, string | number | boolean>
 export function slugify(input: string): string {
   return input
     .normalize('NFKD')
-    .replace(/[̀-ͯ]/g, '')
+    .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
@@ -1775,7 +1775,7 @@ import { parseEnv } from 'node:util'
 import { articleToEntry, projectToEntry, type DatoArticle, type DatoProject, type EntryData } from './migrate/transform'
 
 if (existsSync('.env')) {
-  const env = parseEnv(readFileSync('.env', 'utf8').replace(/^﻿/, ''))
+  const env = parseEnv(readFileSync('.env', 'utf8').replace(/^\uFEFF/, ''))
   for (const [key, value] of Object.entries(env)) process.env[key] ??= value
 }
 
