@@ -2131,7 +2131,8 @@ type Props = {
   locale: Locale
   /** Dezelfde pagina in andere talen; de taalwissel linkt daarheen. */
   alternates: Partial<Record<Locale, string>>
-  current?: NavRoute
+  // Uitgeschreven i.p.v. NavRoute: `wald check` ziet type-aliassen buiten Props niet.
+  current?: 'work' | 'blog' | 'about' | 'contact'
 }
 const { locale, alternates, current } = $$props
 const routes: Array<[NavRoute, MessageKey]> = [['work', 'nav.work'], ['blog', 'nav.blog'], ['about', 'nav.about'], ['contact', 'nav.contact']]
