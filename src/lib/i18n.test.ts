@@ -1,0 +1,45 @@
+import { describe, expect, test } from 'vitest'
+import { LOCALES, isLocale, langSwitchHref, localePath, otherLocale, t } from './i18n'
+
+describe('i18n', () => {
+  test('ondersteunt nl en en', () => {
+    expect(LOCALES).toEqual(['nl', 'en'])
+    expect(isLocale('nl')).toBe(true)
+    expect(isLocale('de')).toBe(false)
+    expect(isLocale(undefined)).toBe(false)
+    expect(otherLocale('nl')).toBe('en')
+    expect(otherLocale('en')).toBe('nl')
+  })
+
+  test('localePath geeft NL zonder prefix en EN onder /en', () => {
+    expect(localePath('home', 'nl')).toBe('/')
+    expect(localePath('home', 'en')).toBe('/en')
+    expect(localePath('work', 'nl')).toBe('/werk')
+    expect(localePath('work', 'en')).toBe('/en/work')
+    expect(localePath('about', 'nl')).toBe('/over')
+    expect(localePath('about', 'en')).toBe('/en/about')
+    expect(localePath('contact', 'en')).toBe('/en/contact')
+  })
+
+  test('localePath vult de slug in bij detailroutes', () => {
+    expect(localePath('project', 'nl', 'waldjs')).toBe('/werk/waldjs')
+    expect(localePath('project', 'en', 'waldjs')).toBe('/en/work/waldjs')
+    expect(localePath('post', 'nl', 'mijn-post')).toBe('/blog/mijn-post')
+    expect(localePath('post', 'en', 'my-post')).toBe('/en/blog/my-post')
+  })
+
+  test('localePath gooit als een detailroute geen slug krijgt', () => {
+    expect(() => localePath('project', 'nl')).toThrow('Route "project" heeft een slug nodig')
+  })
+
+  test('t vertaalt per taal', () => {
+    expect(t('nav.work', 'nl')).toBe('Werk')
+    expect(t('nav.work', 'en')).toBe('Work')
+  })
+
+  test('langSwitchHref linkt naar de vertaling, of naar de home van de andere taal', () => {
+    expect(langSwitchHref({ nl: '/werk/waldjs', en: '/en/work/waldjs' }, 'nl')).toBe('/en/work/waldjs')
+    expect(langSwitchHref({ nl: '/blog/alleen-nl' }, 'nl')).toBe('/en')
+    expect(langSwitchHref({}, 'en')).toBe('/')
+  })
+})
