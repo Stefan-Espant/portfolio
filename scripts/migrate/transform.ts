@@ -39,8 +39,15 @@ function compact(data: Record<string, string | number | boolean | null | undefin
   ) as EntryData
 }
 
+/** Slug die niet leeg is; anders is het record niet bruikbaar als URL. */
+function requireSlug(title: string): string {
+  const slug = slugify(title)
+  if (!slug) throw new Error(`Geen slug te maken van titel "${title}"`)
+  return slug
+}
+
 export function projectToEntry(project: DatoProject, coverUrl: string): EntryData {
-  const slug = slugify(project.heading)
+  const slug = requireSlug(project.heading)
   return compact({
     locale: 'nl',
     translation_key: slug,
@@ -61,17 +68,27 @@ export function projectToEntry(project: DatoProject, coverUrl: string): EntryDat
 const EXCERPT_LENGTH = 160
 
 export function articleToEntry(article: DatoArticle): EntryData {
-  const slug = slugify(article.title)
+  const slug = requireSlug(article.title)
   const body = marked.parse(article.paragraaf ?? '', { async: false }) as string
   // Blok-tags worden een spatie, inline-tags verdwijnen ("<strong>wereld</strong>." → "wereld.").
-  const plain = body
+  const stripped = body
     .replace(/<\/(p|h[1-6]|li|blockquote|pre)>/g, ' ')
     .replace(/<[^>]+>/g, '')
     .replace(/\s+/g, ' ')
     .trim()
-  const excerpt = plain.length > EXCERPT_LENGTH
-    ? plain.slice(0, plain.lastIndexOf(' ', EXCERPT_LENGTH - 1)) + '…'
-    : plain
+  // marked escapt tekst; &amp; als laatste, zodat &amp;lt; niet dubbel wordt gedecodeerd.
+  const plain = stripped
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, '&')
+  let excerpt = plain
+  if (plain.length > EXCERPT_LENGTH) {
+    // Geen spatie in de eerste 160 tekens: kap hard af in plaats van op -1 te snijden.
+    const cut = plain.lastIndexOf(' ', EXCERPT_LENGTH - 1)
+    excerpt = plain.slice(0, cut > 0 ? cut : EXCERPT_LENGTH - 1) + '…'
+  }
   return compact({
     locale: 'nl',
     translation_key: slug,

@@ -66,7 +66,28 @@ describe('articleToEntry', () => {
   test('valt terug op _createdAt en kort lange intro’s af op een woordgrens', () => {
     const entry = articleToEntry({ id: '10', title: 'Lang', datum: null, paragraaf: 'woord '.repeat(60), _createdAt: '2023-11-20T08:00:00Z' })
     expect(entry.published_at).toBe('2023-11-20')
-    expect(String(entry.excerpt).length).toBeLessThanOrEqual(161)
+    expect(String(entry.excerpt).length).toBeLessThanOrEqual(160)
     expect(String(entry.excerpt).endsWith('woord…')).toBe(true)
+  })
+
+  test('kapt een lange intro zonder spaties op 160 tekens af', () => {
+    const entry = articleToEntry({ id: '11', title: 'Url', datum: '2024-01-01', paragraaf: 'x'.repeat(300), _createdAt: '2024-01-01T00:00:00Z' })
+    expect(String(entry.excerpt).length).toBe(160)
+    expect(String(entry.excerpt).endsWith('…')).toBe(true)
+  })
+
+  test('decodeert HTML-entiteiten in de intro', () => {
+    const entry = articleToEntry({ id: '12', title: 'Entiteiten', datum: '2024-01-01', paragraaf: 'Tom & Jerry say "hi"', _createdAt: '2024-01-01T00:00:00Z' })
+    expect(entry.excerpt).toBe('Tom & Jerry say "hi"')
+  })
+
+  test('gooit een fout als de titel geen slug oplevert', () => {
+    expect(() => articleToEntry({ id: '13', title: '!!!', datum: null, paragraaf: null, _createdAt: '2024-01-01T00:00:00Z' })).toThrow()
+  })
+})
+
+describe('projectToEntry slug-fout', () => {
+  test('gooit een fout als de heading geen slug oplevert', () => {
+    expect(() => projectToEntry({ id: '3', heading: '!!!', client: null, date: null, url: null, urlDesign: null, image: null }, '')).toThrow()
   })
 })
