@@ -1,7 +1,7 @@
 // Projecten, blogposts, ervaring en skills uit de Centaur-collecties (zie docs/centaur-collecties.md).
 // Elke entry bestaat per taal; `locale` en `translation_key` koppelen de vertalingen.
-import type { CentaurEntry } from './cms'
-import { LOCALES, isLocale, type Locale } from './i18n'
+import { getCollection, type CentaurEntry } from './cms'
+import { LOCALES, isLocale, localePath, type Locale } from './i18n'
 
 type Data = Record<string, unknown>
 const text = (value: unknown) => (typeof value === 'string' ? value.trim() : '')
@@ -174,4 +174,85 @@ export function missingTranslations<T extends Localized>(items: T[]): Array<{ tr
       return { translationKey, missing: LOCALES.filter(locale => !translations[locale]) }
     })
     .filter(result => result.missing.length > 0)
+}
+
+// ── Loaders ──────────────────────────────────────────────────────────────────────────────
+// Elke collectie wordt per build één keer opgehaald en gemapt. Entries zonder verplichte
+// velden en ontbrekende vertalingen komen als waarschuwing in de build-log.
+
+const loaded = new Map<string, Promise<Localized[]>>()
+
+function load<T extends Localized>(collection: string, map: (entry: CentaurEntry) => T | null): Promise<T[]> {
+  if (!loaded.has(collection)) {
+    const promise = (async () => {
+      const items: T[] = []
+      for (const entry of await getCollection(collection)) {
+        const item = map(entry)
+        if (item) items.push(item)
+        else console.warn(`⚠ ${collection}: entry ${entry.id} mist verplichte velden en wordt overgeslagen`)
+      }
+      for (const { translationKey, missing } of missingTranslations(items)) {
+        console.warn(`⚠ ${collection}: "${translationKey}" heeft geen vertaling in ${missing.join(', ')}`)
+      }
+      return items
+    })()
+    loaded.set(collection, promise)
+    // Een fout niet bewaren: in `wald grow` moet een volgende aanvraag het opnieuw proberen.
+    promise.catch(() => loaded.delete(collection))
+  }
+  return loaded.get(collection) as Promise<T[]>
+}
+
+export function clearContentCache(): void {
+  loaded.clear()
+}
+
+const loadProjects = () => load('projecten', toProject)
+const loadPosts = () => load('blog', toPost)
+
+const byProjectOrder = (a: Project, b: Project) =>
+  Number(b.featured) - Number(a.featured) || a.order - b.order || b.year - a.year
+
+export async function getProjects(locale: Locale): Promise<Project[]> {
+  return forLocale(await loadProjects(), locale).sort(byProjectOrder)
+}
+
+export async function getFeaturedProjects(locale: Locale): Promise<Project[]> {
+  return (await getProjects(locale)).filter(project => project.featured)
+}
+
+export async function getProject(slug: string, locale: Locale): Promise<Project | null> {
+  return (await getProjects(locale)).find(project => project.slug === slug) ?? null
+}
+
+/** Paden van dit project in elke taal waarin het bestaat (voor hreflang en de taalwissel). */
+export async function projectAlternates(project: Project): Promise<Partial<Record<Locale, string>>> {
+  const translations = translationsOf(await loadProjects(), project.translationKey)
+  return Object.fromEntries(
+    Object.entries(translations).map(([locale, item]) => [locale, localePath('project', locale as Locale, item.slug)])
+  )
+}
+
+export async function getPosts(locale: Locale): Promise<Post[]> {
+  return forLocale(await loadPosts(), locale).sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))
+}
+
+export async function getPost(slug: string, locale: Locale): Promise<Post | null> {
+  return (await getPosts(locale)).find(post => post.slug === slug) ?? null
+}
+
+export async function postAlternates(post: Post): Promise<Partial<Record<Locale, string>>> {
+  const translations = translationsOf(await loadPosts(), post.translationKey)
+  return Object.fromEntries(
+    Object.entries(translations).map(([locale, item]) => [locale, localePath('post', locale as Locale, item.slug)])
+  )
+}
+
+export async function getExperience(locale: Locale): Promise<Experience[]> {
+  return forLocale(await load('ervaring', toExperience), locale).sort((a, b) => b.start.localeCompare(a.start))
+}
+
+export async function getSkills(locale: Locale): Promise<Skill[]> {
+  return forLocale(await load('skills', toSkill), locale)
+    .sort((a, b) => a.category.localeCompare(b.category) || a.order - b.order)
 }
