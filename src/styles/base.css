@@ -1,0 +1,85 @@
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-serif);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  isolation: isolate;
+}
+
+main { flex: 1; }
+
+h1, h2, h3 {
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  font-variation-settings: 'opsz' 144;
+  text-wrap: balance;
+}
+
+img { max-width: 100%; display: block; }
+
+a { color: var(--accent); text-underline-offset: 0.2em; }
+a:hover { color: var(--text); }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+::selection { background: var(--brand); color: #fff; }
+
+/* Toegankelijk verborgen, wel voorgelezen. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  z-index: 10;
+  padding: var(--space-2) var(--space-4);
+  background: var(--brand);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  transform: translateY(-200%);
+}
+.skip-link:focus { transform: none; }
+
+/* Stenen achtergrond: donker gemaakt, als textuur achter alle content (spec: "Stenen achtergrond").
+   Iets hoger dan het scherm, zodat de parallax uit plan 3 ruimte heeft. */
+.stone {
+  position: fixed;
+  inset: -10vh 0 auto;
+  z-index: -1;
+  width: 100%;
+  height: 120vh;
+  object-fit: cover;
+  filter: grayscale(1) brightness(0.55) contrast(1.4);
+  mix-blend-mode: luminosity;
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+/* Inhoudsbreedte met vaste marges. */
+.container {
+  width: 100%;
+  max-width: calc(var(--page-width) + 2 * var(--page-gutter));
+  margin-inline: auto;
+  padding-inline: var(--page-gutter);
+}

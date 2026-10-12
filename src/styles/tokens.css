@@ -1,0 +1,38 @@
+/* Design tokens (spec: "Visueel systeem"). Donker thema; er is bewust geen light mode. */
+:root {
+  color-scheme: dark;
+
+  --bg: #0b0d12;
+  --surface: rgb(21 25 36 / 0.72);
+  --border: #2a3245;
+  --text: #e8eaf0;
+  --text-muted: #9aa1b2;
+  --accent: #4d7cff;
+  --accent-2: #9b6bff;
+  --brand: #0f40ec;
+
+  --font-serif: 'Fraunces', Georgia, serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --text-sm: clamp(0.875rem, 0.85rem + 0.1vw, 0.9375rem);
+  --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  --text-lg: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+  --text-xl: clamp(1.75rem, 1.4rem + 1.5vw, 2.5rem);
+  --text-2xl: clamp(2.5rem, 1.8rem + 3.2vw, 4.5rem);
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-24: 6rem;
+
+  --radius-sm: 8px;
+  --radius-lg: 12px;
+  --page-width: 75rem;
+  --page-gutter: clamp(1rem, 4vw, 3rem);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
