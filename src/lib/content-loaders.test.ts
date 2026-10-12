@@ -102,4 +102,18 @@ describe('content-loaders', () => {
     await expect(getProjects('nl')).rejects.toThrow('Centaur down')
     expect((await getProjects('nl')).map(p => p.slug)).toEqual(['centaur-cms', 'waldjs', 'oud-project'])
   })
+
+  test('items zonder volgorde komen achteraan', async () => {
+    vi.mocked(getCollection).mockImplementation(async slug => slug === 'projecten'
+      ? [
+          entry('a', { locale: 'nl', translation_key: 'a', slug: 'zonder-volgorde', title: 'A', featured: true }),
+          entry('b', { locale: 'nl', translation_key: 'b', slug: 'eerste', title: 'B', featured: true, order: 1 })
+        ]
+      : [
+          entry('s1', { locale: 'nl', translation_key: 'x', name: 'Zonder', category: 'frontend' }),
+          entry('s2', { locale: 'nl', translation_key: 'y', name: 'Met', category: 'frontend', order: 1 })
+        ])
+    expect((await getProjects('nl')).map(p => p.slug)).toEqual(['eerste', 'zonder-volgorde'])
+    expect((await getSkills('nl')).map(s => s.name)).toEqual(['Met', 'Zonder'])
+  })
 })

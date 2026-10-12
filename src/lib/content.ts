@@ -198,7 +198,9 @@ function load<T extends Localized>(collection: string, map: (entry: CentaurEntry
     })()
     loaded.set(collection, promise)
     // Een fout niet bewaren: in `wald grow` moet een volgende aanvraag het opnieuw proberen.
-    promise.catch(() => loaded.delete(collection))
+    promise.catch(() => {
+      if (loaded.get(collection) === promise) loaded.delete(collection)
+    })
   }
   return loaded.get(collection) as Promise<T[]>
 }
@@ -210,8 +212,11 @@ export function clearContentCache(): void {
 const loadProjects = () => load('projecten', toProject)
 const loadPosts = () => load('blog', toPost)
 
+/** Zonder volgorde in Centaur (0) achteraan, niet vooraan. */
+const rank = (order: number) => order || Number.MAX_SAFE_INTEGER
+
 const byProjectOrder = (a: Project, b: Project) =>
-  Number(b.featured) - Number(a.featured) || a.order - b.order || b.year - a.year
+  Number(b.featured) - Number(a.featured) || rank(a.order) - rank(b.order) || b.year - a.year
 
 export async function getProjects(locale: Locale): Promise<Project[]> {
   return forLocale(await loadProjects(), locale).sort(byProjectOrder)
@@ -254,5 +259,5 @@ export async function getExperience(locale: Locale): Promise<Experience[]> {
 
 export async function getSkills(locale: Locale): Promise<Skill[]> {
   return forLocale(await load('skills', toSkill), locale)
-    .sort((a, b) => a.category.localeCompare(b.category) || a.order - b.order)
+    .sort((a, b) => a.category.localeCompare(b.category) || rank(a.order) - rank(b.order))
 }
