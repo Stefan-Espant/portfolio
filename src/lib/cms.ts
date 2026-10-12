@@ -55,7 +55,12 @@ async function get<T>(path: string): Promise<T> {
 // Tijdens één build vragen veel pagina's dezelfde data op; memoizen voorkomt dubbele calls.
 const cache = new Map<string, Promise<unknown>>()
 function memo<T>(key: string, load: () => Promise<T>): Promise<T> {
-  if (!cache.has(key)) cache.set(key, load())
+  if (!cache.has(key)) {
+    const promise = load()
+    cache.set(key, promise)
+    // Een fout niet bewaren: in `wald grow` moet een volgende aanvraag het opnieuw proberen.
+    promise.catch(() => cache.delete(key))
+  }
   return cache.get(key) as Promise<T>
 }
 

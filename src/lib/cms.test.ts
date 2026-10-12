@@ -46,6 +46,13 @@ describe('cms', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1)
   })
 
+  test('een mislukte aanvraag wordt niet gecachet', async () => {
+    fetchMock.mockResolvedValueOnce(new Response('', { status: 500 }))
+    await expect(getCollection('projecten')).rejects.toThrow()
+    fetchMock.mockResolvedValueOnce(json([{ id: 'a', data: {} }]))
+    await expect(getCollection('projecten')).resolves.toHaveLength(1)
+  })
+
   test('getPage geeft null bij 404', async () => {
     fetchMock.mockResolvedValue(new Response('', { status: 404 }))
     await expect(getPage('bestaat-niet')).resolves.toBeNull()
