@@ -13,6 +13,7 @@
 
   --font-serif: 'Fraunces', Georgia, serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-display: 'Germania One', var(--font-serif);
 
   --text-sm: clamp(0.875rem, 0.85rem + 0.1vw, 0.9375rem);
   --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);

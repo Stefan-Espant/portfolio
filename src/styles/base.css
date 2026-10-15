@@ -83,3 +83,22 @@ a:hover { color: var(--text); }
   margin-inline: auto;
   padding-inline: var(--page-gutter);
 }
+
+/* Zuid-Duits accent (spec: Typografie): alleen logo, sectiekopjes en projectnamen. */
+.display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  font-variation-settings: normal;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+/* Windows hoog contrast: geen verloop, gewone tekstkleur. */
+@media (forced-colors: active) {
+  .display {
+    background: none;
+    color: CanvasText;
+  }
+}

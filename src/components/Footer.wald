@@ -6,7 +6,7 @@ const year = new Date().getFullYear()
 ---
 <footer class="footer container">
   <p>{t('footer.text', locale)}</p>
-  <p>© {year} Stefan</p>
+  <p><span class="display footer__logo">Steefan</span> © {year} Stefan</p>
 </footer>
 
 <style>
@@ -21,5 +21,9 @@ const year = new Date().getFullYear()
   color: var(--text-muted);
   font-family: var(--font-mono);
   font-size: var(--text-sm);
+}
+.footer__logo {
+  margin-right: var(--space-2);
+  font-size: var(--text-lg);
 }
 </style>

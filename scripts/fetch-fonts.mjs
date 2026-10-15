@@ -1,12 +1,13 @@
-// Downloadt de Latijnse subsets van Fraunces (variabel: opsz, wght, SOFT) en JetBrains Mono
-// (variabel: wght) van Google Fonts naar public/fonts/. Eenmalig draaien; beide fonts zijn OFL.
+// Downloadt de Latijnse subsets van Fraunces (variabel: opsz, wght, SOFT), JetBrains Mono
+// (variabel: wght) en Germania One van Google Fonts naar public/fonts/. Eenmalig draaien; alle drie OFL.
 import { mkdirSync, writeFileSync } from 'node:fs'
 
 // Google Fonts geeft alleen woff2 aan een moderne browser-UA.
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36'
 const FONTS = [
   ['fraunces-latin.woff2', 'Fraunces:opsz,wght,SOFT@9..144,300..800,0..100'],
-  ['jetbrains-mono-latin.woff2', 'JetBrains+Mono:wght@400..700']
+  ['jetbrains-mono-latin.woff2', 'JetBrains+Mono:wght@400..700'],
+  ['germania-one-latin.woff2', 'Germania+One']
 ]
 
 mkdirSync('public/fonts', { recursive: true })

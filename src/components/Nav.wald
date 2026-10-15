@@ -17,7 +17,7 @@ const other = otherLocale(locale)
 const langSwitch = renderTemplate`<a class="nav__lang" href="${langSwitchHref(alternates, locale)}" hreflang="${other}" lang="${other}">${t('lang.switch', locale)}</a>`
 ---
 <header class="nav container">
-  <a class="nav__home" href={localePath('home', locale)}>~/steefan</a>
+  <a class="nav__home display" href={localePath('home', locale)}>Steefan</a>
   <nav aria-label={t('nav.label', locale)}>
     <ul class="nav__list" role="list">{new SafeHtml(items)}</ul>
   </nav>
@@ -37,9 +37,8 @@ const langSwitch = renderTemplate`<a class="nav__lang" href="${langSwitchHref(al
 
   & .nav__home {
     margin-right: auto;
-    color: var(--text);
+    font-size: var(--text-lg);
     text-decoration: none;
-    font-weight: 700;
   }
   & .nav__list {
     display: flex;
