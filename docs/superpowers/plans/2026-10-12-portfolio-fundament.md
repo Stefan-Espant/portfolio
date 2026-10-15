@@ -51,7 +51,7 @@
 | `scripts/migrate-datocms.ts` | Eenmalige runner: DatoCMS lezen, media uploaden, entries aanmaken (idempotent, `--dry-run`) |
 | `scripts/fetch-fonts.mjs` | Eenmalig: Fraunces en JetBrains Mono (latin, woff2) naar `public/fonts/` |
 | `docs/centaur-collecties.md` | Exacte collectie- en veldslugs om in Centaur aan te maken |
-| `src/styles/fonts.css`, `tokens.css`, `base.css` | `@font-face`, design tokens, reset/basis/steen/skip-link/focus |
+| `src/styles/fonts.css`, `tokens.css`, `base.css` | `@font-face`, design tokens, reset/basis/steen/skip-link/focus, `.display` (Germania One-accent) |
 | `src/layouts/Layout.wald` | `<head>` (SEO, canonical, hreflang), steen, nav, footer, inline CSS |
 | `src/components/Nav.wald`, `Footer.wald` | Navigatie met taalwissel, footer |
 | `src/components/pages/HomePage.wald` | Home (eerste versie: hero + uitgelichte projecten) |
@@ -2324,9 +2324,139 @@ git commit -m "feat: add layout with stone background, navigation and footer"
 
 ---
 
+### Task 12b: Germania One als subtiel Zuid-Duits accent
+
+Spec-herziening 2026-10-15 (sectie "Typografie"). Germania One, de breukletter van het vorige portfolio, komt alleen in het logo, de sectiekopjes en de projectnamen, in het blauw-paarse verloop. Nooit in h1, lopende tekst, navigatielinks of knoppen.
+
+**Files:**
+- Modify: `scripts/fetch-fonts.mjs`, `src/styles/fonts.css`, `src/styles/tokens.css`, `src/styles/base.css`, `src/components/Nav.wald`, `src/components/Footer.wald`
+- Create: `public/fonts/germania-one-latin.woff2`
+
+- [ ] **Step 1: Font toevoegen aan het download-script**
+
+In `scripts/fetch-fonts.mjs`, vervang de `FONTS`-array door:
+
+```js
+const FONTS = [
+  ['fraunces-latin.woff2', 'Fraunces:opsz,wght,SOFT@9..144,300..800,0..100'],
+  ['jetbrains-mono-latin.woff2', 'JetBrains+Mono:wght@400..700'],
+  ['germania-one-latin.woff2', 'Germania+One']
+]
+```
+
+En pas de commentaarregel bovenaan aan naar:
+
+```js
+// Downloadt de Latijnse subsets van Fraunces (variabel: opsz, wght, SOFT), JetBrains Mono
+// (variabel: wght) en Germania One van Google Fonts naar public/fonts/. Eenmalig draaien; alle drie OFL.
+```
+
+- [ ] **Step 2: Downloaden**
+
+Run: `npm run fonts && file public/fonts/germania-one-latin.woff2`
+Expected: drie `✓`-regels, en `Web Open Font Format (Version 2)` voor Germania One.
+
+- [ ] **Step 3: `@font-face`, token en `.display`-class**
+
+Voeg onderaan `src/styles/fonts.css` toe:
+
+```css
+@font-face {
+  font-family: 'Germania One';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/fonts/germania-one-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+```
+
+In `src/styles/tokens.css`, voeg direct onder `--font-mono: …;` toe:
+
+```css
+  --font-display: 'Germania One', var(--font-serif);
+```
+
+Voeg onderaan `src/styles/base.css` toe:
+
+```css
+/* Zuid-Duits accent (spec: Typografie): alleen logo, sectiekopjes en projectnamen. */
+.display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  font-variation-settings: normal;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+/* Windows hoog contrast: geen verloop, gewone tekstkleur. */
+@media (forced-colors: active) {
+  .display {
+    background: none;
+    color: CanvasText;
+  }
+}
+```
+
+- [ ] **Step 4: Logo in de navigatie**
+
+In `src/components/Nav.wald`, vervang de home-link:
+
+```wald
+  <a class="nav__home display" href={localePath('home', locale)}>Steefan</a>
+```
+
+en vervang in de `<style>` het blok `& .nav__home {…}` door (geen `color`, anders verdwijnt het verloop):
+
+```css
+  & .nav__home {
+    margin-right: auto;
+    font-size: var(--text-lg);
+    text-decoration: none;
+  }
+```
+
+- [ ] **Step 5: Logo in de footer**
+
+In `src/components/Footer.wald`, vervang `<p>© {year} Stefan</p>` door:
+
+```wald
+  <p><span class="display footer__logo">Steefan</span> © {year} Stefan</p>
+```
+
+en voeg onderaan in de `<style>` (na het `.footer {…}`-blok) toe:
+
+```css
+.footer__logo {
+  margin-right: var(--space-2);
+  font-size: var(--text-lg);
+}
+```
+
+- [ ] **Step 6: Controleren**
+
+```bash
+npm run check
+grep -c 'germania-one-latin.woff2' src/styles/fonts.css
+grep -c '\-\-font-display' src/styles/tokens.css
+```
+
+Expected: `wald check` zonder fouten, beide greps geven `1`.
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add scripts/fetch-fonts.mjs public/fonts/germania-one-latin.woff2 src/styles src/components/Nav.wald src/components/Footer.wald
+git commit -m "feat: add Germania One display accent for logo and labels"
+```
+
+---
+
 ### Task 13: Home (NL + EN) en 404, end-to-end
 
-Vereist een gevulde `.env` (Task 8). Zonder gepubliceerde projecten toont de home de lege staat, en dat is ook goed.
+Vereist een gevulde `.env` (Task 8) en Task 12b (`.display`). Zonder gepubliceerde projecten toont de home de lege staat, en dat is ook goed.
 
 **Files:**
 - Create: `src/components/pages/HomePage.wald`, `src/pages/en/index.wald`, `src/pages/404.wald`
@@ -2347,7 +2477,7 @@ const projects = await getFeaturedProjects(locale)
 const cards = projects.map(project => renderTemplate`
   <li class="home__project">
     <a class="home__project-link" href="${localePath('project', locale, project.slug)}">
-      <h3 class="home__project-title">${project.title}</h3>
+      <h3 class="home__project-title display">${project.title}</h3>
       <p class="home__project-summary">${project.summary}</p>
     </a>
   </li>`).join('')
@@ -2360,7 +2490,7 @@ const alternates = { nl: localePath('home', 'nl'), en: localePath('home', 'en') 
   <main id="main" class="home container">
     <h1 class="home__title">{t('home.heading', locale)}</h1>
     <p class="home__lead">{t('home.lead', locale)}</p>
-    <h2 class="home__subtitle">{t('home.featured', locale)}</h2>
+    <h2 class="home__subtitle display">{t('home.featured', locale)}</h2>
     {new SafeHtml(list)}
   </main>
 </Layout>
@@ -2379,14 +2509,10 @@ const alternates = { nl: localePath('home', 'nl'), en: localePath('home', 'en') 
     color: var(--text-muted);
     font-size: var(--text-lg);
   }
+  /* Lettertype en kleur komen van .display (Germania One in het verloop). */
   & .home__subtitle {
     margin-top: var(--space-16);
-    font-family: var(--font-mono);
-    font-size: var(--text-sm);
-    font-weight: 400;
-    letter-spacing: 0;
-    color: var(--text-muted);
-    text-transform: uppercase;
+    font-size: var(--text-xl);
   }
   & .home__projects {
     display: grid;
@@ -2492,7 +2618,7 @@ kill %1
 
 Expected: alle gegrepte strings komen terug. Open daarna http://localhost:7233 in de browser en controleer visueel:
 - donkere achtergrond met de grijze steentextuur
-- Fraunces in de kop, JetBrains Mono in de nav
+- Fraunces in de kop, JetBrains Mono in de nav-links, Germania One in het blauw-paarse verloop voor het logo, "Uitgelicht werk" en de projectnamen
 - de taalwissel linkt van `/` naar `/en` en terug
 - de skip-link verschijnt bij de eerste Tab
 - de focus-ring is blauw
