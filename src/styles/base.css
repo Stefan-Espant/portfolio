@@ -90,15 +90,32 @@ a:hover { color: var(--text); }
   font-weight: 400;
   letter-spacing: 0.01em;
   font-variation-settings: normal;
+  /* Breukletters lopen buiten de regel; zonder ruimte snijdt background-clip ze af. */
+  line-height: 1.2;
+  padding-block: 0.1em;
   background: linear-gradient(90deg, var(--accent), var(--accent-2));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
-/* Windows hoog contrast: geen verloop, gewone tekstkleur. */
+/* Als link: bij hover en toetsenbordfocus bewust van verloop naar effen tekst. */
+a.display:hover,
+a.display:focus-visible {
+  color: var(--text);
+}
+/* Windows hoog contrast: geen verloop, systeemkleuren (links blijven herkenbaar als link). */
 @media (forced-colors: active) {
   .display {
     background: none;
     color: CanvasText;
+  }
+  a.display {
+    color: LinkText;
+  }
+}
+@media print {
+  .display {
+    background: none;
+    color: #000;
   }
 }
