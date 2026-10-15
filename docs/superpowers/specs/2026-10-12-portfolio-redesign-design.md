@@ -1,7 +1,7 @@
 # Portfolio redesign — ontwerp
 
 **Datum:** 2026-10-12
-**Status:** goedgekeurd, klaar voor implementatieplan
+**Status:** goedgekeurd, klaar voor implementatieplan (herzien 2026-10-15: Germania One-accent)
 **Branch:** `redesign`
 
 ## Doel
@@ -20,7 +20,7 @@ Het portfolio op steefan.nl opnieuw ontwerpen en opnieuw bouwen met WaldJS, GSAP
 | CMS | Centaur CMS voor alle content, inclusief blog |
 | Animatie | GSAP 3.12.5 + ScrollTrigger, niveau "gemiddeld" plus horizontale projectrail |
 | Visuele stijl | Donker developer-thema met bento-grid en de bestaande stenen textuur als donkere achtergrond |
-| Lettertype | Fraunces (variabel) voor koppen en tekst, JetBrains Mono voor navigatie, labels en code |
+| Lettertype | Fraunces (variabel) voor koppen en tekst, JetBrains Mono voor navigatie, labels en code, Germania One als subtiel Zuid-Duits accent (logo, sectiekopjes, projectnamen) |
 | Talen | Nederlands (standaard, zonder prefix) en Engels (`/en/`) |
 | Vertalingen in collecties | `locale`- en `translationKey`-velden in de entry-data |
 | Bestaande content | Migratiescript DatoCMS → Centaur (projecten en blog) |
@@ -160,7 +160,13 @@ De bestaande responsive stenen webp's, `position: fixed` achter de content. Filt
 
 - **Fraunces** (variabel, assen `opsz` 9–144, `wght`, `SOFT`) voor koppen en broodtekst. Koppen op `opsz` 144, broodtekst op de automatische optical size.
 - **JetBrains Mono** voor navigatie, labels, metadata, code en tags.
-- Vloeiende typeschaal met `clamp()`. Beide fonts worden zelf gehost als woff2 met `font-display: swap` en een preload voor Fraunces.
+- **Germania One** (breukletter, ook gebruikt op het vorige portfolio) als subtiel Zuid-Duits accent, via token `--font-display` en class `.display`. Alleen voor:
+  - het logo "Steefan" (nav, footer, 404);
+  - sectiekopjes (bijv. "Uitgelicht werk", "Blog");
+  - projectnamen op kaarten, in de bento en in de rail.
+
+  Nooit voor de grote koppen (h1), lopende tekst, navigatielinks of knoppen. Kleur: het blauw-paarse verloop (`--accent` → `--accent-2`) via `background-clip: text`. Onder `forced-colors: active` valt dat terug op de gewone tekstkleur. Geen andere alpenornamenten (geen ruiten, edelweiss of kaders).
+- Vloeiende typeschaal met `clamp()`. Alle fonts worden zelf gehost als woff2 met `font-display: swap` en een preload voor Fraunces.
 
 ### Ruimte en vorm
 
