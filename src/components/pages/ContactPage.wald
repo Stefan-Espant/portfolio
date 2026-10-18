@@ -1,0 +1,64 @@
+---
+import Layout from '../../layouts/Layout.wald'
+import ContactForm from '../ContactForm.wald'
+import Availability from '../Availability.wald'
+import { getStatus } from '../../lib/content'
+import { getSiteSettings } from '../../lib/cms'
+import { localePath, t, type Locale } from '../../lib/i18n'
+import { CONTACT_EMAIL, GITHUB_URL } from '../../lib/site'
+type Props = { locale: Locale }
+const { locale } = $$props
+const [status, site] = await Promise.all([getStatus(locale), getSiteSettings()])
+const statusHtml = status ? await Availability.render({ status, locale }) : ''
+const channels = ([
+  ['E-mail', `mailto:${CONTACT_EMAIL}`],
+  ['GitHub', GITHUB_URL],
+  ['LinkedIn', site?.linkedIn ?? ''],
+  ['Instagram', site?.instagram ?? '']
+] as Array<[string, string]>).filter(([, href]) => href)
+  .map(([label, href]) => renderTemplate`<li><a href="${href}" rel="noopener">${label} ↗</a></li>`).join('')
+const alternates = { nl: localePath('contact', 'nl'), en: localePath('contact', 'en') }
+---
+<Layout title={t('contact.title', locale)} description={t('contact.description', locale)} path={localePath('contact', locale)} locale={locale} alternates={alternates} current="contact">
+  <main id="main" class="contact container">
+    <h1 class="contact__title">{t('contact.heading', locale)}</h1>
+    <p class="contact__lead">{t('contact.lead', locale)}</p>
+    <div class="contact__status">{new SafeHtml(statusHtml)}</div>
+    <ContactForm locale={locale} />
+    <h2 class="contact__other display">{t('contact.other', locale)}</h2>
+    <ul class="contact__channels" role="list">{new SafeHtml(channels)}</ul>
+  </main>
+  <script src="/contact.js" defer data-wald-no-hoist></script>
+</Layout>
+
+<style>
+.contact {
+  padding-block: var(--space-16);
+
+  & .contact__title {
+    font-size: var(--text-2xl);
+  }
+  & .contact__lead {
+    margin-top: var(--space-4);
+    max-width: 46ch;
+    color: var(--text-muted);
+    font-size: var(--text-lg);
+  }
+  & .contact__status {
+    margin-block: var(--space-6) var(--space-8);
+  }
+  & .contact__other {
+    margin-top: var(--space-16);
+    font-size: var(--text-xl);
+  }
+  & .contact__channels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3) var(--space-8);
+    margin: var(--space-4) 0 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--font-mono);
+  }
+}
+</style>

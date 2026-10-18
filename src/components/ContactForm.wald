@@ -1,0 +1,85 @@
+---
+// Contactformulier → Centaur Forms (JSON). Zonder JavaScript blijft het formulier verborgen en
+// staat er een mailto-link: de Forms-API accepteert geen gewone formulier-POST.
+import { t, type Locale } from '../lib/i18n'
+import { CONTACT_EMAIL } from '../lib/site'
+type Props = { locale: Locale }
+const { locale } = $$props
+const apiBase = process.env.CENTAUR_API_BASE ?? ''
+const tenant = process.env.CENTAUR_TENANT_SLUG ?? ''
+---
+<div class="contact-form" data-contact-form data-api-base={apiBase} data-tenant={tenant} data-send={t('form.send', locale)} data-sending={t('form.sending', locale)} data-success={t('form.success', locale)} data-error={t('form.error', locale)}>
+  <form hidden novalidate>
+    <label class="contact-form__field">
+      <span>{t('form.name', locale)}</span>
+      <input name="naam" type="text" autocomplete="name" required maxlength="120" />
+    </label>
+    <label class="contact-form__field">
+      <span>{t('form.email', locale)}</span>
+      <input name="email" type="email" autocomplete="email" required maxlength="254" />
+    </label>
+    <label class="contact-form__field">
+      <span>{t('form.message', locale)}</span>
+      <textarea name="bericht" rows="6" required></textarea>
+    </label>
+    <button class="contact-form__submit" type="submit">{t('form.send', locale)}</button>
+    <p class="contact-form__status" role="status" aria-live="polite" data-contact-status></p>
+  </form>
+  <noscript>
+    <p class="contact-form__nojs">{t('form.noJs', locale)} <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></p>
+  </noscript>
+</div>
+
+<style>
+.contact-form {
+  & form {
+    display: grid;
+    gap: var(--space-6);
+    max-width: 36rem;
+  }
+  & .contact-form__field {
+    display: grid;
+    gap: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+  }
+  & input,
+  & textarea {
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text);
+    font: inherit;
+    font-family: var(--font-serif);
+    font-size: var(--text-base);
+  }
+  & input:focus-visible,
+  & textarea:focus-visible {
+    border-color: var(--accent);
+  }
+  & .contact-form__submit {
+    justify-self: start;
+    padding: var(--space-3) var(--space-6);
+    border: 0;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--bg);
+    font: inherit;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    cursor: pointer;
+  }
+  & .contact-form__submit:disabled {
+    opacity: 0.6;
+    cursor: progress;
+  }
+  & .contact-form__status[data-state='success'] {
+    color: var(--accent);
+  }
+  & .contact-form__status[data-state='error'] {
+    color: #ff8a7a;
+  }
+}
+</style>
