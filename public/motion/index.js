@@ -1,6 +1,9 @@
 // Beweging voor de hele site (spec: Motion). GSAP, ScrollTrigger en SplitText staan als defer-scripts
 // in <head>; dit module-script draait daarna. Bij prefers-reduced-motion of als GSAP ontbreekt
 // gebeurt er niets en blijft alles statisch zichtbaar.
+import { intro } from './intro.js'
+import { parallax, torch } from './ambient.js'
+
 const root = document.documentElement
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 const { gsap, ScrollTrigger, SplitText } = window
@@ -17,8 +20,18 @@ if (reduced || !gsap || !ScrollTrigger || !SplitText) {
   const finePointer = window.matchMedia('(pointer: fine)').matches
 
   document.fonts.ready.then(() => {
-    window.__motionReady = true
-    // Effecten worden in de volgende taken hier aangeroepen.
-    ScrollTrigger.refresh()
+    try {
+      intro(gsap, SplitText)
+      parallax(gsap)
+      if (finePointer) torch(gsap)
+      // Effecten worden in de volgende taken hier aangeroepen.
+      ScrollTrigger.refresh()
+    } catch (error) {
+      // Een fout in een effect mag de inhoud nooit verborgen laten.
+      stop()
+      console.error(error)
+    } finally {
+      window.__motionReady = true
+    }
   }).catch(stop)
 }
