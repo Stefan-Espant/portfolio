@@ -27,18 +27,26 @@ const langSwitch = renderTemplate`<a class="nav__lang" href="${langSwitchHref(al
 <style>
 /* Links en taalwissel worden in de frontmatter gebouwd: genest onder .nav gestyled. */
 .nav {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    'home lang'
+    'links links';
   align-items: center;
-  gap: var(--space-3) var(--space-8);
+  gap: var(--space-3) var(--space-6);
   padding-block: var(--space-6);
   font-family: var(--font-mono);
   font-size: var(--text-sm);
 
   & .nav__home {
-    margin-right: auto;
+    grid-area: home;
+    justify-self: start;
     font-size: var(--text-lg);
     text-decoration: none;
+  }
+  & nav {
+    grid-area: links;
+    min-width: 0;
   }
   & .nav__list {
     display: flex;
@@ -62,9 +70,21 @@ const langSwitch = renderTemplate`<a class="nav__lang" href="${langSwitchHref(al
     text-decoration-color: var(--accent);
   }
   & .nav__lang {
+    grid-area: lang;
     padding: var(--space-1) var(--space-3);
     border: 1px solid var(--border);
     border-radius: 999px;
+  }
+}
+/* Vanaf tablet alles op één regel. */
+@media (min-width: 48rem) {
+  .nav {
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas: 'home links lang';
+
+    & nav {
+      justify-self: end;
+    }
   }
 }
 </style>
