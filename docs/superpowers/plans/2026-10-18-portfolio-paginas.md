@@ -2472,3 +2472,18 @@ Maak van elke pagina (NL) een screenshot op 1280×900 en op 390 breed (iframe-wr
 - [ ] **Step 4: Plan 1-notities verwerkt?**
 
 Controleer dat deze review-punten uit plan 1 in de code zitten: dubbele slugs worden afgevangen (Task 2), `year` 0 wordt niet getoond (ProjectCard en ProjectPage tonen het jaar alleen als het er is), GitHub-sectie verdwijnt bij een lege lijst (`repos?.length`), alternates bevatten alleen echte vertalingen. Meld wat ontbreekt.
+
+---
+
+## Uitvoeringsnotities (2026-10-18)
+
+Plan 2 is uitgevoerd met subagents, met spec- en kwaliteitsreview per taak (Task 6–11 als één review). Afwijkingen ten opzichte van de code hierboven:
+
+- **Task 1:** `bake-stone.mjs` maakt de uitvoermap aan (`mkdirSync`), omdat git de lege map had verwijderd.
+- **Task 2 (review):** `safeUrl()` in `content.ts` laat alleen `http(s)`- en `mailto`-links uit het CMS door (`live_url`, `repo_url`, `design_url`, klant-`url`). Testdata in `content-extra.test.ts` is geïsoleerd.
+- **Task 3 (review):** `formatDate`/`formatMonth` gebruiken alleen het datumdeel (`JJJJ-MM-DD`), zodat een tijdzone de dag niet verschuift; `work.count` werd "Projecten: {n}" / "Projects: {n}".
+- **Task 5 (review):** `Availability` neemt `{ status, locale }` en zegt de status ook voor schermlezers ("Beschikbaar:" / "Niet beschikbaar:"); de reduced-motion-regel is genest met dezelfde specificiteit.
+- **Task 8 en 9:** de `[slug]`-routes declareren `type Props = { slug: string }` en gebruiken `const { slug } = $$props` (nodig voor `wald check`).
+- **Task 10:** het portret kreeg `height: auto` (anders ovaal) en repo-kaarten `align-content: start`.
+- **Review Task 6–11:** globale regel `[hidden] { display: none !important; }`; `contact.js` maakt het `AbortSignal` veilig aan, gebruikt `aria-disabled` en trimt velden vóór validatie; lege samenvatting, cover-wrapper en `<time>` worden niet gerenderd; galerij-afbeeldingen hebben `alt=""` met het bijschrift als tekst.
+- **Niet met echte data getest:** Centaur had nog geen gepubliceerde items. Bento, marquee, klantenrij, stroken, case studies, blogposts, ervaring en skills zijn alleen op code en lege staat gecontroleerd. Het contactformulier is niet echt verstuurd.
