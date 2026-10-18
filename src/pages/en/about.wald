@@ -1,0 +1,4 @@
+---
+import AboutPage from '../../components/pages/AboutPage.wald'
+---
+<AboutPage locale="en" />
