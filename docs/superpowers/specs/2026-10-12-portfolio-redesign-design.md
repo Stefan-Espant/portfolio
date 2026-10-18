@@ -34,7 +34,7 @@ Het portfolio op steefan.nl opnieuw ontwerpen en opnieuw bouwen met WaldJS, GSAP
 |---|---|---|
 | `/` | `/en/` | Hero, bento met 3 uitgelichte projecten, marquee met projectnamen, klantenrij met quote, horizontale strook "Ander werk", korte over-mij, laatste blogposts als horizontale strook, contact-CTA met beschikbaarheid |
 | `/werk` | `/en/work` | Alle projecten, filterbaar op type (framework / product / website / school) |
-| `/werk/[slug]` | `/en/work/[slug]` | Case study: intro, cijfers (optellend), horizontale strook Probleem → Aanpak → Resultaat, stack en links (live, GitHub, npm), horizontale galerij; bij WaldJS een live `.wald`-playground |
+| `/werk/[slug]` | `/en/work/[slug]` | Case study: intro, cijfers (optellend), tijdlijn Probleem → Aanpak → Resultaat, stack en links (live, GitHub, npm), horizontale galerij; bij WaldJS een live `.wald`-playground |
 | `/blog` | `/en/blog` | Overzicht van posts |
 | `/blog/[slug]` | `/en/blog/[slug]` | Blogpost |
 | `/over` | `/en/about` | Over mij, skills/stack, cv-tijdlijn, cv-pdf-download, GitHub-activiteit |
@@ -199,10 +199,10 @@ Alle GSAP-code staat in `public/motion.js`. GSAP, ScrollTrigger en SplitText kom
 | 3 | `chars` | sectiekopjes (`.display`) | letters verschijnen per letter uit een masker met `back.out`, bij 85% van de viewport |
 | 4 | `bento` | bento-kaarten | bouwen op (y + rotateX + opacity, stagger); kantelen naar de muis (±10°) met `quickTo` en een saffraan lichtvlek onder de cursor; terugveren met `elastic.out`; tilt alleen bij `(pointer: fine)` |
 | 5 | `marquee` | band met projectnamen | loopt continu; snelheid volgt de scrollsnelheid (één snelheids-tween, `overwrite: true`), draait om bij omhoog scrollen; gepauzeerd buiten beeld |
-| 6 | `hscroll` | "Ander werk" en de laatste blogposts op de home; Probleem → Aanpak → Resultaat en de galerij op case studies | gepinde horizontale scroll met voortgangsbalk en teller (`01 / 03`), scrub, vanaf 48rem; daaronder en bij reduced motion een native horizontale swipe-lijst met scroll-snap. Tussen de horizontale momenten scrolt de pagina gewoon verticaal |
+| 6 | `hscroll` | "Ander werk" en de laatste blogposts op de home; de galerij op case studies | gepinde horizontale scroll met voortgangsbalk en teller (`01 / 03`), scrub, vanaf 48rem; daaronder en bij reduced motion een native horizontale swipe-lijst met scroll-snap. Tussen de horizontale momenten scrolt de pagina gewoon verticaal |
 | 7 | `transition` | interne links | donkere wipe (`--brand`) met saffraan logo en lijn; daarnaast CSS cross-document View Transitions |
 
-Daarnaast: `parallax` op de steen (scrub, `yPercent`) en `count` voor cijfers op case studies (tellen op bij in beeld). De case-study-stappen gebruiken `hscroll` (horizontaal) in plaats van verticaal gepinde panelen.
+Daarnaast: `parallax` op de steen (scrub, `yPercent`) en `count` voor cijfers op case studies (tellen op bij in beeld). `timeline` voor Probleem → Aanpak → Resultaat op case studies: geen kaarten maar één lange horizontale lijn met per stap een groot Germania-cijfer (01–03, eerst omlijnd), een stip, kop en tekst. De sectie pint en schuift zijwaarts; een saffraan vulling loopt over de lijn mee met het scrollen en elke stap licht op (cijfer saffraan gevuld, stip gevuld, tekst helder) zodra de vulling zijn stip bereikt (class-toggle, alleen kleurtransities). Op mobiel, bij reduced motion en zonder JavaScript is het een verticale tijdlijn met een saffraan lijn links en alle stappen actief. Zo heeft elk horizontaal moment een eigen vorm.
 
 ### Performance-regels
 
