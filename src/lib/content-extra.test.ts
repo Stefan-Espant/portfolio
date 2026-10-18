@@ -10,6 +10,7 @@ import {
   getProjects,
   getStatus,
   parseMetrics,
+  safeUrl,
   toClient,
   toProject,
   toStatus
@@ -98,5 +99,18 @@ describe('loaders', () => {
 
   test('getClients: op volgorde, zonder volgorde achteraan', async () => {
     expect((await getClients('nl')).map(c => c.name)).toEqual(['Alfa', 'Zeta', 'Mid'])
+  })
+})
+
+describe('safeUrl', () => {
+  test('laat http(s) en mailto door, blokkeert de rest', () => {
+    expect(safeUrl('https://a.nl')).toBe('https://a.nl')
+    expect(safeUrl('mailto:x@y.nl')).toBe('mailto:x@y.nl')
+    expect(safeUrl('javascript:alert(1)')).toBe('')
+    expect(safeUrl('geen url')).toBe('')
+    expect(safeUrl(undefined)).toBe('')
+  })
+  test('toClient wist een onveilige url', () => {
+    expect(toClient(entry('k', { locale: 'en', translation_key: 'x', name: 'X', url: 'javascript:x' }))?.url).toBe('')
   })
 })

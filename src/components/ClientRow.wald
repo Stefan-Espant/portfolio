@@ -8,7 +8,7 @@ const items = clients.map(client => {
     ? renderTemplate`<img src="${client.logo}" alt="${client.name}" loading="lazy" decoding="async">`
     : renderTemplate`<span>${client.name}</span>`
   return client.url
-    ? renderTemplate`<li><a href="${client.url}" rel="noopener">${new SafeHtml(inner)}</a></li>`
+    ? renderTemplate`<li><a href="${client.url}">${new SafeHtml(inner)}</a></li>`
     : renderTemplate`<li>${new SafeHtml(inner)}</li>`
 }).join('')
 const withQuote = clients.find(client => client.quote)

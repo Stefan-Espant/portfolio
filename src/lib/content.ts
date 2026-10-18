@@ -7,6 +7,17 @@ type Data = Record<string, unknown>
 const text = (value: unknown) => (typeof value === 'string' ? value.trim() : '')
 const num = (value: unknown) =>
   value === null || value === undefined || value === '' || !Number.isFinite(Number(value)) ? 0 : Number(value)
+/** Alleen http(s)- en mailto-links uit het CMS; al het andere (bv. javascript:) wordt ''. */
+export function safeUrl(value: unknown): string {
+  const raw = text(value)
+  if (!raw) return ''
+  try {
+    const url = new URL(raw)
+    return ['http:', 'https:', 'mailto:'].includes(url.protocol) ? raw : ''
+  } catch {
+    return ''
+  }
+}
 const bool = (value: unknown) => value === true || value === 'true'
 /** Lijst uit een tekstveld met komma's ("TypeScript, Vite") of uit een array. */
 const list = (value: unknown): string[] =>
@@ -93,9 +104,9 @@ export function toProject(entry: CentaurEntry): Project | null {
     approachHtml: text(data.approach),
     resultHtml: text(data.result),
     gallery: rows(data.gallery).map(row => ({ src: text(row.image), alt: text(row.alt) })).filter(image => image.src),
-    liveUrl: text(data.live_url),
-    repoUrl: text(data.repo_url),
-    designUrl: text(data.design_url),
+    liveUrl: safeUrl(data.live_url),
+    repoUrl: safeUrl(data.repo_url),
+    designUrl: safeUrl(data.design_url),
     npmPackage: text(data.npm_package),
     metrics: parseMetrics(data.metrics)
   }
@@ -200,7 +211,7 @@ export function toClient(entry: CentaurEntry): Client | null {
   const data = entry.data
   const name = text(data.name)
   if (!base || !name) return null
-  return { ...base, name, logo: text(data.logo), url: text(data.url), quote: text(data.quote), quoteAuthor: text(data.quote_author), order: num(data.order) }
+  return { ...base, name, logo: text(data.logo), url: safeUrl(data.url), quote: text(data.quote), quoteAuthor: text(data.quote_author), order: num(data.order) }
 }
 
 // ── Locale-helpers ───────────────────────────────────────────────────────────────────────
