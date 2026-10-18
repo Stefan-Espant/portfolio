@@ -22,6 +22,7 @@ const meta = [t(`type.${project.type}` as MessageKey, locale), project.year ? St
 
 <style>
 .project-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -37,6 +38,20 @@ const meta = [t(`type.${project.type}` as MessageKey, locale), project.year ? St
   &:focus-visible {
     border-color: var(--accent);
     color: var(--text-muted);
+  }
+  /* Lichtvlek onder de cursor (motion.js zet --cx/--cy op bento-kaarten). */
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(circle 180px at var(--cx, 50%) var(--cy, 50%), rgb(255 176 0 / 0.14), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  &:hover::after {
+    opacity: 1;
   }
   & .project-card__cover {
     width: 100%;

@@ -3,6 +3,7 @@
 // gebeurt er niets en blijft alles statisch zichtbaar.
 import { intro } from './intro.js'
 import { parallax, torch } from './ambient.js'
+import { bento, chars } from './reveal.js'
 
 const root = document.documentElement
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -24,6 +25,8 @@ if (reduced || !gsap || !ScrollTrigger || !SplitText) {
       intro(gsap, SplitText)
       parallax(gsap)
       if (finePointer) torch(gsap)
+      chars(gsap, SplitText)
+      bento(gsap, finePointer)
       // Effecten worden in de volgende taken hier aangeroepen.
       ScrollTrigger.refresh()
     } catch (error) {
