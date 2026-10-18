@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 vi.mock('./cms', () => ({ getCollection: vi.fn() }))
 
@@ -26,6 +26,7 @@ describe('parseMetrics', () => {
       { label: 'Laadtijd', value: '0,4 s' }
     ])
     expect(parseMetrics(undefined)).toEqual([])
+    expect(parseMetrics('Tijd: 10:30\r\nScore: 99')).toEqual([{ label: 'Tijd', value: '10:30' }, { label: 'Score', value: '99' }])
   })
 
   test('toProject leest metrics', () => {
@@ -75,6 +76,10 @@ describe('loaders', () => {
     vi.spyOn(console, 'warn').mockImplementation(() => {})
   })
 
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   test('dubbele slug per taal: alleen de eerste blijft, met een waarschuwing', async () => {
     expect((await getProjects('nl')).map(p => p.id)).toEqual(['a', 'c'])
     expect(console.warn).toHaveBeenCalledWith('⚠ projecten: slug "dubbel" (nl) komt meerdere keren voor; entry b wordt overgeslagen')
@@ -86,8 +91,8 @@ describe('loaders', () => {
 
   test('getStatus per taal, of null', async () => {
     expect((await getStatus('en'))?.text).toBe('Fully booked')
-    collections.status = []
     clearContentCache()
+    vi.mocked(getCollection).mockImplementation(async slug => slug === 'status' ? [] : collections[slug] ?? [])
     expect(await getStatus('nl')).toBeNull()
   })
 
