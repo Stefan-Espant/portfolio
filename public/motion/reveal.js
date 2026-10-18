@@ -2,7 +2,8 @@
 // lichtvlek onder de cursor (spec: Motion #4).
 
 export function chars(gsap, SplitText) {
-  gsap.utils.toArray('h2.display').forEach(title => {
+  // Alleen sectiekopjes, geen projecttitels in kaarten (die staan in een link).
+  gsap.utils.toArray('h2.display').filter(title => !title.closest('a')).forEach(title => {
     const split = SplitText.create(title, { type: 'chars', mask: 'chars' })
     gsap.from(split.chars, {
       yPercent: 100,
