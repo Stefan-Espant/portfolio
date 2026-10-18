@@ -91,3 +91,16 @@ describe('projectToEntry slug-fout', () => {
     expect(() => projectToEntry({ id: '3', heading: '!!!', client: null, date: null, url: null, urlDesign: null, image: null }, '')).toThrow()
   })
 })
+
+describe('trimmen van titels', () => {
+  test('projectToEntry trimt heading en client', () => {
+    const entry = projectToEntry({ id: '4', heading: 'Alweer ', client: ' Geen ', date: null, url: null, urlDesign: null, image: null }, '')
+    expect(entry.title).toBe('Alweer')
+    expect(entry.client).toBe('Geen')
+    expect(entry.cover_alt).toBe('Alweer')
+  })
+
+  test('articleToEntry trimt de titel', () => {
+    expect(articleToEntry({ id: '5', title: '  Hallo  ', datum: null, paragraaf: 'x', _createdAt: '2024-01-01T00:00:00Z' }).title).toBe('Hallo')
+  })
+})

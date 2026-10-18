@@ -47,19 +47,20 @@ function requireSlug(title: string): string {
 }
 
 export function projectToEntry(project: DatoProject, coverUrl: string): EntryData {
-  const slug = requireSlug(project.heading)
+  const title = project.heading.trim()
+  const slug = requireSlug(title)
   return compact({
     locale: 'nl',
     translation_key: slug,
     slug,
-    title: project.heading,
+    title,
     type: 'school',
     featured: false,
     order: 100,
     year: Number(project.date?.slice(0, 4)) || 0,
-    client: project.client,
+    client: project.client?.trim(),
     cover: coverUrl,
-    cover_alt: project.image?.alt || project.heading,
+    cover_alt: project.image?.alt || title,
     live_url: project.url,
     design_url: project.urlDesign
   })
@@ -68,7 +69,8 @@ export function projectToEntry(project: DatoProject, coverUrl: string): EntryDat
 const EXCERPT_LENGTH = 160
 
 export function articleToEntry(article: DatoArticle): EntryData {
-  const slug = requireSlug(article.title)
+  const title = article.title.trim()
+  const slug = requireSlug(title)
   const body = marked.parse(article.paragraaf ?? '', { async: false }) as string
   // Blok-tags worden een spatie, inline-tags verdwijnen ("<strong>wereld</strong>." → "wereld.").
   const stripped = body
@@ -93,7 +95,7 @@ export function articleToEntry(article: DatoArticle): EntryData {
     locale: 'nl',
     translation_key: slug,
     slug,
-    title: article.title,
+    title,
     excerpt,
     body,
     published_at: (article.datum || article._createdAt).slice(0, 10)

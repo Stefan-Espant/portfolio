@@ -136,6 +136,7 @@ for (const { record: project, preview } of plannedProjects) {
     console.log(`+ projecten/${preview.slug}`, preview)
     continue
   }
+  // Mislukt het aanmaken na de upload, dan blijft de afbeelding los in Centaur staan; een nieuwe run uploadt hem opnieuw (acceptabel voor een eenmalige migratie).
   const cover = project.image?.url ? await uploadImage(project.image.url, project.image.alt || project.heading) : ''
   await createEntry('projecten', projectToEntry(project, cover))
   projectKeys.add(String(preview.translation_key))
