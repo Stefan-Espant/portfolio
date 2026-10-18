@@ -10,7 +10,8 @@
     "test": "vitest run",
     "migrate": "tsx scripts/migrate-datocms.ts",
     "fonts": "node scripts/fetch-fonts.mjs",
-    "stone": "node scripts/bake-stone.mjs"
+    "stone": "node scripts/bake-stone.mjs",
+    "build:preview": "CENTAUR_PREVIEW=1 npm run build"
   },
   "dependencies": {
     "@waldjs/cli": "^0.12.1",

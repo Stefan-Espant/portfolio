@@ -43,9 +43,9 @@ class CentaurError extends Error {
   }
 }
 
-async function get<T>(path: string): Promise<T> {
+async function get<T>(path: string, key = apiKey()): Promise<T> {
   const response = await fetch(`${apiBase()}${path}`, {
-    headers: { 'X-Api-Key': apiKey() },
+    headers: { 'X-Api-Key': key },
     signal: AbortSignal.timeout(FETCH_TIMEOUT_MS)
   })
   if (!response.ok) throw new CentaurError(response.status, path)
@@ -69,10 +69,20 @@ export function clearCmsCache(): void {
 }
 
 /** Alle gepubliceerde entries van een collectie. Een collectie die (nog) niet bestaat geeft []. */
+/**
+ * Preview-modus (alleen lokaal): met CENTAUR_PREVIEW=1 én een CENTAUR_WRITE_KEY leest de build via
+ * de manage-API ook concepten, zodat je ongepubliceerde content kunt bekijken. Zet die twee nooit
+ * op Vercel: de publieke site hoort alleen gepubliceerde items te tonen.
+ */
+export const isPreview = () => process.env.CENTAUR_PREVIEW === '1' && Boolean(process.env.CENTAUR_WRITE_KEY)
+
 export function getCollection<T = Record<string, unknown>>(slug: string): Promise<CentaurEntry<T>[]> {
-  return memo(`collection:${slug}`, async () => {
+  const preview = isPreview()
+  return memo(`collection:${slug}:${preview}`, async () => {
     try {
-      return await get<CentaurEntry<T>[]>(`/content/${slug}`)
+      return preview
+        ? await get<CentaurEntry<T>[]>(`/api/manage/collections/${slug}/entries`, process.env.CENTAUR_WRITE_KEY)
+        : await get<CentaurEntry<T>[]>(`/content/${slug}`)
     } catch (error) {
       if (error instanceof CentaurError && error.status === 404) return []
       throw error

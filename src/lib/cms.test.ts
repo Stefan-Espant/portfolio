@@ -30,6 +30,32 @@ describe('cms', () => {
     expect(init.headers).toEqual({ 'X-Api-Key': 'lees-sleutel' })
   })
 
+  test('preview-modus leest ook concepten via de manage-API met de schrijf-sleutel', async () => {
+    process.env.CENTAUR_PREVIEW = '1'
+    process.env.CENTAUR_WRITE_KEY = 'schrijf-sleutel'
+    try {
+      fetchMock.mockResolvedValue(json([{ id: 'c', data: {}, status: 'draft' }]))
+      await expect(getCollection('projecten')).resolves.toHaveLength(1)
+      const [url, init] = fetchMock.mock.calls[0]
+      expect(url).toBe('https://api.example.test/api/manage/collections/projecten/entries')
+      expect(init.headers).toEqual({ 'X-Api-Key': 'schrijf-sleutel' })
+    } finally {
+      delete process.env.CENTAUR_PREVIEW
+      delete process.env.CENTAUR_WRITE_KEY
+    }
+  })
+
+  test('zonder schrijf-sleutel blijft preview uit', async () => {
+    process.env.CENTAUR_PREVIEW = '1'
+    try {
+      fetchMock.mockResolvedValue(json([]))
+      await getCollection('blog')
+      expect(fetchMock.mock.calls[0][0]).toBe('https://api.example.test/content/blog')
+    } finally {
+      delete process.env.CENTAUR_PREVIEW
+    }
+  })
+
   test('getCollection geeft een lege lijst als de collectie niet bestaat', async () => {
     fetchMock.mockResolvedValue(new Response('', { status: 404 }))
     await expect(getCollection('bestaat-niet')).resolves.toEqual([])
