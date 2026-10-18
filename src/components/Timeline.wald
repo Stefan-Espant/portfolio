@@ -1,0 +1,85 @@
+---
+// Proces als tijdlijn (spec: Motion, `timeline`). Statisch: verticale tijdlijn met alle stappen
+// actief. Plan 3 maakt er op desktop een gepinde horizontale tijdlijn van.
+type Props = { id: string, title: string, steps: Array<{ title: string, html: string }> }
+const { id, title, steps } = $$props
+const list = steps.map((step, index) => renderTemplate`
+  <li class="timeline__step">
+    <span class="timeline__num" aria-hidden="true">${String(index + 1).padStart(2, '0')}</span>
+    <span class="timeline__dot" aria-hidden="true"></span>
+    <h3 class="timeline__step-title">${step.title}</h3>
+    <div class="timeline__text">${new SafeHtml(step.html)}</div>
+  </li>`).join('')
+---
+<section class="timeline" data-motion="timeline" aria-labelledby={id}>
+  <div class="container">
+    <h2 class="timeline__title display" id={id}>{title}</h2>
+  </div>
+  <div class="timeline__body container">
+    <div class="timeline__line" aria-hidden="true"><i></i></div>
+    <ol class="timeline__track" role="list">{new SafeHtml(list)}</ol>
+  </div>
+</section>
+
+<style>
+.timeline {
+  padding-block: var(--space-16);
+
+  & .timeline__title {
+    font-size: var(--text-xl);
+  }
+  & .timeline__body {
+    position: relative;
+    margin-top: var(--space-8);
+  }
+  & .timeline__line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(var(--page-gutter) + 9px);
+    width: 2px;
+    background: linear-gradient(var(--accent), var(--accent-2));
+  }
+  & .timeline__line i {
+    display: none;
+  }
+  & .timeline__track {
+    display: grid;
+    gap: var(--space-12);
+    margin: 0;
+    padding: 0 0 0 var(--space-12);
+    list-style: none;
+  }
+  & .timeline__step {
+    position: relative;
+  }
+  & .timeline__num {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 4.5rem;
+    line-height: 1;
+    color: var(--accent);
+  }
+  & .timeline__dot {
+    position: absolute;
+    top: 1.6rem;
+    left: calc(-1 * var(--space-12));
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  & .timeline__step-title {
+    margin-top: var(--space-4);
+    font-size: var(--text-xl);
+  }
+  & .timeline__text {
+    margin-top: var(--space-3);
+    max-width: 60ch;
+    color: var(--text-muted);
+  }
+  & .timeline__text > * + * {
+    margin-top: var(--space-3);
+  }
+}
+</style>

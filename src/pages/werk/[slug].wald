@@ -1,0 +1,11 @@
+---
+import ProjectPage from '../../components/pages/ProjectPage.wald'
+import { getProjects } from '../../lib/content'
+type Props = { slug: string }
+const { slug } = $$props
+export async function getStaticPaths() {
+  const projects = await getProjects('nl')
+  return projects.map(project => ({ params: { slug: project.slug } }))
+}
+---
+<ProjectPage locale="nl" slug={slug} />

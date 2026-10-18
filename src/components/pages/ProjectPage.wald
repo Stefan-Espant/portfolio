@@ -1,0 +1,147 @@
+---
+import Layout from '../../layouts/Layout.wald'
+import Metrics from '../Metrics.wald'
+import Timeline from '../Timeline.wald'
+import HScroll from '../HScroll.wald'
+import { getProject, projectAlternates } from '../../lib/content'
+import { localePath, t, type Locale, type MessageKey } from '../../lib/i18n'
+type Props = { locale: Locale, slug: string }
+const { locale, slug } = $$props
+const project = await getProject(slug, locale)
+// Alleen bereikbaar in `wald grow`; de build rendert alleen gepubliceerde projecten.
+if (!project) throw new Error(`Project "${slug}" (${locale}) staat niet (gepubliceerd) in Centaur`)
+const alternates = await projectAlternates(project)
+
+const pills = [t(`type.${project.type}` as MessageKey, locale), project.year ? String(project.year) : '', project.client ? `${t('project.client', locale)}: ${project.client}` : '']
+  .filter(Boolean).map(label => renderTemplate`<li>${label}</li>`).join('')
+const metricsHtml = project.metrics.length
+  ? await Metrics.render({ id: 'metrics-title', title: t('project.metrics', locale), metrics: project.metrics })
+  : ''
+const steps = ([
+  [t('project.problem', locale), project.problemHtml],
+  [t('project.approach', locale), project.approachHtml],
+  [t('project.result', locale), project.resultHtml]
+] as Array<[string, string]>).filter(([, html]) => html).map(([title, html]) => ({ title, html }))
+const timelineHtml = steps.length ? await Timeline.render({ id: 'process-title', title: t('project.process', locale), steps }) : ''
+const links = ([
+  [t('project.live', locale), project.liveUrl],
+  [t('project.repo', locale), project.repoUrl],
+  [t('project.design', locale), project.designUrl],
+  [t('project.npm', locale), project.npmPackage ? `https://www.npmjs.com/package/${project.npmPackage}` : '']
+] as Array<[string, string]>).filter(([, href]) => href)
+  .map(([label, href]) => renderTemplate`<li><a href="${href}" rel="noopener">${label} ↗</a></li>`).join('')
+const stack = project.stack.map(item => renderTemplate`<li>${item}</li>`).join('')
+const detailsHtml = links || stack
+  ? renderTemplate`<section class="case__details container" aria-labelledby="details-title">
+      <h2 class="case__section-title display" id="details-title">${t('project.details', locale)}</h2>
+      ${new SafeHtml(stack ? renderTemplate`<ul class="case__stack" role="list" aria-label="${t('project.stack', locale)}">${new SafeHtml(stack)}</ul>` : '')}
+      ${new SafeHtml(links ? `<ul class="case__links" role="list">${links}</ul>` : '')}
+    </section>`
+  : ''
+const galleryHtml = project.gallery.length
+  ? await HScroll.render({
+      id: 'gallery-title',
+      title: t('project.gallery', locale),
+      items: project.gallery.map(image => renderTemplate`<figure class="case__shot"><img src="${image.src}" alt="${image.alt}" loading="lazy" decoding="async">${new SafeHtml(image.alt ? renderTemplate`<figcaption>${image.alt}</figcaption>` : '')}</figure>`)
+    })
+  : ''
+const cover = project.cover
+  ? renderTemplate`<img class="case__cover" src="${project.cover}" alt="${project.coverAlt}" decoding="async" fetchpriority="high">`
+  : ''
+---
+<Layout title={project.title} description={project.summary} path={localePath('project', locale, project.slug)} locale={locale} alternates={alternates} current="work">
+  <main id="main" class="case">
+    <header class="case__header container">
+      <p class="case__crumb"><a href={localePath('work', locale)}>{t('nav.work', locale)}</a> / {project.title}</p>
+      <h1 class="case__title display">{project.title}</h1>
+      <p class="case__summary">{project.summary}</p>
+      <ul class="case__pills" role="list">{new SafeHtml(pills)}</ul>
+    </header>
+    <div class="container">{new SafeHtml(cover)}</div>
+    {new SafeHtml(metricsHtml)}
+    {new SafeHtml(timelineHtml)}
+    {new SafeHtml(detailsHtml)}
+    {new SafeHtml(galleryHtml)}
+  </main>
+</Layout>
+
+<style>
+.case {
+  & .case__header {
+    padding-block: var(--space-16) var(--space-8);
+  }
+  & .case__crumb {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+  }
+  /* De projectnaam is hier de h1 in Germania: de enige uitzondering op "nooit in h1" (spec: Typografie). */
+  & .case__title {
+    margin-top: var(--space-2);
+    font-size: clamp(3rem, 2rem + 5vw, 6.5rem);
+    line-height: 1.1;
+  }
+  & .case__summary {
+    margin-top: var(--space-4);
+    max-width: 40ch;
+    color: var(--text-muted);
+    font-size: var(--text-lg);
+  }
+  & .case__pills,
+  & .case__stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: var(--space-6) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  & .case__pills li,
+  & .case__stack li {
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+  }
+  & .case__cover {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+  }
+  & .case__details {
+    padding-block: var(--space-12);
+  }
+  & .case__section-title {
+    font-size: var(--text-xl);
+  }
+  & .case__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3) var(--space-8);
+    margin: var(--space-6) 0 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--font-mono);
+  }
+  & .case__shot {
+    margin: 0;
+  }
+  & .case__shot img {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+  }
+  & .case__shot figcaption {
+    margin-top: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+  }
+}
+</style>

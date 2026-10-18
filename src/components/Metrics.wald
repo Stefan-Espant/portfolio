@@ -1,0 +1,47 @@
+---
+import type { Metric } from '../lib/content'
+type Props = { id: string, title: string, metrics: Metric[] }
+const { id, title, metrics } = $$props
+const items = metrics.map(metric =>
+  renderTemplate`<li class="metrics__item"><strong class="metrics__value" data-motion="count">${metric.value}</strong><span class="metrics__label">${metric.label}</span></li>`).join('')
+---
+<section class="metrics container" aria-labelledby={id}>
+  <h2 class="metrics__title display" id={id}>{title}</h2>
+  <ul class="metrics__list" role="list">{new SafeHtml(items)}</ul>
+</section>
+
+<style>
+.metrics {
+  padding-block: var(--space-12);
+
+  & .metrics__title {
+    font-size: var(--text-xl);
+  }
+  & .metrics__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: var(--space-4);
+    margin: var(--space-6) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  & .metrics__item {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-6);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+  }
+  & .metrics__value {
+    font-size: clamp(2.5rem, 2rem + 2vw, 3.5rem);
+    line-height: 1;
+    font-variation-settings: 'opsz' 144;
+  }
+  & .metrics__label {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+  }
+}
+</style>
