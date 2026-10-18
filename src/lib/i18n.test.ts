@@ -52,6 +52,12 @@ describe('i18n', () => {
     expect(formatDate('geen datum', 'nl')).toBe('')
   })
 
+  test('datums met tijdzone of zonder offset schuiven niet van dag', () => {
+    expect(formatDate('2024-05-01T00:30:00+02:00', 'en')).toBe('1 May 2024')
+    expect(formatDate('2024-05-01T00:00:00', 'nl')).toBe('1 mei 2024')
+    expect(formatMonth('2023-09-15T23:59:00-05:00', 'nl')).toBe('sep 2023')
+  })
+
   test('nieuwe teksten bestaan in beide talen', () => {
     expect(t('work.heading', 'nl')).toBe('Werk')
     expect(t('work.heading', 'en')).toBe('Work')

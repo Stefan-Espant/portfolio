@@ -57,7 +57,7 @@ const nl = {
   'work.lead': 'Van eigen frameworks tot websites voor klanten.',
   'work.filterLabel': 'Filter op type',
   'work.filterAll': 'Alles',
-  'work.count': '{n} projecten',
+  'work.count': 'Projecten: {n}',
   'project.process': 'Van probleem naar resultaat',
   'project.problem': 'Probleem',
   'project.approach': 'Aanpak',
@@ -140,7 +140,7 @@ const en: Record<MessageKey, string> = {
   'work.lead': 'From my own frameworks to websites for clients.',
   'work.filterLabel': 'Filter by type',
   'work.filterAll': 'All',
-  'work.count': '{n} projects',
+  'work.count': 'Projects: {n}',
   'project.process': 'From problem to result',
   'project.problem': 'Problem',
   'project.approach': 'Approach',
@@ -206,7 +206,9 @@ const intlLocale = (locale: Locale) => (locale === 'nl' ? 'nl-NL' : 'en-GB')
 
 function toDate(iso: string): Date | null {
   if (!iso) return null
-  const date = new Date(iso)
+  // Alleen de kalenderdatum gebruiken: een tijd met tijdzone zou de dag kunnen verschuiven, afhankelijk van de tijdzone van de buildmachine.
+  const day = /^\d{4}-\d{2}-\d{2}/.exec(iso)
+  const date = new Date(day ? day[0] : iso)
   return Number.isNaN(date.getTime()) ? null : date
 }
 
@@ -219,5 +221,5 @@ export function formatDate(iso: string, locale: Locale): string {
 /** "sep 2023" / "Sept 2023" (voor de cv-tijdlijn). */
 export function formatMonth(iso: string, locale: Locale): string {
   const date = toDate(iso)
-  return date ? new Intl.DateTimeFormat(intlLocale(locale), { month: 'short', year: 'numeric', timeZone: 'UTC' }).format(date).replace('.', '') : ''
+  return date ? new Intl.DateTimeFormat(intlLocale(locale), { month: 'short', year: 'numeric', timeZone: 'UTC' }).format(date).replace(/\./g, '') : ''
 }
