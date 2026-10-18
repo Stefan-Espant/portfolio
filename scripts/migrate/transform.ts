@@ -9,7 +9,7 @@ export interface DatoProject {
   date: string | null
   url: string | null
   urlDesign: string | null
-  image: { url: string; alt: string | null } | null
+  image: Array<{ url: string; alt: string | null }> | null
 }
 
 export interface DatoArticle {
@@ -60,7 +60,7 @@ export function projectToEntry(project: DatoProject, coverUrl: string): EntryDat
     year: Number(project.date?.slice(0, 4)) || 0,
     client: project.client?.trim(),
     cover: coverUrl,
-    cover_alt: project.image?.alt || title,
+    cover_alt: project.image?.[0]?.alt || title,
     live_url: project.url,
     design_url: project.urlDesign
   })

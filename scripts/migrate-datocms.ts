@@ -41,9 +41,15 @@ async function centaur<T>(path: string, init: RequestInit = {}): Promise<T> {
   return response.json() as Promise<T>
 }
 
-async function existingKeys(collection: string): Promise<Set<string>> {
-  const entries = await centaur<Array<{ data: Record<string, unknown> }>>(`/api/manage/collections/${collection}/entries`)
-  return new Set(entries.map(entry => String(entry.data.translation_key ?? '')))
+interface ExistingEntry {
+  id: string
+  data: Record<string, unknown>
+  updatedAt: string
+}
+
+async function existingKeys(collection: string): Promise<Map<string, ExistingEntry>> {
+  const entries = await centaur<ExistingEntry[]>(`/api/manage/collections/${collection}/entries`)
+  return new Map(entries.map(entry => [String(entry.data.translation_key ?? ''), entry]))
 }
 
 async function uploadImage(url: string, alt: string): Promise<string> {
@@ -120,16 +126,45 @@ if (problems) {
 
 const [projectKeys, postKeys] = await Promise.all([
   existingKeys('projecten'),
-  blogToken ? existingKeys('blog') : Promise.resolve(new Set<string>())
+  blogToken ? existingKeys('blog') : Promise.resolve(new Map<string, ExistingEntry>())
 ])
 
 let created = 0
+let updated = 0
 let skipped = 0
 
 for (const { record: project, preview } of plannedProjects) {
-  if (projectKeys.has(String(preview.translation_key))) {
-    skipped++
-    console.log(`= projecten/${preview.slug} bestaat al`)
+  const existing = projectKeys.get(String(preview.translation_key))
+  if (existing) {
+    const image = project.image?.[0]
+    if (existing.data.cover || !image?.url) {
+      skipped++
+      console.log(`= projecten/${preview.slug} bestaat al`)
+      continue
+    }
+    if (dryRun) {
+      console.log(`~ projecten/${preview.slug}: cover toevoegen`)
+      continue
+    }
+    const cover = await uploadImage(image.url, image.alt || String(preview.title))
+    try {
+      await centaur(`/api/manage/collections/projecten/entries/${existing.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          entry: { data: { ...existing.data, cover, cover_alt: existing.data.cover_alt || image.alt || preview.title } },
+          expectedUpdatedAt: existing.updatedAt
+        })
+      })
+    } catch (error) {
+      if (String((error as Error).message).includes(': 409 ')) {
+        console.warn(`⚠ projecten/${preview.slug}: conflict (ondertussen gewijzigd in Centaur), cover niet toegevoegd; draai het script opnieuw`)
+        continue
+      }
+      throw error
+    }
+    updated++
+    console.log(`~ projecten/${preview.slug}: cover toegevoegd`)
     continue
   }
   if (dryRun) {
@@ -137,7 +172,8 @@ for (const { record: project, preview } of plannedProjects) {
     continue
   }
   // Mislukt het aanmaken na de upload, dan blijft de afbeelding los in Centaur staan; een nieuwe run uploadt hem opnieuw (acceptabel voor een eenmalige migratie).
-  const cover = project.image?.url ? await uploadImage(project.image.url, project.image.alt || project.heading) : ''
+  const image = project.image?.[0]
+  const cover = image?.url ? await uploadImage(image.url, image.alt || String(preview.title)) : ''
   await createEntry('projecten', projectToEntry(project, cover))
   projectKeys.add(String(preview.translation_key))
   created++
@@ -167,4 +203,4 @@ for (const { preview: data } of plannedArticles) {
 
 console.log(dryRun
   ? `Dry run: ${allProjects.length} projecten en ${allArticles.length} posts gelezen, niets aangemaakt.`
-  : `Klaar: ${created} aangemaakt, ${skipped} overgeslagen. Alles staat als concept in Centaur.`)
+  : `Klaar: ${created} aangemaakt, ${updated} bijgewerkt, ${skipped} overgeslagen. Alles staat als concept in Centaur.`)

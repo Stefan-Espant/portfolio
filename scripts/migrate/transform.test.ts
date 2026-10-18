@@ -17,7 +17,7 @@ describe('projectToEntry', () => {
       date: '2024-03-15',
       url: 'https://tulp.example',
       urlDesign: 'https://figma.com/file/x',
-      image: { url: 'https://dato.example/tulp.png', alt: '' }
+      image: [{ url: 'https://dato.example/tulp.png', alt: '' }]
     }, 'https://centaur.example/media/tulp.png')).toEqual({
       locale: 'nl',
       translation_key: 'tulp-talk',
@@ -102,5 +102,12 @@ describe('trimmen van titels', () => {
 
   test('articleToEntry trimt de titel', () => {
     expect(articleToEntry({ id: '5', title: '  Hallo  ', datum: null, paragraaf: 'x', _createdAt: '2024-01-01T00:00:00Z' }).title).toBe('Hallo')
+  })
+})
+
+describe('cover_alt uit eerste afbeelding', () => {
+  test('gebruikt de alt van image[0]', () => {
+    const entry = projectToEntry({ id: '6', heading: 'Tulp', client: null, date: null, url: null, urlDesign: null, image: [{ url: 'https://dato.example/a.png', alt: 'Een tulp' }] }, 'https://c.example/a.png')
+    expect(entry.cover_alt).toBe('Een tulp')
   })
 })
