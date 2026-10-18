@@ -1,0 +1,45 @@
+---
+import { formatDate, localePath, type Locale } from '../lib/i18n'
+import type { Post } from '../lib/content'
+type Props = { post: Post, locale: Locale, headingLevel?: 2 | 3 }
+const { post, locale, headingLevel = 3 } = $$props
+const heading = new SafeHtml(headingLevel === 2 ? 'h2' : 'h3')
+const title = renderTemplate`<${heading} class="post-card__title">${post.title}</${heading}>`
+---
+<a class="post-card" href={localePath('post', locale, post.slug)}>
+  <time class="post-card__date" datetime={post.publishedAt}>{formatDate(post.publishedAt, locale)}</time>
+  {new SafeHtml(title)}
+  <p class="post-card__excerpt">{post.excerpt}</p>
+</a>
+
+<style>
+.post-card {
+  display: grid;
+  align-content: start;
+  gap: var(--space-2);
+  height: 100%;
+  padding: var(--space-6);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  color: var(--text-muted);
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--accent);
+    color: var(--text-muted);
+  }
+  & .post-card__date {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+  & .post-card__title {
+    color: var(--text);
+    font-size: var(--text-lg);
+  }
+  & .post-card__excerpt {
+    margin: 0;
+  }
+}
+</style>

@@ -1,0 +1,71 @@
+---
+// Horizontale strook (spec: Motion #6). Zonder JavaScript een swipe-lijst met scroll-snap;
+// plan 3 pint hem op desktop en toont dan de teller en de voortgangsbalk.
+type Props = { id: string, title: string, items: string[] }
+const { id, title, items } = $$props
+const list = items.map(item => `<li class="hscroll__item">${item}</li>`).join('')
+const count = String(items.length).padStart(2, '0')
+---
+<section class="hscroll" data-motion="hscroll" aria-labelledby={id}>
+  <div class="hscroll__head container">
+    <h2 class="hscroll__title display" id={id}>{title}</h2>
+    <span class="hscroll__counter" aria-hidden="true"><b data-hscroll-current>01</b> / {count}</span>
+  </div>
+  <ul class="hscroll__track" role="list">{new SafeHtml(list)}</ul>
+  <div class="hscroll__progress" aria-hidden="true"><i></i></div>
+</section>
+
+<style>
+.hscroll {
+  /* Start van de strook gelijk met de container, ook op brede schermen. */
+  --track-inset: max(var(--page-gutter), calc((100% - var(--page-width)) / 2));
+  padding-block: var(--space-16);
+
+  & .hscroll__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-4);
+  }
+  & .hscroll__title {
+    font-size: var(--text-xl);
+  }
+  & .hscroll__counter {
+    display: none;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+  }
+  & .hscroll__counter b {
+    color: var(--accent);
+    font-weight: 600;
+  }
+  & .hscroll__track {
+    display: flex;
+    gap: var(--space-4);
+    margin: var(--space-6) 0 0;
+    padding: 0 var(--track-inset) var(--space-4);
+    list-style: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--track-inset);
+  }
+  & .hscroll__item {
+    flex: 0 0 min(78vw, 22rem);
+    scroll-snap-align: start;
+  }
+  & .hscroll__progress {
+    display: none;
+    height: 2px;
+    margin: var(--space-6) var(--track-inset) 0;
+    background: var(--border);
+  }
+  & .hscroll__progress i {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    transform-origin: left;
+    transform: scaleX(0);
+  }
+}
+</style>

@@ -1,0 +1,67 @@
+---
+import { localePath, t, type Locale, type MessageKey } from '../lib/i18n'
+import type { Project } from '../lib/content'
+type Props = { project: Project, locale: Locale, headingLevel?: 2 | 3, size?: 'large' | 'normal' }
+const { project, locale, headingLevel = 3, size = 'normal' } = $$props
+const heading = new SafeHtml(headingLevel === 2 ? 'h2' : 'h3')
+const title = renderTemplate`<${heading} class="project-card__title display">${project.title}</${heading}>`
+// Decoratief: de titel is de linktekst.
+const cover = project.cover
+  ? renderTemplate`<img class="project-card__cover" src="${project.cover}" alt="" loading="lazy" decoding="async">`
+  : ''
+const meta = [t(`type.${project.type}` as MessageKey, locale), project.year ? String(project.year) : ''].filter(Boolean).join(' · ')
+---
+<a class="project-card" data-size={size} href={localePath('project', locale, project.slug)}>
+  {new SafeHtml(cover)}
+  <div class="project-card__body">
+    {new SafeHtml(title)}
+    <p class="project-card__summary">{project.summary}</p>
+    <p class="project-card__meta">{meta}</p>
+  </div>
+</a>
+
+<style>
+.project-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: border-color 0.2s var(--ease-out);
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--accent);
+    color: var(--text-muted);
+  }
+  & .project-card__cover {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-bottom: 1px solid var(--border);
+  }
+  & .project-card__body {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-6);
+  }
+  & .project-card__title {
+    font-size: var(--text-lg);
+  }
+  &[data-size='large'] .project-card__title {
+    font-size: var(--text-xl);
+  }
+  & .project-card__summary,
+  & .project-card__meta {
+    margin: 0;
+  }
+  & .project-card__meta {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+}
+</style>
