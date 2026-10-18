@@ -1,0 +1,82 @@
+---
+import Layout from '../../layouts/Layout.wald'
+import ProjectCard from '../ProjectCard.wald'
+import { getProjects, PROJECT_TYPES } from '../../lib/content'
+import { localePath, t, type Locale, type MessageKey } from '../../lib/i18n'
+type Props = { locale: Locale }
+const { locale } = $$props
+const projects = await getProjects(locale)
+const cards = await Promise.all(projects.map(async project =>
+  renderTemplate`<li class="work__item" data-filter-item data-type="${project.type}">${new SafeHtml(await ProjectCard.render({ project, locale, headingLevel: 2 }))}</li>`))
+// Alleen types die echt voorkomen, in de vaste volgorde van PROJECT_TYPES.
+const types = PROJECT_TYPES.filter(type => projects.some(project => project.type === type))
+const buttons = [
+  renderTemplate`<button type="button" data-value="all" aria-pressed="true">${t('work.filterAll', locale)}</button>`,
+  ...types.map(type => renderTemplate`<button type="button" data-value="${type}" aria-pressed="false">${t(`type.${type}` as MessageKey, locale)}</button>`)
+].join('')
+const filters = types.length > 1
+  ? renderTemplate`<div class="work__filters" role="group" aria-label="${t('work.filterLabel', locale)}" data-filter hidden>${new SafeHtml(buttons)}</div>
+    <p class="sr-only" aria-live="polite" data-filter-status data-template="${t('work.count', locale)}"></p>`
+  : ''
+const list = projects.length
+  ? `<ul class="work__grid" role="list">${cards.join('')}</ul>`
+  : renderTemplate`<p class="work__empty">${t('home.empty', locale)}</p>`
+const alternates = { nl: localePath('work', 'nl'), en: localePath('work', 'en') }
+---
+<Layout title={t('work.title', locale)} description={t('work.description', locale)} path={localePath('work', locale)} locale={locale} alternates={alternates} current="work">
+  <main id="main" class="work container">
+    <h1 class="work__title">{t('work.heading', locale)}</h1>
+    <p class="work__lead">{t('work.lead', locale)}</p>
+    {new SafeHtml(filters)}
+    {new SafeHtml(list)}
+  </main>
+  <script src="/filter.js" defer data-wald-no-hoist></script>
+</Layout>
+
+<style>
+.work {
+  padding-block: var(--space-16);
+
+  & .work__title {
+    font-size: var(--text-2xl);
+  }
+  & .work__lead,
+  & .work__empty {
+    margin-top: var(--space-4);
+    color: var(--text-muted);
+    font-size: var(--text-lg);
+  }
+  & .work__filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-8);
+  }
+  & .work__filters button {
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text-muted);
+    font: inherit;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    cursor: pointer;
+  }
+  & .work__filters button[aria-pressed='true'] {
+    border-color: var(--accent);
+    color: var(--text);
+  }
+  & .work__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+    gap: var(--space-4);
+    margin: var(--space-8) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  & .work__item[hidden] {
+    display: none;
+  }
+}
+</style>
