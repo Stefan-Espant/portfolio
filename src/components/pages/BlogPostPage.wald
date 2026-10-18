@@ -1,0 +1,96 @@
+---
+import Layout from '../../layouts/Layout.wald'
+import { getPost, postAlternates } from '../../lib/content'
+import { formatDate, localePath, t, type Locale } from '../../lib/i18n'
+type Props = { locale: Locale, slug: string }
+const { locale, slug } = $$props
+const post = await getPost(slug, locale)
+if (!post) throw new Error(`Blogpost "${slug}" (${locale}) staat niet (gepubliceerd) in Centaur`)
+const alternates = await postAlternates(post)
+const tags = post.tags.length ? `<ul class="post__tags" role="list">${post.tags.map(tag => renderTemplate`<li>${tag}</li>`).join('')}</ul>` : ''
+const cover = post.cover ? renderTemplate`<img class="post__cover" src="${post.cover}" alt="${post.coverAlt}" decoding="async">` : ''
+---
+<Layout title={post.title} description={post.excerpt} path={localePath('post', locale, post.slug)} locale={locale} alternates={alternates} current="blog">
+  <main id="main" class="post container">
+    <article>
+      <header class="post__header">
+        <p class="post__crumb"><a href={localePath('blog', locale)}>{t('post.back', locale)}</a></p>
+        <h1 class="post__title">{post.title}</h1>
+        <time class="post__date" datetime={post.publishedAt}>{formatDate(post.publishedAt, locale)}</time>
+        {new SafeHtml(tags)}
+      </header>
+      {new SafeHtml(cover)}
+      <div class="post__body">{new SafeHtml(post.bodyHtml)}</div>
+    </article>
+  </main>
+</Layout>
+
+<style>
+.post {
+  max-width: calc(46rem + 2 * var(--page-gutter));
+  padding-block: var(--space-16);
+
+  & .post__crumb,
+  & .post__date {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+  }
+  & .post__title {
+    margin-block: var(--space-4);
+    font-size: var(--text-2xl);
+  }
+  & .post__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: var(--space-4) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  & .post__tags li {
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+  }
+  & .post__cover {
+    width: 100%;
+    margin-top: var(--space-8);
+    border-radius: var(--radius-lg);
+  }
+  & .post__body {
+    margin-top: var(--space-8);
+    font-size: var(--text-base);
+  }
+  & .post__body > * + * {
+    margin-top: var(--space-4);
+  }
+  & .post__body h2,
+  & .post__body h3 {
+    margin-top: var(--space-8);
+  }
+  & .post__body pre,
+  & .post__body code {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+  & .post__body pre {
+    overflow-x: auto;
+    padding: var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+  }
+  & .post__body img {
+    border-radius: var(--radius-sm);
+  }
+  & .post__body blockquote {
+    padding-left: var(--space-4);
+    border-left: 3px solid var(--accent);
+    color: var(--text-muted);
+  }
+}
+</style>
