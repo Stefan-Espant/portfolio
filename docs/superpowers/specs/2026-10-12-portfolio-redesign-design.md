@@ -1,7 +1,7 @@
 # Portfolio redesign — ontwerp
 
 **Datum:** 2026-10-12
-**Status:** goedgekeurd, klaar voor implementatieplan (herzien 2026-10-15: Germania One-accent)
+**Status:** goedgekeurd (herzien 2026-10-15: Germania One-accent; herzien 2026-10-18: saffraan, gebakken steen, zeven motion-effecten, extra's)
 **Branch:** `redesign`
 
 ## Doel
@@ -18,8 +18,8 @@ Het portfolio op steefan.nl opnieuw ontwerpen en opnieuw bouwen met WaldJS, GSAP
 |---|---|
 | Framework | WaldJS (statisch, alle content tijdens de build) |
 | CMS | Centaur CMS voor alle content, inclusief blog |
-| Animatie | GSAP 3.12.5 + ScrollTrigger, niveau "gemiddeld" plus horizontale projectrail |
-| Visuele stijl | Donker developer-thema met bento-grid en de bestaande stenen textuur als donkere achtergrond |
+| Animatie | GSAP 3 (npm, ≥ 3.13 voor SplitText) + ScrollTrigger + SplitText: zeven effecten (zie Motion), met harde performance-regels |
+| Visuele stijl | Donker developer-thema met bento-grid, de stenen textuur als vooraf donker gebakken achtergrond, en saffraan als accentkleur |
 | Lettertype | Fraunces (variabel) voor koppen en tekst, JetBrains Mono voor navigatie, labels en code, Germania One als subtiel Zuid-Duits accent (logo, sectiekopjes, projectnamen) |
 | Talen | Nederlands (standaard, zonder prefix) en Engels (`/en/`) |
 | Vertalingen in collecties | `locale`- en `translationKey`-velden in de entry-data |
@@ -32,16 +32,16 @@ Het portfolio op steefan.nl opnieuw ontwerpen en opnieuw bouwen met WaldJS, GSAP
 
 | NL | EN | Inhoud |
 |---|---|---|
-| `/` | `/en/` | Hero, bento met 3 uitgelichte projecten, horizontale rail "Ander werk", korte over-mij, laatste 3 blogposts, contact-CTA |
+| `/` | `/en/` | Hero, bento met 3 uitgelichte projecten, marquee met projectnamen, klantenrij met quote, horizontale rail "Ander werk", korte over-mij, laatste 3 blogposts, contact-CTA met beschikbaarheid |
 | `/werk` | `/en/work` | Alle projecten, filterbaar op type (framework / product / website / school) |
-| `/werk/[slug]` | `/en/work/[slug]` | Case study: intro, gepinde sectie Probleem → Aanpak → Resultaat, stack, galerij, links (live, GitHub, npm) |
+| `/werk/[slug]` | `/en/work/[slug]` | Case study: intro, cijfers (optellend), gepinde sectie Probleem → Aanpak → Resultaat, stack, galerij, links (live, GitHub, npm); bij WaldJS een live `.wald`-playground |
 | `/blog` | `/en/blog` | Overzicht van posts |
 | `/blog/[slug]` | `/en/blog/[slug]` | Blogpost |
 | `/over` | `/en/about` | Over mij, skills/stack, cv-tijdlijn, cv-pdf-download, GitHub-activiteit |
 | `/contact` | `/en/contact` | Contactformulier (Centaur Forms) en links |
 | `/404` | | 404-pagina |
 
-Daarnaast `sitemap.xml` (met hreflang-alternates) en `robots.txt`, gegenereerd in `wald.config.ts` zoals bij Steva's Kookboek.
+Daarnaast `sitemap.xml` (met hreflang-alternates), `robots.txt`, `/rss.xml` en `/en/rss.xml`, een social-afbeelding per pagina en een zoekindex voor het commandopalet, allemaal gegenereerd tijdens de build.
 
 De typefilter op `/werk` is client-side filtering (knoppen met `aria-pressed`) bovenop de volledige, statisch gerenderde lijst. Zonder JavaScript zijn de knoppen verborgen en is de volledige lijst zichtbaar.
 
@@ -75,6 +75,9 @@ Per taal bestaat één entry. Dit sluit aan op een latere native locale-feature 
 | `liveUrl` | url | optioneel |
 | `repoUrl` | url | optioneel |
 | `npmPackage` | tekst | optioneel, bijv. `@waldjs/cli` |
+| `metrics` | tekst | optioneel; per regel `Label: waarde` (bijv. `Lighthouse: 100`), getallen tellen op op de case study |
+
+De echte veldslugs in Centaur zijn snake_case (`live_url`, `npm_package`, `translation_key`); zie `docs/centaur-collecties.md`. Lijsten (`stack`, `tags`) zijn tekst met komma's.
 
 ### Collectie `blog`
 
@@ -87,6 +90,18 @@ Per taal bestaat één entry. Dit sluit aan op een latere native locale-feature 
 ### Collectie `skills`
 
 `name`, `category` (bijv. `frontend`, `backend`, `design`, `tools`), `order`.
+
+### Collectie `status`
+
+Eén entry per taal: `available` (bool) en `text` (bijv. "Beschikbaar voor opdrachten vanaf januari"). Voedt de beschikbaarheidsstip bij de contact-CTA. Zonder entry wordt de stip niet getoond.
+
+### Collectie `klanten`
+
+`name`, `logo` (media, optioneel: zonder logo toont de site de naam), `url`, `quote`, `quote_author`, `order`. Voedt de klantenrij met quote op de home.
+
+### Collecties aanmaken
+
+`docs/centaur-collecties.js` maakt alle collecties in één keer aan via de dashboard-sessie (plakken in de browserconsole), naar het voorbeeld van Steva's Kookboek.
 
 ### Pagina's en site settings
 
@@ -142,19 +157,20 @@ wald.config.ts         .env laden, Vercel-adapter, sitemap.xml, robots.txt, 404.
 | Token | Waarde | Gebruik |
 |---|---|---|
 | `--bg` | `#0b0d12` | pagina-achtergrond |
-| `--surface` | `rgba(21,25,36,.72)` + `backdrop-filter: blur(6px)` | kaarten |
+| `--surface` | `rgba(21,25,36,.9)` | kaarten (geen `backdrop-filter`, zie Performance) |
 | `--border` | `#2a3245` | randen van kaarten |
 | `--text` | `#e8eaf0` | tekst |
 | `--text-muted` | `#9aa1b2` | secundaire tekst, navigatie |
-| `--accent` | `#4d7cff` | links, focus, hover-randen |
-| `--accent-2` | `#9b6bff` | eindkleur van het highlight-verloop |
-| `--brand` | `#0f40ec` | pagina-wipe, `::selection`, vlakken |
+| `--accent` | `#ffb000` (saffraan) | links, focus, hover-randen, highlight, beginkleur van het verloop (10,6:1 op `--bg`) |
+| `--accent-2` | `#f28c18` | eindkleur van het saffraan-verloop (7,9:1 op `--bg`) |
+| `--brand` | `#161208` | donker vlak van de pagina-wipe, met een saffraan logo en een 2px saffraan lijn |
+| `--selection-bg` / `--selection-text` | `#3a2a0a` / `#ffd27a` | `::selection` |
 
-Alle combinaties van tekst en achtergrond halen minimaal WCAG AA (4,5:1 voor broodtekst).
+Het vroegere merkblauw komt niet meer terug. Alle combinaties van tekst en achtergrond halen minimaal WCAG AA (4,5:1 voor broodtekst).
 
 ### Stenen achtergrond
 
-De bestaande responsive stenen webp's, `position: fixed` achter de content. Filter: `grayscale(1) brightness(.55) contrast(1.4)`, `mix-blend-mode: luminosity`, dekking 35%. Tekst staat altijd op `--bg` of op een kaart met `--surface`, nooit direct op een licht deel van de steen.
+De stenen textuur wordt **vooraf donker gebakken** met sharp (`scripts/bake-stone.mjs`): grayscale, brightness .55, contrast 1.4 en 35% over `--bg`, als webp in 489, 857 en 1400 px breed (`public/images/stone/stone-dark-*.webp`). In de browser staat er geen CSS-filter of blend-mode op; de afbeelding staat `position: fixed` achter de content met `will-change: transform` voor de parallax. Tekst staat altijd op `--bg` of op een kaart met `--surface`, nooit direct op een licht deel van de steen.
 
 ### Typografie
 
@@ -165,7 +181,7 @@ De bestaande responsive stenen webp's, `position: fixed` achter de content. Filt
   - sectiekopjes (bijv. "Uitgelicht werk", "Blog");
   - projectnamen op kaarten, in de bento en in de rail.
 
-  Nooit voor de grote koppen (h1), lopende tekst, navigatielinks of knoppen. Kleur: het blauw-paarse verloop (`--accent` → `--accent-2`) via `background-clip: text`. Onder `forced-colors: active` valt dat terug op de gewone tekstkleur. Geen andere alpenornamenten (geen ruiten, edelweiss of kaders).
+  Nooit voor de grote koppen (h1), lopende tekst, navigatielinks of knoppen. Kleur: het saffraan-verloop (`--accent` → `--accent-2`) via `background-clip: text`. Onder `forced-colors: active` valt dat terug op de gewone tekstkleur. Geen andere alpenornamenten (geen ruiten, edelweiss of kaders).
 - Vloeiende typeschaal met `clamp()`. Alle fonts worden zelf gehost als woff2 met `font-display: swap` en een preload voor Fraunces.
 
 ### Ruimte en vorm
@@ -174,20 +190,46 @@ Ruimte op een 4px-basis, radius 8px (kaarten) en 12px (grote panelen). Bento-gri
 
 ## Motion
 
-Alle GSAP-code staat in `assets/js/motion.js`. Elementen kiezen een effect via `data-motion="<naam>"`. GSAP en ScrollTrigger worden met `defer` vanaf cdnjs geladen (versie 3.12.5), zoals op de WaldJS-marketingsite.
+Alle GSAP-code staat in `public/motion.js`. GSAP, ScrollTrigger en SplitText komen uit het npm-pakket `gsap` en worden door `wald.config.ts` naar `public/vendor/` gekopieerd (zoals bij Steva's Kookboek), en met `defer` geladen. Elementen kiezen een effect via `data-motion="<naam>"`.
 
-| Effect | Element | Gedrag |
-|---|---|---|
-| `parallax` | stenen achtergrond | verschuift rustig mee bij het scrollen (scrub) |
-| `hero` | home-hero | kop en lead faden in (stagger), daarna bouwen de bento-kaarten op met `back.out` |
-| `reveal` | secties en lijsten | 30px omhoog met fade, trigger op 85% van de viewport |
-| `magnetic` | bento-kaarten, CTA's | volgen de muis, terugveren met `elastic.out`; alleen bij `(pointer: fine)` |
-| `rail` | "Ander werk" op home | gepinde horizontale scroll (scrub) vanaf 768px; daaronder native horizontale swipe met scroll-snap |
-| `pinCase` | case study | Probleem → Aanpak → Resultaat als gepinde panelen (scrub) |
-| `transition` | interne links | blauwe wipe (`--brand`) bij navigatie; daarnaast CSS cross-document View Transitions |
-| `fraunces` | koppen bij hover | subtiele animatie van de `wght`/`SOFT`-assen |
+| # | Effect | Element | Gedrag |
+|---|---|---|---|
+| 1 | `intro` | home-hero | kopregels schuiven uit een masker omhoog (SplitText, `mask: 'lines'`); Fraunces groeit van `wght` 300 naar 700; het logo-verloop veegt erdoorheen; de steen zoomt rustig in; lead en hint faden in |
+| 2 | `torch` | hele pagina | een zachte lichtbundel (radial-gradient, 520px) volgt de muis via `gsap.quickTo` op `transform`; alleen bij `(pointer: fine)` |
+| 3 | `chars` | sectiekopjes (`.display`) | letters verschijnen per letter uit een masker met `back.out`, bij 85% van de viewport |
+| 4 | `bento` | bento-kaarten | bouwen op (y + rotateX + opacity, stagger); kantelen naar de muis (±10°) met `quickTo` en een saffraan lichtvlek onder de cursor; terugveren met `elastic.out`; tilt alleen bij `(pointer: fine)` |
+| 5 | `marquee` | band met projectnamen | loopt continu; snelheid volgt de scrollsnelheid (één snelheids-tween, `overwrite: true`), draait om bij omhoog scrollen; gepauzeerd buiten beeld |
+| 6 | `rail` | "Ander werk" | gepinde horizontale scroll met voortgangsbalk (scrub) vanaf 768px; daaronder native horizontale swipe met scroll-snap |
+| 7 | `transition` | interne links | donkere wipe (`--brand`) met saffraan logo en lijn; daarnaast CSS cross-document View Transitions |
 
-**Reduced motion:** bij `prefers-reduced-motion: reduce` stopt `motion.js` direct en blijft alle content statisch en zichtbaar. Ook View Transitions staan dan uit. Elementen worden nooit met CSS verborgen in afwachting van JavaScript. GSAP gebruikt `gsap.from` met `clearProps`.
+Daarnaast: `parallax` op de steen (scrub, `yPercent`), `count` voor cijfers op case studies (tellen op bij in beeld), en de gepinde case-study-sectie Probleem → Aanpak → Resultaat (`pinCase`).
+
+### Performance-regels
+
+Vastgesteld na een demo die zichtbaar haperde:
+
+- Alleen `transform` en `opacity` animeren (plus de `wght`-as éénmalig in de intro). Geen animaties op `filter`, `mask`, `box-shadow`, `width/height` of `top/left`.
+- Geen CSS-filters of `mix-blend-mode` op grote vlakken; de steen is vooraf gebakken.
+- Geen `backdrop-filter`.
+- Alles wat de muis volgt gebruikt `gsap.quickTo`; nooit een nieuwe tween per `pointermove`. Afmetingen worden bij `pointerenter` gemeten, niet bij elke beweging. Listeners zijn `passive`.
+- Doorlopende animaties (marquee) pauzeren buiten beeld via ScrollTrigger `onToggle`.
+- `ScrollTrigger.config({ ignoreMobileResize: true })`.
+- Muis-effecten (torch, tilt) alleen bij `(pointer: fine)`.
+
+**Reduced motion:** bij `prefers-reduced-motion: reduce` stopt `motion.js` direct en blijft alle content statisch en zichtbaar; de intro-kop staat dan direct op `wght` 700. Ook View Transitions en de pulserende beschikbaarheidsstip staan dan uit. Elementen worden nooit met CSS verborgen in afwachting van JavaScript. GSAP gebruikt `gsap.from` met `clearProps`.
+
+## Extra's
+
+| Onderdeel | Gedrag |
+|---|---|
+| Build-strip | Onderaan elke pagina: bouwtijd, HTML-gewicht van de pagina, framework-JS-gewicht en datum van de laatste content-update, gemeten door de build zelf (de adapter vult placeholders in de gebouwde HTML in). Een Lighthouse-score staat er alleen als die echt gemeten is in de audit. |
+| Beschikbaarheid | Pil met (pulserende) saffraan stip boven de contact-CTA, uit collectie `status`. |
+| Klantenrij | Namen of logo's plus één quote op de home, uit collectie `klanten`. |
+| Cijfers | Op case studies, uit het veld `metrics`; getallen tellen op. |
+| Social-afbeeldingen | Per pagina een PNG (1200×630) met de titel in Germania op de gebakken steen, gemaakt tijdens de build met satori + @resvg/resvg-js; `og:image` en `twitter:card` in de head. |
+| RSS | `/rss.xml` (NL) en `/en/rss.xml` (EN) met de blogposts. |
+| Commandopalet | ⌘K / Ctrl+K of een knop in de nav opent een `<dialog>` met een combobox (ARIA `combobox` + `listbox`, pijltjes, Enter, Esc) over pagina's, projecten, posts en de taalwissel; de lijst komt uit een zoekindex (JSON) die de build maakt. Zonder JavaScript: gewone navigatie, de knop is verborgen. |
+| `.wald`-playground | Op de case study van WaldJS: links bewerkbare `.wald`-code, rechts het resultaat. Hergebruikt de `Playground` van de WaldJS-marketingsite; de uitwerking volgt in het plan. |
 
 ## Toegankelijkheid (WCAG 2.2 AA)
 
@@ -228,12 +270,13 @@ Stefan reviewt de drafts in Centaur en publiceert wat blijft. De content voor Wa
 
 ## Fasering
 
-1. **Content:** collecties aanmaken in Centaur, migratiescript schrijven en draaien, NL-content voor de drie uitgelichte projecten.
-2. **Basis:** WaldJS-project op `redesign`, tokens, fonts, layout, stenen achtergrond, nav, i18n.
-3. **Pagina's:** home, werk en case study, blog, over, contact (eerst NL, daarna de EN-routes).
-4. **Motion:** `motion.js` met alle effecten.
-5. **Lokaal afronden:** EN-vertalingen, toegankelijkheids- en performance-audit, review door Stefan.
-6. **Publiceren** (pas na akkoord van Stefan): Vercel-project, domein steefan.nl, Deploy Hook plus Centaur-webhook, DatoCMS uitzetten.
+Alles wordt eerst lokaal afgemaakt; publiceren gebeurt pas na akkoord van Stefan.
+
+1. **Fundament** (plan 1): WaldJS-project, libs, collecties, migratie, layout, eerste home. Inclusief een vervolg: saffraan-kleuren en de gebakken steen.
+2. **Pagina's** (plan 2): werk-overzicht met filter, case study (met cijfers), blog, over (tijdlijn, skills, GitHub), contact (met Centaur Forms en beschikbaarheid), klantenrij en marquee op de home, plus alle EN-routes.
+3. **Motion** (plan 3): `motion.js` met de zeven effecten, parallax, count en pinCase, volgens de performance-regels.
+4. **Extra's** (plan 4): build-strip, social-afbeeldingen, RSS, commandopalet en de `.wald`-playground.
+5. **Afronden en publiceren** (plan 5): EN-vertalingen, audits (Lighthouse, axe, toetsenbord, reduced motion), README, Vercel-project, steefan.nl, Deploy Hook en Centaur-webhook, DatoCMS uitzetten.
 
 ## Buiten scope
 

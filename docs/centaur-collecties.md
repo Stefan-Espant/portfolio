@@ -1,7 +1,7 @@
 # Centaur-collecties voor het portfolio
 
 De slugs van collecties en velden moeten **exact** zo heten: `src/lib/content.ts` leest ze zo uit.
-Aanmaken: Centaur → **Collecties** → nieuwe collectie, als **Admin**.
+**Snelste manier:** plak `docs/centaur-collecties.js` in de browserconsole van het Centaur-dashboard (ingelogd als Admin). Dat maakt alle collecties hieronder in één keer aan. Met de hand kan ook: Centaur → **Collecties** → nieuwe collectie, als **Admin**.
 
 Elke collectie heeft deze twee velden voor tweetaligheid:
 
@@ -35,6 +35,7 @@ Per taal maak je een aparte entry. Lijsten (`stack`, `tags`) zijn tekst met komm
 | Repo-URL | `repo_url` | Tekst | | |
 | Ontwerp-URL | `design_url` | Tekst | | Bv. Figma |
 | npm-pakket | `npm_package` | Tekst | | Bv. `@waldjs/cli` |
+| Cijfers | `metrics` | Tekst | | Per regel `Label: waarde`, bv. `Lighthouse: 100`. Getallen tellen op op de case study |
 
 ## `blog` (naam: Blog)
 
@@ -67,6 +68,26 @@ Per taal maak je een aparte entry. Lijsten (`stack`, `tags`) zijn tekst met komm
 | Naam | `name` | Tekst | ✓ | |
 | Categorie | `category` | Tekst | | Bv. `frontend`, `backend`, `design`, `tools` |
 | Volgorde | `order` | Getal | | Binnen de categorie |
+
+## `status` (naam: Status)
+
+Eén entry per taal. Voedt de beschikbaarheidsstip bij de contact-CTA.
+
+| Veld (naam) | Slug | Type | Verplicht | Toelichting |
+|---|---|---|---|---|
+| Beschikbaar voor opdrachten | `available` | Boolean | | Aan = saffraan stip |
+| Tekst | `text` | Tekst | ✓ | Bv. "Beschikbaar voor opdrachten vanaf januari" |
+
+## `klanten` (naam: Klanten)
+
+| Veld (naam) | Slug | Type | Verplicht | Toelichting |
+|---|---|---|---|---|
+| Naam | `name` | Tekst | ✓ | |
+| Logo | `logo` | Media | | SVG of PNG op transparante achtergrond. Zonder logo toont de site de naam |
+| Website | `url` | Tekst | | |
+| Quote | `quote` | Tekst | | Optioneel |
+| Auteur van de quote | `quote_author` | Tekst | | Bv. "Naam, functie bij Organisatie" |
+| Volgorde | `order` | Getal | | |
 
 ## API-sleutels
 
