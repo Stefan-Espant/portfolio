@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { LOCALES, isLocale, langSwitchHref, localePath, otherLocale, t } from './i18n'
+import { LOCALES, formatDate, formatMonth, isLocale, langSwitchHref, localePath, otherLocale, t } from './i18n'
 
 describe('i18n', () => {
   test('ondersteunt nl en en', () => {
@@ -41,5 +41,20 @@ describe('i18n', () => {
     expect(langSwitchHref({ nl: '/werk/waldjs', en: '/en/work/waldjs' }, 'nl')).toBe('/en/work/waldjs')
     expect(langSwitchHref({ nl: '/blog/alleen-nl' }, 'nl')).toBe('/en')
     expect(langSwitchHref({}, 'en')).toBe('/')
+  })
+
+  test('formatDate en formatMonth per taal', () => {
+    expect(formatDate('2024-05-01', 'nl')).toBe('1 mei 2024')
+    expect(formatDate('2024-05-01', 'en')).toBe('1 May 2024')
+    expect(formatMonth('2023-09-01', 'nl')).toBe('sep 2023')
+    expect(formatMonth('2023-09-01', 'en')).toBe('Sept 2023')
+    expect(formatDate('', 'nl')).toBe('')
+    expect(formatDate('geen datum', 'nl')).toBe('')
+  })
+
+  test('nieuwe teksten bestaan in beide talen', () => {
+    expect(t('work.heading', 'nl')).toBe('Werk')
+    expect(t('work.heading', 'en')).toBe('Work')
+    expect(t('type.framework', 'en')).toBe('Framework')
   })
 })

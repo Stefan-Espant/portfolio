@@ -9,3 +9,8 @@ export function siteUrl(): string {
 export function absoluteUrl(url: string): string {
   return url.startsWith('/') ? `${siteUrl()}${url}` : url
 }
+
+/** Contactadres voor de mailto-link op /contact. Pas hier aan als het adres verandert. */
+export const CONTACT_EMAIL = 'info@espant.com'
+
+export const GITHUB_URL = 'https://github.com/Stefan-Espant'
