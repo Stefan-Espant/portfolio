@@ -1,82 +1,116 @@
 ---
 import Layout from '../../layouts/Layout.wald'
-import { getFeaturedProjects } from '../../lib/content'
+import Bento from '../Bento.wald'
+import Marquee from '../Marquee.wald'
+import ClientRow from '../ClientRow.wald'
+import HScroll from '../HScroll.wald'
+import ProjectCard from '../ProjectCard.wald'
+import PostCard from '../PostCard.wald'
+import Availability from '../Availability.wald'
+import { getClients, getFeaturedProjects, getOtherProjects, getPosts, getStatus } from '../../lib/content'
 import { localePath, t, type Locale } from '../../lib/i18n'
 type Props = { locale: Locale }
 const { locale } = $$props
-const projects = await getFeaturedProjects(locale)
-const cards = projects.map(project => renderTemplate`
-  <li class="home__project">
-    <a class="home__project-link" href="${localePath('project', locale, project.slug)}">
-      <h3 class="home__project-title display">${project.title}</h3>
-      <p class="home__project-summary">${project.summary}</p>
-    </a>
-  </li>`).join('')
-const list = projects.length
-  ? `<ul class="home__projects" role="list">${cards}</ul>`
+const [featured, other, posts, clients, status] = await Promise.all([
+  getFeaturedProjects(locale), getOtherProjects(locale), getPosts(locale), getClients(locale), getStatus(locale)
+])
+
+const featuredHtml = featured.length
+  ? await Bento.render({ projects: featured, locale })
   : renderTemplate`<p class="home__empty">${t('home.empty', locale)}</p>`
+const names = [...featured, ...other].map(project => project.title)
+const marqueeHtml = names.length >= 3 ? await Marquee.render({ names }) : ''
+const clientsHtml = clients.length ? await ClientRow.render({ clients, locale }) : ''
+const otherHtml = other.length
+  ? await HScroll.render({ id: 'other-work', title: t('home.other', locale), items: await Promise.all(other.map(project => ProjectCard.render({ project, locale }))) })
+  : ''
+const latest = posts.slice(0, 6)
+const blogHtml = latest.length
+  ? await HScroll.render({ id: 'latest-posts', title: t('home.blog', locale), items: await Promise.all(latest.map(post => PostCard.render({ post, locale }))) })
+  : ''
+const statusHtml = status ? await Availability.render({ status, locale }) : ''
 const alternates = { nl: localePath('home', 'nl'), en: localePath('home', 'en') }
 ---
 <Layout title={t('home.title', locale)} fullTitle={true} description={t('home.description', locale)} path={localePath('home', locale)} locale={locale} alternates={alternates}>
-  <main id="main" class="home container">
-    <h1 class="home__title">{t('home.heading', locale)}</h1>
-    <p class="home__lead">{t('home.lead', locale)}</p>
-    <h2 class="home__subtitle display">{t('home.featured', locale)}</h2>
-    {new SafeHtml(list)}
+  <main id="main" class="home">
+    <header class="home__hero container" data-motion="intro">
+      <h1 class="home__title">{t('home.heading', locale)}</h1>
+      <p class="home__lead">{t('home.lead', locale)}</p>
+    </header>
+
+    <section class="home__featured container" aria-labelledby="featured-title">
+      <h2 class="home__section-title display" id="featured-title">{t('home.featured', locale)}</h2>
+      {new SafeHtml(featuredHtml)}
+    </section>
+
+    {new SafeHtml(marqueeHtml)}
+    {new SafeHtml(clientsHtml)}
+    {new SafeHtml(otherHtml)}
+
+    <section class="home__about container" aria-labelledby="about-title">
+      <h2 class="home__section-title display" id="about-title">{t('home.about', locale)}</h2>
+      <p class="home__about-text">{t('home.aboutText', locale)}</p>
+      <a class="home__about-link" href={localePath('about', locale)}>{t('home.aboutLink', locale)} →</a>
+    </section>
+
+    {new SafeHtml(blogHtml)}
+
+    <section class="home__cta container">
+      {new SafeHtml(statusHtml)}
+      <a class="home__cta-link display" href={localePath('contact', locale)}>{t('home.cta', locale)}</a>
+    </section>
   </main>
 </Layout>
 
 <style>
 .home {
-  padding-top: var(--space-16);
-
+  & .home__hero {
+    min-height: min(80vh, 48rem);
+    display: grid;
+    align-content: center;
+    padding-block: var(--space-16);
+  }
   & .home__title {
-    max-width: 16ch;
-    font-size: var(--text-2xl);
+    max-width: 13ch;
+    font-size: clamp(2.75rem, 1.6rem + 5.5vw, 6.5rem);
     font-weight: 700;
+    line-height: 0.98;
   }
   & .home__lead {
-    margin-top: var(--space-4);
+    margin-top: var(--space-6);
+    max-width: 38ch;
     color: var(--text-muted);
     font-size: var(--text-lg);
   }
-  /* Lettertype en kleur komen van .display (Germania One in het verloop). */
-  & .home__subtitle {
-    margin-top: var(--space-16);
+  & .home__featured,
+  & .home__about {
+    padding-block: var(--space-16);
+  }
+  & .home__section-title {
     font-size: var(--text-xl);
   }
-  & .home__projects {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
-    gap: var(--space-4);
+  & .home__empty,
+  & .home__about-text {
     margin-top: var(--space-6);
-    padding: 0;
-    list-style: none;
-  }
-  & .home__project-link {
-    display: block;
-    height: 100%;
-    padding: var(--space-6);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    background: var(--surface);
-    backdrop-filter: blur(6px);
-    color: var(--text);
-    text-decoration: none;
-  }
-  & .home__project-link:hover {
-    border-color: var(--accent);
-  }
-  & .home__project-title {
+    max-width: 60ch;
+    color: var(--text-muted);
     font-size: var(--text-lg);
   }
-  & .home__project-summary {
-    margin-top: var(--space-2);
-    color: var(--text-muted);
+  & .home__about-link {
+    display: inline-block;
+    margin-top: var(--space-4);
+    font-family: var(--font-mono);
   }
-  & .home__empty {
-    margin-top: var(--space-6);
-    color: var(--text-muted);
+  & .home__cta {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-6);
+    padding-block: var(--space-24);
+    text-align: center;
+  }
+  & .home__cta-link {
+    font-size: clamp(2.5rem, 1.5rem + 5vw, 6rem);
+    text-decoration: none;
   }
 }
 </style>
