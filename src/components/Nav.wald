@@ -30,8 +30,8 @@ const langSwitch = renderTemplate`<a class="nav__lang" href="${langSwitchHref(al
   display: grid;
   grid-template-columns: 1fr auto;
   grid-template-areas:
-    'home lang'
-    'links links';
+    'home home'
+    'links lang';
   align-items: center;
   gap: var(--space-3) var(--space-6);
   padding-block: var(--space-6);
