@@ -9,7 +9,8 @@
     "check": "wald check",
     "test": "vitest run",
     "migrate": "tsx scripts/migrate-datocms.ts",
-    "fonts": "node scripts/fetch-fonts.mjs"
+    "fonts": "node scripts/fetch-fonts.mjs",
+    "stone": "node scripts/bake-stone.mjs"
   },
   "dependencies": {
     "@waldjs/cli": "^0.12.1",
@@ -17,6 +18,7 @@
   },
   "devDependencies": {
     "marked": "^18.1.1",
+    "sharp": "^0.33.5",
     "tsx": "^4.23.15",
     "vitest": "^5.0.4"
   },

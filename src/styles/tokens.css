@@ -3,13 +3,15 @@
   color-scheme: dark;
 
   --bg: #0b0d12;
-  --surface: rgb(21 25 36 / 0.72);
+  --surface: rgb(21 25 36 / 0.9);
   --border: #2a3245;
   --text: #e8eaf0;
   --text-muted: #9aa1b2;
-  --accent: #4d7cff;
-  --accent-2: #9b6bff;
-  --brand: #0f40ec;
+  --accent: #ffb000;
+  --accent-2: #f28c18;
+  --brand: #161208;
+  --selection-bg: #3a2a0a;
+  --selection-text: #ffd27a;
 
   --font-serif: 'Fraunces', Georgia, serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;

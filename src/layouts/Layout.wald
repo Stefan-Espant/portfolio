@@ -63,8 +63,8 @@ const footer = await Footer.render({ locale })
     <a class="skip-link" href="#main">{t('skip', locale)}</a>
     <img
       class="stone"
-      src="/images/stone/stone-1400.webp"
-      srcset="/images/stone/stone-489.webp 489w, /images/stone/stone-857.webp 857w, /images/stone/stone-1400.webp 1400w"
+      src="/images/stone/stone-dark-1400.webp"
+      srcset="/images/stone/stone-dark-489.webp 489w, /images/stone/stone-dark-857.webp 857w, /images/stone/stone-dark-1400.webp 1400w"
       sizes="100vw"
       alt=""
       decoding="async"
