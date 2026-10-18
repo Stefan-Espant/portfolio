@@ -1,0 +1,36 @@
+---
+// Decoratieve band met projectnamen (spec: Motion #5). Alleen sier: aria-hidden.
+type Props = { names: string[] }
+const { names } = $$props
+const run = names.map(name => renderTemplate`<span>${name}</span>`).join('')
+---
+<div class="marquee" aria-hidden="true" data-motion="marquee">
+  <div class="marquee__track">{new SafeHtml(run + run + run)}</div>
+</div>
+
+<style>
+.marquee {
+  overflow: hidden;
+  margin-block: var(--space-16);
+  padding-block: var(--space-4);
+  border-block: 1px solid var(--border);
+  white-space: nowrap;
+
+  & .marquee__track {
+    display: inline-flex;
+    gap: var(--space-12);
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 1.5rem + 4vw, 5rem);
+    line-height: 1.2;
+    color: transparent;
+    -webkit-text-stroke: 1px #5b6478;
+    will-change: transform;
+  }
+  & .marquee__track span:nth-child(3n + 1) {
+    -webkit-text-stroke: 0;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+}
+</style>

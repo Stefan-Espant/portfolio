@@ -1,0 +1,31 @@
+---
+import ProjectCard from './ProjectCard.wald'
+import type { Locale } from '../lib/i18n'
+import type { Project } from '../lib/content'
+type Props = { projects: Project[], locale: Locale }
+const { projects, locale } = $$props
+const cards = await Promise.all(projects.map(async (project, index) => {
+  const size = index === 0 ? 'large' : 'normal'
+  return `<li class="bento__item${index === 0 ? ' bento__item--large' : ''}">${await ProjectCard.render({ project, locale, size })}</li>`
+}))
+---
+<ul class="bento" role="list" data-motion="bento">{new SafeHtml(cards.join(''))}</ul>
+
+<style>
+.bento {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+  margin: var(--space-6) 0 0;
+  padding: 0;
+  list-style: none;
+
+  @media (min-width: 48rem) {
+    grid-template-columns: 1.4fr 1fr;
+
+    & .bento__item--large {
+      grid-row: span 2;
+    }
+  }
+}
+</style>

@@ -1,0 +1,80 @@
+---
+import { t, type Locale } from '../lib/i18n'
+import type { Client } from '../lib/content'
+type Props = { clients: Client[], locale: Locale }
+const { clients, locale } = $$props
+const items = clients.map(client => {
+  const inner = client.logo
+    ? renderTemplate`<img src="${client.logo}" alt="${client.name}" loading="lazy" decoding="async">`
+    : renderTemplate`<span>${client.name}</span>`
+  return client.url
+    ? renderTemplate`<li><a href="${client.url}" rel="noopener">${new SafeHtml(inner)}</a></li>`
+    : renderTemplate`<li>${new SafeHtml(inner)}</li>`
+}).join('')
+const withQuote = clients.find(client => client.quote)
+const quote = withQuote
+  ? renderTemplate`<blockquote class="clients__quote"><p>${withQuote.quote}</p><footer>${withQuote.quoteAuthor || withQuote.name}</footer></blockquote>`
+  : ''
+---
+<section class="clients container" aria-labelledby="clients-title">
+  <h2 class="clients__title display" id="clients-title">{t('home.clients', locale)}</h2>
+  <ul class="clients__list" role="list">{new SafeHtml(items)}</ul>
+  {new SafeHtml(quote)}
+</section>
+
+<style>
+.clients {
+  padding-block: var(--space-16);
+
+  & .clients__title {
+    font-size: var(--text-xl);
+  }
+  & .clients__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4) var(--space-12);
+    margin: var(--space-6) 0 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  & .clients__list a {
+    color: inherit;
+    text-decoration: none;
+  }
+  & .clients__list a:hover {
+    color: var(--text);
+  }
+  & .clients__list img {
+    height: 2rem;
+    width: auto;
+    opacity: 0.8;
+  }
+  & .clients__quote {
+    max-width: 46rem;
+    margin: var(--space-8) 0 0;
+    padding: var(--space-6) var(--space-8);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+    background: var(--surface);
+  }
+  & .clients__quote p {
+    font-size: var(--text-lg);
+    font-style: italic;
+    quotes: '“' '”';
+  }
+  & .clients__quote p::before { content: open-quote; }
+  & .clients__quote p::after { content: close-quote; }
+  & .clients__quote footer {
+    margin-top: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+  }
+}
+</style>

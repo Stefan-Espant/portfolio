@@ -1,0 +1,43 @@
+---
+import type { Status } from '../lib/content'
+type Props = { status: Status }
+const { status } = $$props
+---
+<p class="availability" data-available={status.available ? 'true' : 'false'}>
+  <span class="availability__dot" aria-hidden="true"></span>{status.text}
+</p>
+
+<style>
+.availability {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+
+  & .availability__dot {
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+    background: var(--text-muted);
+  }
+  &[data-available='true'] .availability__dot {
+    background: var(--accent);
+    animation: availability-pulse 2s infinite;
+  }
+}
+@keyframes availability-pulse {
+  0% { box-shadow: 0 0 0 0 rgb(255 176 0 / 0.6); }
+  70% { box-shadow: 0 0 0 0.6rem rgb(255 176 0 / 0); }
+  100% { box-shadow: 0 0 0 0 rgb(255 176 0 / 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .availability .availability__dot {
+    animation: none;
+  }
+}
+</style>
