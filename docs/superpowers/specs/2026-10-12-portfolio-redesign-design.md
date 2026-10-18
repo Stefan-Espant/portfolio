@@ -32,9 +32,9 @@ Het portfolio op steefan.nl opnieuw ontwerpen en opnieuw bouwen met WaldJS, GSAP
 
 | NL | EN | Inhoud |
 |---|---|---|
-| `/` | `/en/` | Hero, bento met 3 uitgelichte projecten, marquee met projectnamen, klantenrij met quote, horizontale rail "Ander werk", korte over-mij, laatste 3 blogposts, contact-CTA met beschikbaarheid |
+| `/` | `/en/` | Hero, bento met 3 uitgelichte projecten, marquee met projectnamen, klantenrij met quote, horizontale strook "Ander werk", korte over-mij, laatste blogposts als horizontale strook, contact-CTA met beschikbaarheid |
 | `/werk` | `/en/work` | Alle projecten, filterbaar op type (framework / product / website / school) |
-| `/werk/[slug]` | `/en/work/[slug]` | Case study: intro, cijfers (optellend), gepinde sectie Probleem → Aanpak → Resultaat, stack, galerij, links (live, GitHub, npm); bij WaldJS een live `.wald`-playground |
+| `/werk/[slug]` | `/en/work/[slug]` | Case study: intro, cijfers (optellend), horizontale strook Probleem → Aanpak → Resultaat, stack en links (live, GitHub, npm), horizontale galerij; bij WaldJS een live `.wald`-playground |
 | `/blog` | `/en/blog` | Overzicht van posts |
 | `/blog/[slug]` | `/en/blog/[slug]` | Blogpost |
 | `/over` | `/en/about` | Over mij, skills/stack, cv-tijdlijn, cv-pdf-download, GitHub-activiteit |
@@ -199,10 +199,10 @@ Alle GSAP-code staat in `public/motion.js`. GSAP, ScrollTrigger en SplitText kom
 | 3 | `chars` | sectiekopjes (`.display`) | letters verschijnen per letter uit een masker met `back.out`, bij 85% van de viewport |
 | 4 | `bento` | bento-kaarten | bouwen op (y + rotateX + opacity, stagger); kantelen naar de muis (±10°) met `quickTo` en een saffraan lichtvlek onder de cursor; terugveren met `elastic.out`; tilt alleen bij `(pointer: fine)` |
 | 5 | `marquee` | band met projectnamen | loopt continu; snelheid volgt de scrollsnelheid (één snelheids-tween, `overwrite: true`), draait om bij omhoog scrollen; gepauzeerd buiten beeld |
-| 6 | `rail` | "Ander werk" | gepinde horizontale scroll met voortgangsbalk (scrub) vanaf 768px; daaronder native horizontale swipe met scroll-snap |
+| 6 | `hscroll` | "Ander werk" en de laatste blogposts op de home; Probleem → Aanpak → Resultaat en de galerij op case studies | gepinde horizontale scroll met voortgangsbalk en teller (`01 / 03`), scrub, vanaf 48rem; daaronder en bij reduced motion een native horizontale swipe-lijst met scroll-snap. Tussen de horizontale momenten scrolt de pagina gewoon verticaal |
 | 7 | `transition` | interne links | donkere wipe (`--brand`) met saffraan logo en lijn; daarnaast CSS cross-document View Transitions |
 
-Daarnaast: `parallax` op de steen (scrub, `yPercent`), `count` voor cijfers op case studies (tellen op bij in beeld), en de gepinde case-study-sectie Probleem → Aanpak → Resultaat (`pinCase`).
+Daarnaast: `parallax` op de steen (scrub, `yPercent`) en `count` voor cijfers op case studies (tellen op bij in beeld). De case-study-stappen gebruiken `hscroll` (horizontaal) in plaats van verticaal gepinde panelen.
 
 ### Performance-regels
 
@@ -236,7 +236,7 @@ Vastgesteld na een demo die zichtbaar haperde:
 - Landmarks (`header`, `nav`, `main`, `footer`), skip-link, logische koppenstructuur, één `h1` per pagina.
 - `lang` per pagina en `hreflang`-alternates in de head.
 - Zichtbare focus-ring in `--accent` op alle interactieve elementen.
-- Rail: in DOM-volgorde met het toetsenbord bereikbaar en de kaarten zijn focusbaar. Pinning is alleen enhancement.
+- Horizontale stroken: inhoud staat in DOM-volgorde en is met het toetsenbord bereikbaar; elk item is een gewoon element (link of figuur). De teller is `aria-hidden`; elke strook heeft een kop als label (`aria-labelledby`). Pinning is alleen enhancement: zonder JavaScript, op mobiel en bij reduced motion is het een gewone swipe-lijst.
 - Taalwissel: linkt naar de vertaling van de huidige pagina via `translationKey`. Ontbreekt die, dan linkt hij naar de home van de andere taal.
 - Contactformulier: labels, foutmeldingen in een `aria-live`-regio en zonder JavaScript een gewone POST-fallback naar Centaur Forms.
 - Afbeeldingen: `alt` uit Centaur-media. Decoratieve steen met `alt=""`.
