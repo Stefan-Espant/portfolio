@@ -120,3 +120,57 @@ a.display:focus-visible {
     color: #000;
   }
 }
+
+/* ── Motion (plan 3) ──────────────────────────────────────────────────────────────────── */
+
+/* Alleen de home-intro wacht op JavaScript; de fail-safe in <head> haalt `motion` na 3 s weg. */
+.motion [data-motion='intro'] {
+  visibility: hidden;
+}
+
+/* Lichtbundel die de muis volgt (spec: Motion #2). Onzichtbaar tot motion.js hem aanzet. */
+.torch {
+  position: fixed;
+  top: -260px;
+  left: -260px;
+  z-index: -1;
+  width: 520px;
+  height: 520px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(255 214 150 / 0.13) 0%, rgb(255 214 150 / 0.05) 40%, transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* Pagina-overgang (spec: Motion #7). */
+.wipe {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  border-top: 2px solid var(--accent);
+  background: var(--brand);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  pointer-events: none;
+}
+.wipe__logo {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  color: var(--accent);
+  opacity: 0;
+}
+.is-arriving .wipe {
+  transform: none;
+}
+.is-arriving .wipe__logo {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+}

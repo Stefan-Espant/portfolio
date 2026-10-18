@@ -45,6 +45,15 @@ const headTags = [
 const inlineCss = `<style data-wald-no-hoist>${['src/styles/fonts.css', 'src/styles/tokens.css', 'src/styles/base.css']
   .map(file => readFileSync(file, 'utf8')).join('\n').replace(/<\//g, '<\\/')}</style>`
 
+// Beweging (plan 3). Het inline script zet vóór de eerste paint `motion` op <html> (alleen de
+// home-intro wacht daarop) en `is-arriving` als de vorige pagina met de wipe vertrok. Start het
+// motion-script niet binnen 3 s, dan gaan beide classes eraf: inhoud blijft nooit onzichtbaar.
+const motionHead = `<script data-wald-no-hoist>(function(){var d=document.documentElement;if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;d.classList.add('motion');try{if(sessionStorage.getItem('wipe')==='1'){d.classList.add('is-arriving');sessionStorage.removeItem('wipe')}}catch(e){}setTimeout(function(){if(!window.__motionReady)d.classList.remove('motion','is-arriving')},3000)})()</script>
+    <script src="/vendor/gsap.min.js" defer data-wald-no-hoist></script>
+    <script src="/vendor/ScrollTrigger.min.js" defer data-wald-no-hoist></script>
+    <script src="/vendor/SplitText.min.js" defer data-wald-no-hoist></script>
+    <script type="module" src="/motion/index.js" data-wald-no-hoist></script>`
+
 const nav = await Nav.render({ locale, alternates, current })
 const footer = await Footer.render({ locale })
 ---
@@ -58,9 +67,11 @@ const footer = await Footer.render({ locale })
     <link rel="icon" href="/favicon.png" type="image/png" />
     <link rel="preload" href="/fonts/fraunces-latin.woff2" as="font" type="font/woff2" crossorigin />
     {new SafeHtml(inlineCss)}
+    {new SafeHtml(motionHead)}
   </head>
   <body>
     <a class="skip-link" href="#main">{t('skip', locale)}</a>
+    <div class="torch" aria-hidden="true"></div>
     <img
       class="stone"
       src="/images/stone/stone-dark-1400.webp"
@@ -73,5 +84,6 @@ const footer = await Footer.render({ locale })
     {new SafeHtml(nav)}
     {pond}
     {new SafeHtml(footer)}
+    <div class="wipe" aria-hidden="true"><span class="wipe__logo">Steefan</span></div>
   </body>
 </html>
