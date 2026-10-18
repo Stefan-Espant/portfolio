@@ -1,8 +1,4 @@
 ---
-const title = 'Steefan'
+import HomePage from '../components/pages/HomePage.wald'
 ---
-<!DOCTYPE html>
-<html lang="nl">
-  <head><meta charset="UTF-8" /><title>{title}</title></head>
-  <body><h1>{title}</h1></body>
-</html>
+<HomePage locale="nl" />

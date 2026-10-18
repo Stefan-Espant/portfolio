@@ -1,0 +1,22 @@
+---
+import Layout from '../layouts/Layout.wald'
+import { localePath, t } from '../lib/i18n'
+---
+<Layout title={t('notFound.title', 'nl')} path="/404" locale="nl" noindex={true}>
+  <main id="main" class="not-found container">
+    <h1 class="not-found__title">404</h1>
+    <p>{t('notFound.body', 'nl')} <a href={localePath('home', 'nl')}>{t('notFound.back', 'nl')}</a></p>
+    <p lang="en">{t('notFound.body', 'en')} <a href={localePath('home', 'en')}>{t('notFound.back', 'en')}</a></p>
+  </main>
+</Layout>
+
+<style>
+.not-found {
+  padding-top: var(--space-24);
+  display: grid;
+  gap: var(--space-4);
+}
+.not-found__title {
+  font-size: var(--text-2xl);
+}
+</style>

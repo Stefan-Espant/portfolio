@@ -1,0 +1,82 @@
+---
+import Layout from '../../layouts/Layout.wald'
+import { getFeaturedProjects } from '../../lib/content'
+import { localePath, t, type Locale } from '../../lib/i18n'
+type Props = { locale: Locale }
+const { locale } = $$props
+const projects = await getFeaturedProjects(locale)
+const cards = projects.map(project => renderTemplate`
+  <li class="home__project">
+    <a class="home__project-link" href="${localePath('project', locale, project.slug)}">
+      <h3 class="home__project-title display">${project.title}</h3>
+      <p class="home__project-summary">${project.summary}</p>
+    </a>
+  </li>`).join('')
+const list = projects.length
+  ? `<ul class="home__projects" role="list">${cards}</ul>`
+  : renderTemplate`<p class="home__empty">${t('home.empty', locale)}</p>`
+const alternates = { nl: localePath('home', 'nl'), en: localePath('home', 'en') }
+---
+<Layout title={t('home.title', locale)} fullTitle={true} description={t('home.description', locale)} path={localePath('home', locale)} locale={locale} alternates={alternates}>
+  <main id="main" class="home container">
+    <h1 class="home__title">{t('home.heading', locale)}</h1>
+    <p class="home__lead">{t('home.lead', locale)}</p>
+    <h2 class="home__subtitle display">{t('home.featured', locale)}</h2>
+    {new SafeHtml(list)}
+  </main>
+</Layout>
+
+<style>
+.home {
+  padding-top: var(--space-16);
+
+  & .home__title {
+    max-width: 16ch;
+    font-size: var(--text-2xl);
+    font-weight: 700;
+  }
+  & .home__lead {
+    margin-top: var(--space-4);
+    color: var(--text-muted);
+    font-size: var(--text-lg);
+  }
+  /* Lettertype en kleur komen van .display (Germania One in het verloop). */
+  & .home__subtitle {
+    margin-top: var(--space-16);
+    font-size: var(--text-xl);
+  }
+  & .home__projects {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+    gap: var(--space-4);
+    margin-top: var(--space-6);
+    padding: 0;
+    list-style: none;
+  }
+  & .home__project-link {
+    display: block;
+    height: 100%;
+    padding: var(--space-6);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    backdrop-filter: blur(6px);
+    color: var(--text);
+    text-decoration: none;
+  }
+  & .home__project-link:hover {
+    border-color: var(--accent);
+  }
+  & .home__project-title {
+    font-size: var(--text-lg);
+  }
+  & .home__project-summary {
+    margin-top: var(--space-2);
+    color: var(--text-muted);
+  }
+  & .home__empty {
+    margin-top: var(--space-6);
+    color: var(--text-muted);
+  }
+}
+</style>
