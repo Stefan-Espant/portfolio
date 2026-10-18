@@ -181,7 +181,7 @@ De stenen textuur wordt **vooraf donker gebakken** met sharp (`scripts/bake-ston
   - sectiekopjes (bijv. "Uitgelicht werk", "Blog");
   - projectnamen op kaarten, in de bento en in de rail.
 
-  Nooit voor de grote koppen (h1), lopende tekst, navigatielinks of knoppen. Kleur: het saffraan-verloop (`--accent` → `--accent-2`) via `background-clip: text`. Onder `forced-colors: active` valt dat terug op de gewone tekstkleur. Geen andere alpenornamenten (geen ruiten, edelweiss of kaders).
+  Nooit voor de grote koppen (h1), lopende tekst, navigatielinks of knoppen, met één uitzondering: op een case study is de projectnaam de h1 in Germania. Kleur: het saffraan-verloop (`--accent` → `--accent-2`) via `background-clip: text`. Onder `forced-colors: active` valt dat terug op de gewone tekstkleur. Geen andere alpenornamenten (geen ruiten, edelweiss of kaders).
 - Vloeiende typeschaal met `clamp()`. Alle fonts worden zelf gehost als woff2 met `font-display: swap` en een preload voor Fraunces.
 
 ### Ruimte en vorm
@@ -238,7 +238,7 @@ Vastgesteld na een demo die zichtbaar haperde:
 - Zichtbare focus-ring in `--accent` op alle interactieve elementen.
 - Horizontale stroken: inhoud staat in DOM-volgorde en is met het toetsenbord bereikbaar; elk item is een gewoon element (link of figuur). De teller is `aria-hidden`; elke strook heeft een kop als label (`aria-labelledby`). Pinning is alleen enhancement: zonder JavaScript, op mobiel en bij reduced motion is het een gewone swipe-lijst.
 - Taalwissel: linkt naar de vertaling van de huidige pagina via `translationKey`. Ontbreekt die, dan linkt hij naar de home van de andere taal.
-- Contactformulier: labels, foutmeldingen in een `aria-live`-regio en zonder JavaScript een gewone POST-fallback naar Centaur Forms.
+- Contactformulier: labels, foutmeldingen in een `aria-live`-regio. Centaur Forms accepteert alleen JSON; zonder JavaScript blijft het formulier daarom verborgen en staat er een mailto-link (`CONTACT_EMAIL` in `src/lib/site.ts`). Inzendingen vereisen een gepubliceerde Centaur-pagina met slug `contact`.
 - Afbeeldingen: `alt` uit Centaur-media. Decoratieve steen met `alt=""`.
 
 ## Foutafhandeling
