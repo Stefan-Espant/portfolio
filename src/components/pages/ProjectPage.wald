@@ -42,22 +42,23 @@ const galleryHtml = project.gallery.length
   ? await HScroll.render({
       id: 'gallery-title',
       title: t('project.gallery', locale),
-      items: project.gallery.map(image => renderTemplate`<figure class="case__shot"><img src="${image.src}" alt="${image.alt}" loading="lazy" decoding="async">${new SafeHtml(image.alt ? renderTemplate`<figcaption>${image.alt}</figcaption>` : '')}</figure>`)
+      items: project.gallery.map(image => renderTemplate`<figure class="case__shot"><img src="${image.src}" alt="" loading="lazy" decoding="async">${new SafeHtml(image.alt ? renderTemplate`<figcaption>${image.alt}</figcaption>` : '')}</figure>`)
     })
   : ''
 const cover = project.cover
-  ? renderTemplate`<img class="case__cover" src="${project.cover}" alt="${project.coverAlt}" decoding="async" fetchpriority="high">`
+  ? renderTemplate`<div class="container"><img class="case__cover" src="${project.cover}" alt="${project.coverAlt}" decoding="async" fetchpriority="high"></div>`
   : ''
+const summaryHtml = project.summary ? renderTemplate`<p class="case__summary">${project.summary}</p>` : ''
 ---
 <Layout title={project.title} description={project.summary} path={localePath('project', locale, project.slug)} locale={locale} alternates={alternates} current="work">
   <main id="main" class="case">
     <header class="case__header container">
       <p class="case__crumb"><a href={localePath('work', locale)}>{t('nav.work', locale)}</a> / {project.title}</p>
       <h1 class="case__title display">{project.title}</h1>
-      <p class="case__summary">{project.summary}</p>
+      {new SafeHtml(summaryHtml)}
       <ul class="case__pills" role="list">{new SafeHtml(pills)}</ul>
     </header>
-    <div class="container">{new SafeHtml(cover)}</div>
+    {new SafeHtml(cover)}
     {new SafeHtml(metricsHtml)}
     {new SafeHtml(timelineHtml)}
     {new SafeHtml(detailsHtml)}

@@ -71,7 +71,7 @@ const tenant = process.env.CENTAUR_TENANT_SLUG ?? ''
     font-weight: 700;
     cursor: pointer;
   }
-  & .contact-form__submit:disabled {
+  & .contact-form__submit[aria-disabled='true'] {
     opacity: 0.6;
     cursor: progress;
   }

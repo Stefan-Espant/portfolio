@@ -5,9 +5,10 @@ type Props = { post: Post, locale: Locale, headingLevel?: 2 | 3 }
 const { post, locale, headingLevel = 3 } = $$props
 const heading = new SafeHtml(headingLevel === 2 ? 'h2' : 'h3')
 const title = renderTemplate`<${heading} class="post-card__title">${post.title}</${heading}>`
+const date = post.publishedAt ? renderTemplate`<time class="post-card__date" datetime="${post.publishedAt}">${formatDate(post.publishedAt, locale)}</time>` : ''
 ---
 <a class="post-card" href={localePath('post', locale, post.slug)}>
-  <time class="post-card__date" datetime={post.publishedAt}>{formatDate(post.publishedAt, locale)}</time>
+  {new SafeHtml(date)}
   {new SafeHtml(title)}
   <p class="post-card__excerpt">{post.excerpt}</p>
 </a>

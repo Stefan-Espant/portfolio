@@ -9,6 +9,7 @@ if (!post) throw new Error(`Blogpost "${slug}" (${locale}) staat niet (gepublice
 const alternates = await postAlternates(post)
 const tags = post.tags.length ? `<ul class="post__tags" role="list">${post.tags.map(tag => renderTemplate`<li>${tag}</li>`).join('')}</ul>` : ''
 const cover = post.cover ? renderTemplate`<img class="post__cover" src="${post.cover}" alt="${post.coverAlt}" decoding="async">` : ''
+const date = post.publishedAt ? renderTemplate`<time class="post__date" datetime="${post.publishedAt}">${formatDate(post.publishedAt, locale)}</time>` : ''
 ---
 <Layout title={post.title} description={post.excerpt} path={localePath('post', locale, post.slug)} locale={locale} alternates={alternates} current="blog">
   <main id="main" class="post container">
@@ -16,7 +17,7 @@ const cover = post.cover ? renderTemplate`<img class="post__cover" src="${post.c
       <header class="post__header">
         <p class="post__crumb"><a href={localePath('blog', locale)}>{t('post.back', locale)}</a></p>
         <h1 class="post__title">{post.title}</h1>
-        <time class="post__date" datetime={post.publishedAt}>{formatDate(post.publishedAt, locale)}</time>
+        {new SafeHtml(date)}
         {new SafeHtml(tags)}
       </header>
       {new SafeHtml(cover)}

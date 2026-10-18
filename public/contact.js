@@ -9,15 +9,21 @@ document.querySelectorAll('[data-contact-form]').forEach(function (root) {
 
   form.addEventListener('submit', function (event) {
     event.preventDefault()
-    if (sending || !form.reportValidity()) return
+    if (sending) return
+    // Alleen-spaties mag niet door `required` komen.
+    form.querySelectorAll('input, textarea').forEach(function (input) {
+      if (input.name === 'naam' || input.name === 'email' || input.name === 'bericht') input.value = input.value.trim()
+    })
+    if (!form.reportValidity()) return
     var data = new FormData(form)
     var fields = {
       naam: String(data.get('naam') || '').trim(),
       email: String(data.get('email') || '').trim(),
       bericht: String(data.get('bericht') || '').trim()
     }
+    var signal = typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function' ? AbortSignal.timeout(8000) : undefined
     sending = true
-    button.disabled = true
+    button.setAttribute('aria-disabled', 'true')
     button.textContent = root.dataset.sending
     status.textContent = ''
     delete status.dataset.state
@@ -26,7 +32,7 @@ document.querySelectorAll('[data-contact-form]').forEach(function (root) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-Tenant-Slug': root.dataset.tenant },
       body: JSON.stringify({ pageSlug: 'contact', formTitle: 'Contact portfolio', fields: fields }),
-      signal: AbortSignal.timeout(8000)
+      signal: signal
     })
       .then(function (response) {
         if (!response.ok) throw new Error('Status ' + response.status)
@@ -40,7 +46,7 @@ document.querySelectorAll('[data-contact-form]').forEach(function (root) {
       })
       .finally(function () {
         sending = false
-        button.disabled = false
+        button.removeAttribute('aria-disabled')
         button.textContent = root.dataset.send
       })
   })

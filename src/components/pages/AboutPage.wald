@@ -8,13 +8,19 @@ type Props = { locale: Locale }
 const { locale } = $$props
 const [experience, skills, repos] = await Promise.all([getExperience(locale), getSkills(locale), getRecentRepos()])
 
-const experienceItems = experience.map(item => renderTemplate`
+const experienceItems = experience.map(item => {
+  const range = item.start && item.end
+    ? `${formatMonth(item.start, locale)} – ${formatMonth(item.end, locale)}`
+    : item.start ? `${formatMonth(item.start, locale)} – ${t('about.present', locale)}` : ''
+  const meta = [range, t(`about.kind.${item.kind}` as MessageKey, locale)].filter(Boolean).join(' · ')
+  return renderTemplate`
   <li class="about__job">
-    <p class="about__job-meta">${formatMonth(item.start, locale)} – ${item.end ? formatMonth(item.end, locale) : t('about.present', locale)} · ${t(`about.kind.${item.kind}` as MessageKey, locale)}</p>
+    <p class="about__job-meta">${meta}</p>
     <h3 class="about__job-role">${item.role}</h3>
     ${new SafeHtml(item.organisation ? renderTemplate`<p class="about__job-org">${item.organisation}</p>` : '')}
     <div class="about__job-text">${new SafeHtml(item.descriptionHtml)}</div>
-  </li>`).join('')
+  </li>`
+}).join('')
 const experienceHtml = experience.length
   ? renderTemplate`<section class="about__section" aria-labelledby="experience-title"><h2 class="about__section-title display" id="experience-title">${t('about.experience', locale)}</h2><ol class="about__jobs" role="list">${new SafeHtml(experienceItems)}</ol></section>`
   : ''

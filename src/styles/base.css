@@ -1,6 +1,9 @@
 *, *::before, *::after { box-sizing: border-box; }
 * { margin: 0; }
 
+/* Het hidden-attribuut wint altijd van display-regels in componenten. */
+[hidden] { display: none !important; }
+
 html { -webkit-text-size-adjust: 100%; }
 
 body {
