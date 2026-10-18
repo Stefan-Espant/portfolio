@@ -1147,7 +1147,7 @@ const latest = posts.slice(0, 6)
 const blogHtml = latest.length
   ? await HScroll.render({ id: 'latest-posts', title: t('home.blog', locale), items: await Promise.all(latest.map(post => PostCard.render({ post, locale }))) })
   : ''
-const statusHtml = status ? await Availability.render({ status }) : ''
+const statusHtml = status ? await Availability.render({ status, locale }) : ''
 const alternates = { nl: localePath('home', 'nl'), en: localePath('home', 'en') }
 ---
 <Layout title={t('home.title', locale)} fullTitle={true} description={t('home.description', locale)} path={localePath('home', locale)} locale={locale} alternates={alternates}>
@@ -1714,12 +1714,14 @@ const cover = project.cover
 ---
 import ProjectPage from '../../components/pages/ProjectPage.wald'
 import { getProjects } from '../../lib/content'
+type Props = { slug: string }
+const { slug } = $$props
 export async function getStaticPaths() {
   const projects = await getProjects('nl')
   return projects.map(project => ({ params: { slug: project.slug } }))
 }
 ---
-<ProjectPage locale="nl" slug={$$props.slug} />
+<ProjectPage locale="nl" slug={slug} />
 ```
 
 `src/pages/en/work/[slug].wald`:
@@ -1728,12 +1730,14 @@ export async function getStaticPaths() {
 ---
 import ProjectPage from '../../../components/pages/ProjectPage.wald'
 import { getProjects } from '../../../lib/content'
+type Props = { slug: string }
+const { slug } = $$props
 export async function getStaticPaths() {
   const projects = await getProjects('en')
   return projects.map(project => ({ params: { slug: project.slug } }))
 }
 ---
-<ProjectPage locale="en" slug={$$props.slug} />
+<ProjectPage locale="en" slug={slug} />
 ```
 
 - [ ] **Step 5: Controleren**
@@ -2352,7 +2356,7 @@ import { CONTACT_EMAIL, GITHUB_URL } from '../../lib/site'
 type Props = { locale: Locale }
 const { locale } = $$props
 const [status, site] = await Promise.all([getStatus(locale), getSiteSettings()])
-const statusHtml = status ? await Availability.render({ status }) : ''
+const statusHtml = status ? await Availability.render({ status, locale }) : ''
 const channels = ([
   ['E-mail', `mailto:${CONTACT_EMAIL}`],
   ['GitHub', GITHUB_URL],
