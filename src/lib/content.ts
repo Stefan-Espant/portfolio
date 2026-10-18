@@ -14,6 +14,21 @@ const list = (value: unknown): string[] =>
 const rows = (value: unknown): Data[] =>
   Array.isArray(value) ? value.filter((row): row is Data => typeof row === 'object' && row !== null) : []
 
+export interface Metric {
+  label: string
+  value: string
+}
+
+/** Cijfers uit een tekstveld: één per regel, "Label: waarde" (bv. "Lighthouse: 100"). */
+export function parseMetrics(value: unknown): Metric[] {
+  return text(value).split('\n').flatMap(line => {
+    const colon = line.indexOf(':')
+    const label = line.slice(0, colon).trim()
+    const metricValue = line.slice(colon + 1).trim()
+    return colon > 0 && label && metricValue ? [{ label, value: metricValue }] : []
+  })
+}
+
 export interface Localized {
   id: string
   locale: Locale
@@ -53,6 +68,7 @@ export interface Project extends Localized {
   repoUrl: string
   designUrl: string
   npmPackage: string
+  metrics: Metric[]
 }
 
 export function toProject(entry: CentaurEntry): Project | null {
@@ -80,7 +96,8 @@ export function toProject(entry: CentaurEntry): Project | null {
     liveUrl: text(data.live_url),
     repoUrl: text(data.repo_url),
     designUrl: text(data.design_url),
-    npmPackage: text(data.npm_package)
+    npmPackage: text(data.npm_package),
+    metrics: parseMetrics(data.metrics)
   }
 }
 
@@ -155,6 +172,37 @@ export function toSkill(entry: CentaurEntry): Skill | null {
   return { ...base, name, category: text(entry.data.category), order: num(entry.data.order) }
 }
 
+// ── Status en klanten ────────────────────────────────────────────────────────────────────
+
+export interface Status extends Localized {
+  available: boolean
+  text: string
+}
+
+export function toStatus(entry: CentaurEntry): Status | null {
+  const base = localized(entry)
+  const statusText = text(entry.data.text)
+  if (!base || !statusText) return null
+  return { ...base, available: bool(entry.data.available), text: statusText }
+}
+
+export interface Client extends Localized {
+  name: string
+  logo: string
+  url: string
+  quote: string
+  quoteAuthor: string
+  order: number
+}
+
+export function toClient(entry: CentaurEntry): Client | null {
+  const base = localized(entry)
+  const data = entry.data
+  const name = text(data.name)
+  if (!base || !name) return null
+  return { ...base, name, logo: text(data.logo), url: text(data.url), quote: text(data.quote), quoteAuthor: text(data.quote_author), order: num(data.order) }
+}
+
 // ── Locale-helpers ───────────────────────────────────────────────────────────────────────
 
 export function forLocale<T extends Localized>(items: T[], locale: Locale): T[] {
@@ -186,10 +234,21 @@ function load<T extends Localized>(collection: string, map: (entry: CentaurEntry
   if (!loaded.has(collection)) {
     const promise = (async () => {
       const items: T[] = []
+      const slugs = new Set<string>()
       for (const entry of await getCollection(collection)) {
         const item = map(entry)
-        if (item) items.push(item)
-        else console.warn(`⚠ ${collection}: entry ${entry.id} mist verplichte velden en wordt overgeslagen`)
+        if (!item) {
+          console.warn(`⚠ ${collection}: entry ${entry.id} mist verplichte velden en wordt overgeslagen`)
+          continue
+        }
+        // Twee entries met dezelfde slug in één taal zouden dezelfde URL krijgen.
+        const slugKey = `${item.locale}:${item.slug}`
+        if (item.slug && slugs.has(slugKey)) {
+          console.warn(`⚠ ${collection}: slug "${item.slug}" (${item.locale}) komt meerdere keren voor; entry ${entry.id} wordt overgeslagen`)
+          continue
+        }
+        slugs.add(slugKey)
+        items.push(item)
       }
       for (const { translationKey, missing } of missingTranslations(items)) {
         console.warn(`⚠ ${collection}: "${translationKey}" heeft geen vertaling in ${missing.join(', ')}`)
@@ -253,11 +312,28 @@ export async function postAlternates(post: Post): Promise<Partial<Record<Locale,
   )
 }
 
+const loadExperience = () => load('ervaring', toExperience)
+const loadSkills = () => load('skills', toSkill)
+
 export async function getExperience(locale: Locale): Promise<Experience[]> {
-  return forLocale(await load('ervaring', toExperience), locale).sort((a, b) => b.start.localeCompare(a.start))
+  return forLocale(await loadExperience(), locale).sort((a, b) => b.start.localeCompare(a.start))
 }
 
 export async function getSkills(locale: Locale): Promise<Skill[]> {
-  return forLocale(await load('skills', toSkill), locale)
+  return forLocale(await loadSkills(), locale)
     .sort((a, b) => a.category.localeCompare(b.category) || rank(a.order) - rank(b.order))
+}
+
+export async function getOtherProjects(locale: Locale): Promise<Project[]> {
+  return (await getProjects(locale)).filter(project => !project.featured)
+}
+
+/** De beschikbaarheid in deze taal, of null als er (nog) geen entry is. */
+export async function getStatus(locale: Locale): Promise<Status | null> {
+  return forLocale(await load('status', toStatus), locale)[0] ?? null
+}
+
+export async function getClients(locale: Locale): Promise<Client[]> {
+  return forLocale(await load('klanten', toClient), locale)
+    .sort((a, b) => rank(a.order) - rank(b.order) || a.name.localeCompare(b.name))
 }

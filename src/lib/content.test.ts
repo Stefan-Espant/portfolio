@@ -56,7 +56,8 @@ describe('toProject', () => {
       liveUrl: 'https://waldjs.eu',
       repoUrl: 'https://github.com/Stefan-Espant/WaldJS',
       designUrl: '',
-      npmPackage: '@waldjs/cli'
+      npmPackage: '@waldjs/cli',
+      metrics: []
     })
   })
 
