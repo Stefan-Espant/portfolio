@@ -4,6 +4,8 @@
 import { intro } from './intro.js'
 import { parallax, torch } from './ambient.js'
 import { bento, chars } from './reveal.js'
+import { marquee } from './marquee.js'
+import { counts } from './count.js'
 
 const root = document.documentElement
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -27,6 +29,8 @@ if (reduced || !gsap || !ScrollTrigger || !SplitText) {
       if (finePointer) torch(gsap)
       chars(gsap, SplitText)
       bento(gsap, finePointer)
+      marquee(gsap, ScrollTrigger)
+      counts(gsap)
       // Effecten worden in de volgende taken hier aangeroepen.
       ScrollTrigger.refresh()
     } catch (error) {
