@@ -67,5 +67,29 @@ const count = String(items.length).padStart(2, '0')
     transform-origin: left;
     transform: scaleX(0);
   }
+
+  /* Gepinde stand op desktop (motion.js zet .is-pinned). */
+  &.is-pinned {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: center;
+    overflow: hidden;
+  }
+  /* Automatische marges in een grid laten de container krimpen; daarom expliciet 100%. */
+  &.is-pinned .hscroll__head {
+    width: 100%;
+  }
+  &.is-pinned .hscroll__counter,
+  &.is-pinned .hscroll__progress {
+    display: block;
+  }
+  &.is-pinned .hscroll__track {
+    justify-self: start;
+    width: max-content;
+    overflow: visible;
+    scroll-snap-type: none;
+    will-change: transform;
+  }
 }
 </style>

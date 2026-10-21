@@ -81,5 +81,80 @@ const list = steps.map((step, index) => renderTemplate`
   & .timeline__text > * + * {
     margin-top: var(--space-3);
   }
+
+  /* Horizontale tijdlijn op desktop (motion.js zet .is-horizontal en .is-active per stap). */
+  &.is-horizontal {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: center;
+    overflow: hidden;
+  }
+  &.is-horizontal > .container {
+    width: 100%;
+  }
+  &.is-horizontal .timeline__body {
+    justify-self: start;
+    width: max-content;
+    max-width: none;
+    margin-top: var(--space-12);
+    will-change: transform;
+  }
+  &.is-horizontal .timeline__track {
+    display: flex;
+    gap: 0;
+    padding: 0;
+  }
+  &.is-horizontal .timeline__step {
+    width: min(78vw, 44rem);
+    padding-right: var(--space-24);
+  }
+  &.is-horizontal .timeline__num {
+    height: 7rem;
+    font-size: 7rem;
+    color: transparent;
+    -webkit-text-stroke: 1.5px #4a5266;
+    transition: color 0.4s, -webkit-text-stroke-color 0.4s;
+  }
+  &.is-horizontal .timeline__line {
+    top: 8rem;
+    bottom: auto;
+    left: 0;
+    right: 0;
+    width: auto;
+    height: 2px;
+    background: var(--border);
+  }
+  &.is-horizontal .timeline__line i {
+    display: block;
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    transform-origin: left;
+    transform: scaleX(0);
+  }
+  &.is-horizontal .timeline__dot {
+    top: calc(8rem - 9px);
+    left: 0;
+    border: 2px solid #4a5266;
+    background: var(--bg);
+    transition: background 0.4s, border-color 0.4s;
+  }
+  &.is-horizontal .timeline__step-title {
+    margin-top: var(--space-12);
+    color: var(--text-muted);
+    transition: color 0.4s;
+  }
+  &.is-horizontal .timeline__step.is-active .timeline__num {
+    color: var(--accent);
+    -webkit-text-stroke-color: transparent;
+  }
+  &.is-horizontal .timeline__step.is-active .timeline__dot {
+    border-color: var(--accent);
+    background: var(--accent);
+  }
+  &.is-horizontal .timeline__step.is-active .timeline__step-title {
+    color: var(--text);
+  }
 }
 </style>
