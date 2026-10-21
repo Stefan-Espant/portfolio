@@ -7,6 +7,7 @@ import { bento, chars } from './reveal.js'
 import { marquee } from './marquee.js'
 import { counts } from './count.js'
 import { hscroll, timeline } from './scroll.js'
+import { transitions } from './transition.js'
 
 const root = document.documentElement
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -34,7 +35,7 @@ if (reduced || !gsap || !ScrollTrigger || !SplitText) {
       counts(gsap)
       hscroll(gsap)
       timeline(gsap)
-      // Effecten worden in de volgende taken hier aangeroepen.
+      transitions(gsap)
       ScrollTrigger.refresh()
     } catch (error) {
       // Een fout in een effect mag de inhoud nooit verborgen laten.
