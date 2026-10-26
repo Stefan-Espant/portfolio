@@ -46,9 +46,11 @@ const inlineCss = `<style data-wald-no-hoist>${['src/styles/fonts.css', 'src/sty
   .map(file => readFileSync(file, 'utf8')).join('\n').replace(/<\//g, '<\\/')}</style>`
 
 // Beweging (plan 3). Het inline script zet vóór de eerste paint `motion` op <html> (alleen de
-// home-intro wacht daarop) en `is-arriving` als de vorige pagina met de wipe vertrok. Start het
-// motion-script niet binnen 3 s, dan gaan beide classes eraf: inhoud blijft nooit onzichtbaar.
-const motionHead = `<script data-wald-no-hoist>(function(){var d=document.documentElement;if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;d.classList.add('motion');try{if(sessionStorage.getItem('wipe')==='1'){d.classList.add('is-arriving');sessionStorage.removeItem('wipe')}}catch(e){}setTimeout(function(){if(!window.__motionReady)d.classList.remove('motion','is-arriving')},3000)})()</script>
+// home-intro wacht daarop) en `is-arriving` als de vorige pagina minder dan 5 s geleden met de wipe
+// vertrok. De wipe-vlag wordt altijd gelezen en gewist, ook bij reduced motion. Start het
+// motion-script niet binnen 1,5 s, dan gaat `is-arriving` eraf; na 3 s ook `motion`:
+// inhoud blijft nooit onzichtbaar.
+const motionHead = `<script data-wald-no-hoist>(function(){var d=document.documentElement;try{var w=Number(sessionStorage.getItem('wipe'));sessionStorage.removeItem('wipe')}catch(e){}if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;d.classList.add('motion');if(w&&Date.now()-w<5000)d.classList.add('is-arriving');setTimeout(function(){if(!window.__motionReady)d.classList.remove('is-arriving')},1500);setTimeout(function(){if(!window.__motionReady)d.classList.remove('motion','is-arriving')},3000)})()</script>
     <script src="/vendor/gsap.min.js" defer data-wald-no-hoist></script>
     <script src="/vendor/ScrollTrigger.min.js" defer data-wald-no-hoist></script>
     <script src="/vendor/SplitText.min.js" defer data-wald-no-hoist></script>
@@ -71,7 +73,6 @@ const footer = await Footer.render({ locale })
   </head>
   <body>
     <a class="skip-link" href="#main">{t('skip', locale)}</a>
-    <div class="torch" aria-hidden="true"></div>
     <img
       class="stone"
       src="/images/stone/stone-dark-1400.webp"
@@ -81,6 +82,7 @@ const footer = await Footer.render({ locale })
       decoding="async"
       data-motion="parallax"
     />
+    <div class="torch" aria-hidden="true"></div>
     {new SafeHtml(nav)}
     {pond}
     {new SafeHtml(footer)}

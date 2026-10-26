@@ -5,8 +5,8 @@ export function marquee(gsap, ScrollTrigger) {
     const track = band.querySelector('.marquee__track')
     if (!track) return
     const loop = gsap.to(track, { xPercent: -100 / 3, duration: 24, ease: 'none', repeat: -1, paused: true })
-    // Ver vooruit beginnen, zodat achteruit lopen (omhoog scrollen) nooit tegen het begin stuit.
-    loop.totalTime(loop.duration() * 1000)
+    // 100 loops vooruit beginnen, zodat achteruit lopen (omhoog scrollen) nooit tegen het begin stuit.
+    loop.totalTime(loop.duration() * 100)
     const speed = { value: 1 }
     const apply = () => loop.timeScale(speed.value)
     ScrollTrigger.create({

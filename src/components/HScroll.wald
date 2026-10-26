@@ -70,11 +70,11 @@ const count = String(items.length).padStart(2, '0')
 
   /* Gepinde stand op desktop (motion.js zet .is-pinned). */
   &.is-pinned {
-    min-height: 100vh;
+    min-height: 100svh;
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     align-content: center;
-    overflow: hidden;
+    overflow: clip;
   }
   /* Automatische marges in een grid laten de container krimpen; daarom expliciet 100%. */
   &.is-pinned .hscroll__head {

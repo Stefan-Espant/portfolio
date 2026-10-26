@@ -39,6 +39,8 @@ if (reduced || !gsap || !ScrollTrigger || !SplitText) {
       ScrollTrigger.refresh()
     } catch (error) {
       // Een fout in een effect mag de inhoud nooit verborgen laten.
+      // Halverwege een effect kan inhoud op opacity 0 staan: alles terugzetten.
+      gsap.set('[data-motion="intro"] > *, .wipe, .wipe__logo', { clearProps: 'all' })
       stop()
       console.error(error)
     } finally {

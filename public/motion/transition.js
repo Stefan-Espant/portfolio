@@ -1,6 +1,7 @@
 // Pagina-overgang (spec: Motion #7): bij een interne link schuift een donker vlak met het saffraan logo
 // omhoog; op de nieuwe pagina schuift het weer weg (het inline script in <head> zet `is-arriving`).
 export function transitions(gsap) {
+  let leaving = false
   const root = document.documentElement
   const wipe = document.querySelector('.wipe')
   if (!wipe) return
@@ -25,9 +26,11 @@ export function transitions(gsap) {
     if (url.pathname === location.pathname && url.hash) return // anker op dezelfde pagina (o.a. de skip-link)
     if (/\.[a-z0-9]{2,5}$/i.test(url.pathname)) return // bestanden zoals de cv-pdf
     event.preventDefault()
+    if (leaving) return
+    leaving = true
     gsap.timeline({
       onComplete: () => {
-        try { sessionStorage.setItem('wipe', '1') } catch { /* privémodus: dan zonder wipe-uit */ }
+        try { sessionStorage.setItem('wipe', String(Date.now())) } catch { /* privémodus: dan zonder wipe-uit */ }
         location.href = url.href
       }
     })
@@ -38,6 +41,9 @@ export function transitions(gsap) {
 
   // Terug-knop (bfcache): de pagina komt terug zoals hij vertrok, dus de wipe opruimen.
   addEventListener('pageshow', event => {
-    if (event.persisted) gsap.set([wipe, logo], { clearProps: 'all' })
+    if (!event.persisted) return
+    leaving = false
+    try { sessionStorage.removeItem('wipe') } catch { /* privémodus */ }
+    gsap.set([wipe, logo], { clearProps: 'all' })
   })
 }

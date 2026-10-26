@@ -84,11 +84,11 @@ const list = steps.map((step, index) => renderTemplate`
 
   /* Horizontale tijdlijn op desktop (motion.js zet .is-horizontal en .is-active per stap). */
   &.is-horizontal {
-    min-height: 100vh;
+    min-height: 100svh;
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     align-content: center;
-    overflow: hidden;
+    overflow: clip;
   }
   &.is-horizontal > .container {
     width: 100%;
@@ -113,7 +113,7 @@ const list = steps.map((step, index) => renderTemplate`
     height: 7rem;
     font-size: 7rem;
     color: transparent;
-    -webkit-text-stroke: 1.5px #4a5266;
+    -webkit-text-stroke: 1.5px #6b7386;
     transition: color 0.4s, -webkit-text-stroke-color 0.4s;
   }
   &.is-horizontal .timeline__line {
@@ -136,7 +136,7 @@ const list = steps.map((step, index) => renderTemplate`
   &.is-horizontal .timeline__dot {
     top: calc(8rem - 9px);
     left: 0;
-    border: 2px solid #4a5266;
+    border: 2px solid #6b7386;
     background: var(--bg);
     transition: background 0.4s, border-color 0.4s;
   }

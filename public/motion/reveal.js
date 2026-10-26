@@ -4,7 +4,7 @@
 export function chars(gsap, SplitText) {
   // Alleen sectiekopjes, geen projecttitels in kaarten (die staan in een link).
   gsap.utils.toArray('h2.display').filter(title => !title.closest('a')).forEach(title => {
-    const split = SplitText.create(title, { type: 'chars', mask: 'chars' })
+    const split = SplitText.create(title, { type: 'words,chars', mask: 'chars' })
     gsap.from(split.chars, {
       yPercent: 100,
       rotate: 6,
