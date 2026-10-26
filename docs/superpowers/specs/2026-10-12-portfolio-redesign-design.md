@@ -190,7 +190,7 @@ Ruimte op een 4px-basis, radius 8px (kaarten) en 12px (grote panelen). Bento-gri
 
 ## Motion
 
-Alle GSAP-code staat in `public/motion.js`. GSAP, ScrollTrigger en SplitText komen uit het npm-pakket `gsap` en worden door `wald.config.ts` naar `public/vendor/` gekopieerd (zoals bij Steva's Kookboek), en met `defer` geladen. Elementen kiezen een effect via `data-motion="<naam>"`.
+Alle GSAP-code staat in kleine ES-modules in `public/motion/` (gestart vanuit `index.js`, effecten in een try/catch zodat een fout nooit inhoud verborgen laat); pure rekenhulpjes in `utils.js` zijn getest. GSAP, ScrollTrigger en SplitText komen uit het npm-pakket `gsap` en worden door `wald.config.ts` naar `public/vendor/` gekopieerd (zoals bij Steva's Kookboek), en met `defer` geladen. Elementen kiezen een effect via `data-motion="<naam>"`.
 
 | # | Effect | Element | Gedrag |
 |---|---|---|---|
@@ -216,7 +216,7 @@ Vastgesteld na een demo die zichtbaar haperde:
 - `ScrollTrigger.config({ ignoreMobileResize: true })`.
 - Muis-effecten (torch, tilt) alleen bij `(pointer: fine)`.
 
-**Reduced motion:** bij `prefers-reduced-motion: reduce` stopt `motion.js` direct en blijft alle content statisch en zichtbaar; de intro-kop staat dan direct op `wght` 700. Ook View Transitions en de pulserende beschikbaarheidsstip staan dan uit. Elementen worden nooit met CSS verborgen in afwachting van JavaScript. GSAP gebruikt `gsap.from` met `clearProps`.
+**Reduced motion:** bij `prefers-reduced-motion: reduce` stopt `motion.js` direct en blijft alle content statisch en zichtbaar; de intro-kop staat dan direct op `wght` 700. Ook View Transitions en de pulserende beschikbaarheidsstip staan dan uit. Alleen de home-intro wordt kort verborgen tot het motion-script start (class `motion` op `<html>`, gezet door een inline script); start het script niet binnen 3 seconden, dan wordt de class weggehaald. De donkere wipe bij aankomst (`is-arriving`) heeft een eigen vangnet van 1,5 seconde en geldt alleen als de vorige pagina minder dan 5 seconden geleden vertrok. Zonder JavaScript of bij reduced motion wordt niets verborgen. Gepinde secties gebruiken `overflow: clip`, zodat toetsenbordfocus de opmaak niet verschuift. GSAP gebruikt `gsap.from` met `clearProps`.
 
 ## Extra's
 

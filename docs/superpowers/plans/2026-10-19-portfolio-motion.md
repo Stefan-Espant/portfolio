@@ -952,3 +952,16 @@ git commit -m "docs: record motion module layout and intro fail-safe in spec"
 - [ ] **Step 5: Overdracht aan Stefan**
 
 Laat Stefan in zijn eigen browser (http://localhost:4321/) controleren: intro op de home, lichtbundel, kopjes per letter, tilt op de bento (zodra een project `featured` is), marquee bij snel en omhoog scrollen, de gepinde strook "Ander werk", de tijdlijn op een case study met Probleem/Aanpak/Resultaat-tekst, de pagina-overgang, en dat het soepel blijft (FPS).
+
+
+---
+
+## Uitvoeringsnotities (2026-10-26)
+
+Uitgevoerd met subagents; Task 1–7 samen gereviewd. Afwijkingen ten opzichte van de code hierboven:
+
+- **Task 1:** testinvoer `activeSteps(0.9, 3)` → `0.93` (met de formule gaat de laatste stap aan bij 0,925).
+- **Task 2/3:** `window.__motionReady` wordt pas in `finally` gezet en alle effecten staan in een `try/catch`; bij een fout worden intro- en wipe-eigenschappen teruggezet en de classes verwijderd.
+- **Task 4:** `chars()` slaat titels in links over (projectkaarten op /werk zijn ook `h2.display`) en splitst op `words,chars`.
+- **Review:** lichtbundel na de steen in de DOM (stond eronder); `overflow: clip` en `100svh` voor gepinde secties; lichtere grijstint (`#6b7386`) voor inactieve tijdlijnstappen; dubbelklik-bescherming en tijdstempel-vlag voor de wipe (alleen geldig binnen 5 s, eigen vangnet van 1,5 s); marquee start 100 loops vooruit.
+- **Niet automatisch te controleren:** headless Chrome speelt GSAP niet betrouwbaar af. Bewegingscheck door Stefan in de browser; de tijdlijn is pas te zien zodra een case study Probleem/Aanpak/Resultaat-tekst heeft.
