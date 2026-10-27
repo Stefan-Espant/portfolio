@@ -70,6 +70,12 @@ const meta = [t(`type.${project.type}` as MessageKey, locale), project.year ? St
   &[data-size='large'] .project-card__title {
     font-size: var(--text-xl);
   }
+  /* De grote bento-kaart is twee rijen hoog: de cover vult de vrije ruimte, geen leeg vlak eronder. */
+  &[data-size='large'] .project-card__cover {
+    flex: 1;
+    min-height: 16rem;
+    aspect-ratio: auto;
+  }
   & .project-card__summary,
   & .project-card__meta {
     margin: 0;
