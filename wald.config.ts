@@ -2,7 +2,8 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, join } from 'node:path'
 import { parseEnv } from 'node:util'
-import { defineConfig, vercelAdapter } from '@waldjs/cli'
+import { defineAdapter, defineConfig, vercelAdapter } from '@waldjs/cli'
+import { writeExtras } from './src/build/extras'
 
 // GSAP met ScrollTrigger en SplitText als losse bestanden naast de site (public/vendor staat in
 // .gitignore): de browser cachet ze en ze laden alleen met defer.
@@ -19,6 +20,15 @@ if (existsSync('.env')) {
   for (const [key, value] of Object.entries(env)) process.env[key] ??= value
 }
 
+// De Vercel-adapter, met eerst de extra's (RSS, build-strip, social-afbeeldingen) op de gebouwde output.
+const vercel = vercelAdapter()
 export default defineConfig({
-  adapter: vercelAdapter()
+  adapter: defineAdapter({
+    name: vercel.name,
+    outDir: vercel.outDir,
+    async adapt(context) {
+      await writeExtras(context)
+      await vercel.adapt?.(context)
+    }
+  })
 })

@@ -23,6 +23,10 @@ const langSwitch = renderTemplate`<a class="nav__pill nav__lang" href="${langSwi
     <ul class="nav__list" role="list">{new SafeHtml(items)}</ul>
   </nav>
   <div class="nav__tools">
+    <button class="nav__pill nav__search" type="button" data-palette-open aria-label={t('palette.open', locale)} aria-keyshortcuts="Meta+K Control+K" hidden>
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.6"/><path d="m11 11 3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <kbd class="nav__kbd">⌘K</kbd>
+    </button>
     {new SafeHtml(langSwitch)}
     <button class="nav__pill nav__theme" type="button" data-theme-toggle aria-pressed="false" aria-label={t('theme.label', locale)} hidden>
       <span class="nav__moon" aria-hidden="true">☾</span><span class="nav__sun" aria-hidden="true">☀</span>
@@ -127,8 +131,24 @@ const langSwitch = renderTemplate`<a class="nav__pill nav__lang" href="${langSwi
     padding: 0;
     font-size: 1rem;
   }
-  & .nav__theme[hidden] {
+  & .nav__theme[hidden],
+  & .nav__search[hidden] {
     display: none;
+  }
+  & .nav__search {
+    display: flex;
+    gap: var(--space-2);
+  }
+  & .nav__kbd {
+    display: none;
+    font: inherit;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+  @media (min-width: 64rem) {
+    & .nav__kbd {
+      display: inline;
+    }
   }
   & .nav__sun {
     display: none;

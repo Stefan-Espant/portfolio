@@ -362,3 +362,10 @@ export async function getClients(locale: Locale): Promise<Client[]> {
   return forLocale(await load('klanten', toClient), locale)
     .sort((a, b) => rank(a.order) - rank(b.order) || a.name.localeCompare(b.name))
 }
+
+/** Datum (ISO) van de laatst gewijzigde entry in alle collecties; leeg als er niets is. Voor de build-strip. */
+export async function getLastContentUpdate(): Promise<string> {
+  const collections = ['projecten', 'blog', 'ervaring', 'skills', 'status', 'klanten']
+  const entries = (await Promise.all(collections.map(collection => getCollection(collection)))).flat()
+  return entries.map(entry => entry.updatedAt).filter(Boolean).sort().at(-1) ?? ''
+}

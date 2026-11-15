@@ -1,10 +1,12 @@
 ---
 import Nav from '../components/Nav.wald'
 import Footer from '../components/Footer.wald'
+import CommandPalette from '../components/CommandPalette.wald'
 import { readFileSync } from 'node:fs'
 import { getSiteSettings } from '../lib/cms'
 import { t, type Locale } from '../lib/i18n'
 import { absoluteUrl } from '../lib/site'
+import { feedPath, ogImagePath } from '../lib/extras'
 type Props = {
   title: string
   /** true: titel zoals hij is, zonder " — Steefan" (de home). */
@@ -37,6 +39,12 @@ const headTags = [
   description ? renderTemplate`<meta property="og:description" content="${description}">` : '',
   renderTemplate`<meta property="og:url" content="${canonical}">`,
   renderTemplate`<meta property="og:locale" content="${locale === 'nl' ? 'nl_NL' : 'en_GB'}">`,
+  // Social-afbeelding per pagina; src/build/extras.ts maakt het bestand na de build.
+  renderTemplate`<meta property="og:image" content="${absoluteUrl(ogImagePath(path))}">`,
+  '<meta property="og:image:width" content="1200">',
+  '<meta property="og:image:height" content="630">',
+  '<meta name="twitter:card" content="summary_large_image">',
+  renderTemplate`<link rel="alternate" type="application/rss+xml" title="Steefan — blog" href="${absoluteUrl(feedPath(locale))}">`,
   ...hreflang
 ].filter(Boolean).join('\n    ')
 
@@ -65,10 +73,12 @@ const headScript = `<script data-wald-no-hoist>(function(){var d=document.docume
     <script src="/vendor/gsap.min.js" defer data-wald-no-hoist></script>
     <script src="/vendor/ScrollTrigger.min.js" defer data-wald-no-hoist></script>
     <script src="/vendor/SplitText.min.js" defer data-wald-no-hoist></script>
-    <script type="module" src="/motion/index.js" data-wald-no-hoist></script>`
+    <script type="module" src="/motion/index.js" data-wald-no-hoist></script>
+    <script type="module" src="/palette/palette.js" data-wald-no-hoist></script>`
 
 const nav = await Nav.render({ locale, alternates, current })
 const footer = await Footer.render({ locale })
+const palette = await CommandPalette.render({ locale, alternates })
 ---
 <!DOCTYPE html>
 <html lang={locale}>
@@ -88,5 +98,6 @@ const footer = await Footer.render({ locale })
     {new SafeHtml(nav)}
     {pond}
     {new SafeHtml(footer)}
+    {new SafeHtml(palette)}
   </body>
 </html>
