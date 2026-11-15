@@ -4,61 +4,85 @@ import ContactForm from '../ContactForm.wald'
 import Availability from '../Availability.wald'
 import { getStatus } from '../../lib/content'
 import { getSiteSettings } from '../../lib/cms'
-import { localePath, t, type Locale } from '../../lib/i18n'
+import { accent, localePath, t, type Locale } from '../../lib/i18n'
 import { CONTACT_EMAIL, GITHUB_URL } from '../../lib/site'
 type Props = { locale: Locale }
 const { locale } = $$props
 const [status, site] = await Promise.all([getStatus(locale), getSiteSettings()])
 const statusHtml = status ? await Availability.render({ status, locale }) : ''
 const channels = ([
-  ['E-mail', `mailto:${CONTACT_EMAIL}`],
   ['GitHub', GITHUB_URL],
   ['LinkedIn', site?.linkedIn ?? ''],
   ['Instagram', site?.instagram ?? '']
 ] as Array<[string, string]>).filter(([, href]) => href)
-  .map(([label, href]) => renderTemplate`<li><a href="${href}" rel="noopener">${label} ↗</a></li>`).join('')
+  .map(([label, href]) => renderTemplate`<li><a class="contact__big" href="${href}" rel="noopener">${label} ↗</a></li>`).join('')
 const alternates = { nl: localePath('contact', 'nl'), en: localePath('contact', 'en') }
 ---
 <Layout title={t('contact.title', locale)} description={t('contact.description', locale)} path={localePath('contact', locale)} locale={locale} alternates={alternates} current="contact">
-  <main id="main" class="contact container">
-    <h1 class="contact__title">{t('contact.heading', locale)}</h1>
-    <p class="contact__lead">{t('contact.lead', locale)}</p>
-    <div class="contact__status">{new SafeHtml(statusHtml)}</div>
-    <ContactForm locale={locale} />
-    <h2 class="contact__other display">{t('contact.other', locale)}</h2>
-    <ul class="contact__channels" role="list">{new SafeHtml(channels)}</ul>
+  <main id="main" class="contact">
+    <header class="page-head container" data-motion="intro">
+      {new SafeHtml(statusHtml)}
+      <h1 class="page-title">{new SafeHtml(accent(t('contact.heading', locale)))}</h1>
+      <p class="lead">{t('contact.lead', locale)}</p>
+    </header>
+    <div class="container contact__grid" data-motion="rise">
+      <ContactForm locale={locale} />
+      <aside class="contact__side">
+        <div class="card contact__card">
+          <p class="label">{t('contact.mail', locale)}</p>
+          <a class="contact__big" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+        </div>
+        <div class="card contact__card">
+          <p class="label">{t('contact.other', locale)}</p>
+          <ul class="contact__channels" role="list">{new SafeHtml(channels)}</ul>
+        </div>
+        <div class="card contact__card">
+          <p class="label">{t('contact.code', locale)}</p>
+          <p class="contact__muted">{t('contact.codeText', locale)} <code>npm create wald</code>.</p>
+        </div>
+      </aside>
+    </div>
   </main>
   <script src="/contact.js" defer data-wald-no-hoist></script>
 </Layout>
 
 <style>
 .contact {
-  padding-block: var(--space-16);
+  & .contact__grid {
+    display: grid;
+    gap: var(--space-4);
+    align-items: start;
 
-  & .contact__title {
-    font-size: var(--text-2xl);
+    @media (min-width: 56rem) {
+      grid-template-columns: 1.4fr 1fr;
+    }
   }
-  & .contact__lead {
-    margin-top: var(--space-4);
-    max-width: 46ch;
-    color: var(--text-muted);
-    font-size: var(--text-lg);
+  & .contact__side {
+    display: grid;
+    gap: var(--space-4);
   }
-  & .contact__status {
-    margin-block: var(--space-6) var(--space-8);
+  & .contact__card {
+    display: grid;
+    gap: var(--space-2);
+    padding: 1.625rem;
   }
-  & .contact__other {
-    margin-top: var(--space-16);
-    font-size: var(--text-xl);
+  & .contact__big {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 600;
+    font-stretch: 85%;
+    letter-spacing: -0.03em;
+    text-decoration: none;
+    overflow-wrap: anywhere;
   }
   & .contact__channels {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-3) var(--space-8);
-    margin: var(--space-4) 0 0;
-    padding: 0;
+    gap: var(--space-2) var(--space-6);
     list-style: none;
-    font-family: var(--font-mono);
+  }
+  & .contact__muted {
+    color: var(--muted);
   }
 }
 </style>

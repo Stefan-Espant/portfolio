@@ -2,42 +2,38 @@
 import Layout from '../../layouts/Layout.wald'
 import PostCard from '../PostCard.wald'
 import { getPosts } from '../../lib/content'
-import { localePath, t, type Locale } from '../../lib/i18n'
+import { accent, localePath, t, type Locale } from '../../lib/i18n'
 type Props = { locale: Locale }
 const { locale } = $$props
 const posts = await getPosts(locale)
-const cards = await Promise.all(posts.map(async post => `<li>${await PostCard.render({ post, locale, headingLevel: 2 })}</li>`))
+// De nieuwste post staat breed bovenaan.
+const cards = await Promise.all(posts.map(async (post, index) =>
+  `<li class="${index === 0 ? 'blog__item blog__item--featured' : 'blog__item'}">${await PostCard.render({ post, locale, headingLevel: 2, featured: index === 0 })}</li>`))
 const list = posts.length
-  ? `<ul class="blog__grid" role="list">${cards.join('')}</ul>`
-  : renderTemplate`<p class="blog__empty">${t('blog.empty', locale)}</p>`
+  ? `<ul class="blog__grid" role="list" data-motion="rise">${cards.join('')}</ul>`
+  : renderTemplate`<p class="lead">${t('blog.empty', locale)}</p>`
 const alternates = { nl: localePath('blog', 'nl'), en: localePath('blog', 'en') }
 ---
 <Layout title={t('blog.title', locale)} description={t('blog.description', locale)} path={localePath('blog', locale)} locale={locale} alternates={alternates} current="blog">
-  <main id="main" class="blog container">
-    <h1 class="blog__title">{t('blog.heading', locale)}</h1>
-    {new SafeHtml(list)}
+  <main id="main" class="blog">
+    <header class="page-head container" data-motion="intro">
+      <h1 class="page-title">{new SafeHtml(accent(t('blog.heading', locale)))}</h1>
+      <p class="lead">{t('blog.lead', locale)}</p>
+    </header>
+    <div class="container">{new SafeHtml(list)}</div>
   </main>
 </Layout>
 
 <style>
 .blog {
-  padding-block: var(--space-16);
-
-  & .blog__title {
-    font-size: var(--text-2xl);
-  }
-  & .blog__empty {
-    margin-top: var(--space-6);
-    color: var(--text-muted);
-    font-size: var(--text-lg);
-  }
   & .blog__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
     gap: var(--space-4);
-    margin: var(--space-8) 0 0;
-    padding: 0;
     list-style: none;
+  }
+  & .blog__item--featured {
+    grid-column: 1 / -1;
   }
 }
 </style>

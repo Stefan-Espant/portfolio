@@ -1,88 +1,110 @@
 ---
 import { localePath, t, type Locale, type MessageKey } from '../lib/i18n'
-import type { Project } from '../lib/content'
+import { transitionName, type Project } from '../lib/content'
 type Props = { project: Project, locale: Locale, headingLevel?: 2 | 3, size?: 'large' | 'normal' }
 const { project, locale, headingLevel = 3, size = 'normal' } = $$props
 const heading = new SafeHtml(headingLevel === 2 ? 'h2' : 'h3')
-const title = renderTemplate`<${heading} class="project-card__title display">${project.title}</${heading}>`
+// Cover en titel schuiven bij de pagina-overgang door naar de case study (zelfde naam daar).
+const title = renderTemplate`<${heading} class="project-card__title" style="view-transition-name: ${transitionName('title', project.slug)}">${project.title}</${heading}>`
 // Decoratief: de titel is de linktekst.
 const cover = project.cover
-  ? renderTemplate`<img class="project-card__cover" src="${project.cover}" alt="" loading="lazy" decoding="async">`
-  : ''
+  ? renderTemplate`<img class="project-card__img" src="${project.cover}" alt="" loading="lazy" decoding="async" style="view-transition-name: ${transitionName('cover', project.slug)}">`
+  : '<span class="project-card__art" aria-hidden="true"></span>'
 const meta = [t(`type.${project.type}` as MessageKey, locale), project.year ? String(project.year) : ''].filter(Boolean).join(' · ')
+const summary = size === 'large' && project.summary ? renderTemplate`<p class="project-card__summary">${project.summary}</p>` : ''
 ---
 <a class="project-card" data-size={size} href={localePath('project', locale, project.slug)}>
-  {new SafeHtml(cover)}
-  <div class="project-card__body">
+  <span class="project-card__cover">{new SafeHtml(cover)}</span>
+  <span class="project-card__body">
     {new SafeHtml(title)}
-    <p class="project-card__summary">{project.summary}</p>
-    <p class="project-card__meta">{meta}</p>
-  </div>
+    <span class="project-card__meta">{meta}</span>
+    {new SafeHtml(summary)}
+  </span>
+  <span class="project-card__arrow" aria-hidden="true">→</span>
 </a>
 
 <style>
 .project-card {
   position: relative;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: 1fr auto;
   height: 100%;
   overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
-  color: var(--text-muted);
-  text-decoration: none;
-  transition: border-color 0.2s var(--ease-out);
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: var(--edge);
 
-  &:hover,
-  &:focus-visible {
-    border-color: var(--accent);
-    color: var(--text-muted);
+  /* De afbeelding staat absoluut: zo bepaalt de kaart (of de bento-cel) de hoogte, niet de foto. */
+  & .project-card__cover {
+    position: relative;
+    display: block;
+    min-height: 0;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--line);
   }
-  /* Lichtvlek onder de cursor (motion.js zet --cx/--cy op bento-kaarten). */
-  &::after {
-    content: '';
+  & .project-card__img,
+  & .project-card__art {
     position: absolute;
     inset: 0;
-    border-radius: inherit;
-    background: radial-gradient(circle 180px at var(--cx, 50%) var(--cy, 50%), rgb(255 176 0 / 0.14), transparent 70%);
-    opacity: 0;
-    transition: opacity 0.3s;
-    pointer-events: none;
-  }
-  &:hover::after {
-    opacity: 1;
-  }
-  & .project-card__cover {
+    display: block;
     width: 100%;
-    aspect-ratio: 16 / 9;
+    height: 100%;
     object-fit: cover;
-    border-bottom: 1px solid var(--border);
+  }
+  & .project-card__art {
+    background: var(--grad);
   }
   & .project-card__body {
-    display: grid;
-    gap: var(--space-2);
-    padding: var(--space-6);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-1) var(--space-3);
+    padding: var(--space-4) 1.125rem;
   }
   & .project-card__title {
-    font-size: var(--text-lg);
+    font-size: 1.375rem;
+    letter-spacing: -0.03em;
+  }
+  & .project-card__meta {
+    color: var(--muted);
+    font-size: var(--text-sm);
+  }
+  & .project-card__summary {
+    flex-basis: 100%;
+    max-width: 52ch;
+    color: var(--muted);
+  }
+  & .project-card__arrow {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: var(--card);
+    opacity: 0;
+    transform: scale(0.6) rotate(-45deg);
+  }
+  /* Toetsenbord (en zonder motion.js): pijl direct tonen. */
+  &:focus-visible .project-card__arrow {
+    opacity: 1;
+    transform: none;
+  }
+  /* In de bento vult de cover de vrije hoogte. */
+  &[data-size='large'] .project-card__cover,
+  .bento & .project-card__cover {
+    aspect-ratio: auto;
+    min-height: 12rem;
   }
   &[data-size='large'] .project-card__title {
     font-size: var(--text-xl);
   }
-  /* De grote bento-kaart is twee rijen hoog: de cover vult de vrije ruimte, geen leeg vlak eronder. */
-  &[data-size='large'] .project-card__cover {
-    flex: 1;
-    min-height: 16rem;
-    aspect-ratio: auto;
-  }
-  & .project-card__summary,
-  & .project-card__meta {
-    margin: 0;
-  }
-  & .project-card__meta {
-    font-family: var(--font-mono);
-    font-size: var(--text-sm);
-  }
+}
+@media (hover: hover) and (prefers-reduced-motion: reduce) {
+  .project-card:hover .project-card__arrow { opacity: 1; transform: none; }
 }
 </style>

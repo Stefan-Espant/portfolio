@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { LOCALES, formatDate, formatMonth, isLocale, langSwitchHref, localePath, otherLocale, t } from './i18n'
+import { LOCALES, MESSAGE_KEYS, accent, formatDate, formatMonth, isLocale, langSwitchHref, localePath, otherLocale, plain, t } from './i18n'
 
 describe('i18n', () => {
   test('ondersteunt nl en en', () => {
@@ -59,8 +59,27 @@ describe('i18n', () => {
   })
 
   test('nieuwe teksten bestaan in beide talen', () => {
-    expect(t('work.heading', 'nl')).toBe('Werk')
-    expect(t('work.heading', 'en')).toBe('Work')
+    expect(t('work.heading', 'nl')).toBe('Mijn *werk*')
+    expect(t('work.heading', 'en')).toBe('My *work*')
     expect(t('type.framework', 'en')).toBe('Framework')
+  })
+})
+
+describe('accent en plain', () => {
+  test('maakt van *woorden* een <em> en escapet de rest', () => {
+    expect(accent('Eerder *werk*')).toBe('Eerder <em>werk</em>')
+    expect(accent('Snel, *van framework tot frontend.*')).toBe('Snel, <em>van framework tot frontend.</em>')
+    expect(accent('<b>&"\'</b> *x*')).toBe('&lt;b&gt;&amp;&quot;&#39;&lt;/b&gt; <em>x</em>')
+    expect(accent('Zonder accent')).toBe('Zonder accent')
+  })
+  test('plain haalt de sterretjes weg voor titels en labels', () => {
+    expect(plain('Laten we iets *bouwen.*')).toBe('Laten we iets bouwen.')
+    expect(plain('Geen sterretjes')).toBe('Geen sterretjes')
+  })
+  test('elke vertaling heeft evenveel accenten als de Nederlandse tekst', () => {
+    for (const key of MESSAGE_KEYS) {
+      const count = (text: string) => (text.match(/\*/g) ?? []).length
+      expect(count(t(key, 'en')), key).toBe(count(t(key, 'nl')))
+    }
   })
 })

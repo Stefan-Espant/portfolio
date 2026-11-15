@@ -13,22 +13,20 @@ const { status, locale } = $$props
   display: inline-flex;
   align-items: center;
   gap: var(--space-3);
-  padding: var(--space-2) var(--space-4);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--surface);
-  font-family: var(--font-mono);
+  color: var(--muted);
   font-size: var(--text-sm);
+  font-weight: 500;
 
   & .availability__dot {
-    width: 0.6rem;
-    height: 0.6rem;
+    width: 0.5rem;
+    height: 0.5rem;
     border-radius: 50%;
-    background: var(--text-muted);
+    background: var(--muted);
   }
   &[data-available='true'] .availability__dot {
-    background: var(--accent);
-    animation: availability-pulse 2s infinite;
+    background: var(--ok);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--ok) 25%, transparent);
+    animation: availability-pulse 2.4s infinite;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -38,8 +36,6 @@ const { status, locale } = $$props
   }
 }
 @keyframes availability-pulse {
-  0% { box-shadow: 0 0 0 0 rgb(255 176 0 / 0.6); }
-  70% { box-shadow: 0 0 0 0.6rem rgb(255 176 0 / 0); }
-  100% { box-shadow: 0 0 0 0 rgb(255 176 0 / 0); }
+  50% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--ok) 0%, transparent); }
 }
 </style>

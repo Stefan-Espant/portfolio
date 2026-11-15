@@ -25,6 +25,20 @@ const list = (value: unknown): string[] =>
 const rows = (value: unknown): Data[] =>
   Array.isArray(value) ? value.filter((row): row is Data => typeof row === 'object' && row !== null) : []
 
+/**
+ * Naam voor CSS View Transitions, gelijk op projectkaart en case study zodat cover en titel doorschuiven.
+ * Een geldige CSS-identifier: alleen kleine letters, cijfers en koppeltekens, en nooit beginnend met een cijfer.
+ */
+export function transitionName(part: 'cover' | 'title', slug: string): string {
+  return `${part}-${slug.toLowerCase().replace(/[^a-z0-9-]+/g, '-')}`
+}
+
+/** Leestijd in minuten (minstens 1) bij ongeveer 200 woorden per minuut; HTML-tags tellen niet mee. */
+export function readingMinutes(html: string): number {
+  const words = html.replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length
+  return Math.max(1, Math.round(words / 200))
+}
+
 export interface Metric {
   label: string
   value: string

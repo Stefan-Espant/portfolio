@@ -1,8 +1,9 @@
 ---
-// Decoratieve band met projectnamen (spec: Motion #5). Alleen sier: aria-hidden.
+// Decoratieve band met projectnamen (spec 2026-11-15, Motion: marquee). Alleen sier: aria-hidden.
 type Props = { names: string[] }
 const { names } = $$props
-const run = names.map(name => renderTemplate`<span>${name}</span>`).join('')
+// Per naam vast (niet nth-child): bij een oneven aantal namen zou elke kopie anders ogen en de lus springen.
+const run = names.map((name, index) => index % 2 ? renderTemplate`<span class="marquee__alt">${name}</span>` : renderTemplate`<span>${name}</span>`).join('')
 ---
 <div class="marquee" aria-hidden="true" data-motion="marquee">
   <div class="marquee__track">{new SafeHtml(run + run + run)}</div>
@@ -11,26 +12,39 @@ const run = names.map(name => renderTemplate`<span>${name}</span>`).join('')
 <style>
 .marquee {
   overflow: hidden;
-  margin-block: var(--space-16);
-  padding-block: var(--space-4);
-  border-block: 1px solid var(--border);
+  margin-top: var(--space-24);
+  padding-block: var(--space-6);
+  border-block: 1px solid var(--line);
   white-space: nowrap;
 
   & .marquee__track {
     display: inline-flex;
-    gap: var(--space-12);
     font-family: var(--font-display);
-    font-size: clamp(2.5rem, 1.5rem + 4vw, 5rem);
-    line-height: 1.2;
-    color: transparent;
-    -webkit-text-stroke: 1px #5b6478;
+    font-size: clamp(2.5rem, 1.5rem + 4vw, 5.25rem);
+    font-weight: 600;
+    font-stretch: 80%;
+    letter-spacing: -0.04em;
+    line-height: 1.1;
     will-change: transform;
   }
-  & .marquee__track span:nth-child(3n + 1) {
-    -webkit-text-stroke: 0;
-    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  & .marquee__track span {
+    padding-right: 0.6em;
+  }
+  /* Elke tweede naam in scherpe Fraunces cursief met het verloop. */
+  & .marquee__alt {
+    padding-right: 0.7em;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    font-stretch: normal;
+    font-variation-settings: var(--serif-sharp);
+    background: var(--grad);
     -webkit-background-clip: text;
     background-clip: text;
+    color: transparent;
+  }
+  @media (forced-colors: active) {
+    & .marquee__alt { background: none; color: CanvasText; }
   }
 }
 </style>

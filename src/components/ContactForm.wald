@@ -9,7 +9,7 @@ const apiBase = process.env.CENTAUR_API_BASE ?? ''
 const tenant = process.env.CENTAUR_TENANT_SLUG ?? ''
 ---
 <div class="contact-form" data-contact-form data-api-base={apiBase} data-tenant={tenant} data-send={t('form.send', locale)} data-sending={t('form.sending', locale)} data-success={t('form.success', locale)} data-error={t('form.error', locale)}>
-  <form hidden novalidate>
+  <form class="card" hidden novalidate>
     <label class="contact-form__field">
       <span>{t('form.name', locale)}</span>
       <input name="naam" type="text" autocomplete="name" required maxlength="120" />
@@ -22,7 +22,7 @@ const tenant = process.env.CENTAUR_TENANT_SLUG ?? ''
       <span>{t('form.message', locale)}</span>
       <textarea name="bericht" rows="6" required></textarea>
     </label>
-    <button class="contact-form__submit" type="submit">{t('form.send', locale)}</button>
+    <button class="contact-form__submit btn" type="submit">{t('form.send', locale)}</button>
     <p class="contact-form__status" role="status" aria-live="polite" data-contact-status></p>
   </form>
   <noscript>
@@ -35,51 +35,46 @@ const tenant = process.env.CENTAUR_TENANT_SLUG ?? ''
   & form {
     display: grid;
     gap: var(--space-6);
-    max-width: 36rem;
+    padding: clamp(1.5rem, 3.4vw, 2.5rem);
   }
   & .contact-form__field {
     display: grid;
     gap: var(--space-2);
-    font-family: var(--font-mono);
     font-size: var(--text-sm);
-    color: var(--text-muted);
+    font-weight: 500;
   }
   & input,
   & textarea {
-    padding: var(--space-3) var(--space-4);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    background: var(--surface);
-    color: var(--text);
+    padding: 0.8rem 0.95rem;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--bg);
+    color: var(--ink);
     font: inherit;
-    font-family: var(--font-serif);
-    font-size: var(--text-base);
+    font-size: 1rem;
+    font-weight: 400;
+    resize: vertical;
   }
   & input:focus-visible,
   & textarea:focus-visible {
-    border-color: var(--accent);
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+    border-color: transparent;
   }
   & .contact-form__submit {
     justify-self: start;
-    padding: var(--space-3) var(--space-6);
-    border: 0;
-    border-radius: 999px;
-    background: var(--accent);
-    color: var(--bg);
-    font: inherit;
-    font-family: var(--font-mono);
-    font-weight: 700;
-    cursor: pointer;
-  }
-  & .contact-form__submit[aria-disabled='true'] {
-    opacity: 0.6;
-    cursor: progress;
   }
   & .contact-form__status[data-state='success'] {
-    color: var(--accent);
+    color: var(--ok);
   }
   & .contact-form__status[data-state='error'] {
-    color: #ff8a7a;
+    color: #c62828;
+  }
+  & .contact-form__nojs {
+    padding: var(--space-6);
+    border-radius: var(--radius);
+    background: var(--card);
   }
 }
+[data-theme='dark'] .contact-form .contact-form__status[data-state='error'] { color: #ff8a7a; }
 </style>

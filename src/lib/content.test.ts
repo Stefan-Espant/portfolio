@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
 import type { CentaurEntry } from './cms'
-import { forLocale, missingTranslations, toExperience, toPost, toProject, toSkill, translationsOf } from './content'
+import { forLocale, missingTranslations, toExperience, toPost, toProject, readingMinutes, toSkill, transitionName, translationsOf } from './content'
 
 const entry = (data: Record<string, unknown>, id = 'e1'): CentaurEntry => ({
   id,
@@ -166,5 +166,21 @@ describe('locale-helpers', () => {
 
   test('missingTranslations meldt items zonder vertaling', () => {
     expect(missingTranslations(items)).toEqual([{ translationKey: 'oud', missing: ['en'] }])
+  })
+})
+
+describe('transitionName', () => {
+  test('geeft een geldige, voorspelbare CSS-naam per slug', () => {
+    expect(transitionName('cover', 'waldjs')).toBe('cover-waldjs')
+    expect(transitionName('title', 'eva-s-kookboek')).toBe('title-eva-s-kookboek')
+    expect(transitionName('cover', '2024 Möhlen_VOF')).toBe('cover-2024-m-hlen-vof')
+  })
+})
+
+describe('readingMinutes', () => {
+  test('telt woorden zonder HTML, minstens één minuut', () => {
+    expect(readingMinutes('')).toBe(1)
+    expect(readingMinutes('<p>' + 'woord '.repeat(1000) + '</p>')).toBe(5)
+    expect(readingMinutes('<h2>Kop</h2><p>' + 'woord '.repeat(450) + '</p>')).toBe(2)
   })
 })

@@ -1,29 +1,85 @@
 ---
-import { t, type Locale } from '../lib/i18n'
+import { localePath, t, type Locale } from '../lib/i18n'
+import { GITHUB_URL } from '../lib/site'
 type Props = { locale: Locale }
 const { locale } = $$props
 const year = new Date().getFullYear()
 ---
-<footer class="footer container">
-  <p>{t('footer.text', locale)}</p>
-  <p><span class="display footer__logo">Steefan</span> © {year} Stefan</p>
+<footer class="footer">
+  <div class="footer__inner container">
+    <div class="footer__brand">
+      <a class="footer__word" href={localePath('home', locale)}>Steefan</a>
+      <p>{t('footer.text', locale)}</p>
+      <p class="footer__copy">© {year} Stefan</p>
+    </div>
+    <nav class="footer__col" aria-label={t('footer.pages', locale)}>
+      <p class="footer__head">{t('footer.pages', locale)}</p>
+      <a href={localePath('work', locale)}>{t('nav.work', locale)}</a>
+      <a href={localePath('blog', locale)}>{t('nav.blog', locale)}</a>
+      <a href={localePath('about', locale)}>{t('nav.about', locale)}</a>
+      <a href={localePath('contact', locale)}>{t('nav.contact', locale)}</a>
+    </nav>
+    <nav class="footer__col" aria-label={t('footer.elsewhere', locale)}>
+      <p class="footer__head">{t('footer.elsewhere', locale)}</p>
+      <a href={GITHUB_URL} rel="noopener">GitHub</a>
+      <a href="https://waldjs.eu" rel="noopener">waldjs.eu</a>
+      <a href="https://centaur-cms.app" rel="noopener">centaur-cms.app</a>
+      <a href="/licenses/byzantium.txt">Byzantium (MIT)</a>
+    </nav>
+  </div>
 </footer>
 
 <style>
 .footer {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: var(--space-2) var(--space-8);
   margin-top: var(--space-24);
-  padding-block: var(--space-8);
-  border-top: 1px solid var(--border);
-  color: var(--text-muted);
-  font-family: var(--font-mono);
+  border-top: 1px solid var(--line);
   font-size: var(--text-sm);
-}
-.footer__logo {
-  margin-right: var(--space-2);
-  font-size: var(--text-lg);
+
+  & .footer__inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-8) var(--space-6);
+    padding-block: var(--space-12);
+
+    @media (min-width: 48rem) {
+      grid-template-columns: 2fr 1fr 1fr;
+    }
+  }
+  & .footer__brand {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+    max-width: 36ch;
+    color: var(--muted);
+
+    @media (min-width: 48rem) {
+      grid-column: auto;
+    }
+  }
+  & .footer__word {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: 700;
+    font-stretch: 85%;
+    letter-spacing: -0.05em;
+    line-height: 1;
+    color: var(--ink);
+  }
+  & .footer__col {
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+  }
+  & .footer__head {
+    margin-bottom: var(--space-1);
+    font-weight: 600;
+  }
+  & .footer__col a {
+    color: var(--muted);
+  }
+  & .footer__col a:hover {
+    color: var(--ink);
+  }
 }
 </style>

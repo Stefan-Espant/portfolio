@@ -1,31 +1,77 @@
 ---
+// Bento op de home (spec 2026-11-15): het eerste uitgelichte project groot, daarnaast de andere twee, een
+// verlooptegel met het WaldJS-kerngetal en een notitietegel over het npm-pakket.
 import ProjectCard from './ProjectCard.wald'
-import type { Locale } from '../lib/i18n'
+import { accent, t, type Locale } from '../lib/i18n'
 import type { Project } from '../lib/content'
 type Props = { projects: Project[], locale: Locale }
 const { projects, locale } = $$props
-const cards = await Promise.all(projects.map(async (project, index) => {
-  const size = index === 0 ? 'large' : 'normal'
-  return `<li class="bento__item${index === 0 ? ' bento__item--large' : ''}">${await ProjectCard.render({ project, locale, size })}</li>`
-}))
+const [first, second, third] = projects
+const card = async (project: Project | undefined, size: 'large' | 'normal' = 'normal') =>
+  project ? `<li class="bento__item${size === 'large' ? ' bento__item--large' : ''}">${await ProjectCard.render({ project, locale, size })}</li>` : ''
+const stat = renderTemplate`<li class="bento__item bento__stat"><span>${t('home.statLabel', locale)}</span><strong>${t('home.statValue', locale)}</strong><span>${t('home.statNote', locale)}</span></li>`
+const note = renderTemplate`<li class="bento__item bento__note"><p class="accent">${new SafeHtml(accent(t('home.noteText', locale)))}</p><code>${t('home.noteCode', locale)}</code></li>`
+const items = [await card(first, 'large'), await card(second), stat, await card(third), note].join('')
 ---
-<ul class="bento" role="list" data-motion="bento">{new SafeHtml(cards.join(''))}</ul>
+<ul class="bento" role="list" data-motion="tiles">{new SafeHtml(items)}</ul>
 
 <style>
 .bento {
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--space-4);
-  margin: var(--space-6) 0 0;
   padding: 0;
   list-style: none;
 
-  @media (min-width: 48rem) {
-    grid-template-columns: 1.4fr 1fr;
+  & .bento__item {
+    min-height: 15rem;
+  }
+  & .bento__stat,
+  & .bento__note {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: 1.375rem;
+    border-radius: var(--radius);
+  }
+  & .bento__stat {
+    background: var(--grad);
+    color: var(--on-accent);
+  }
+  & .bento__stat strong {
+    font-family: var(--font-display);
+    font-size: clamp(4rem, 3rem + 3vw, 6rem);
+    font-weight: 600;
+    font-stretch: 85%;
+    letter-spacing: -0.05em;
+    line-height: 0.9;
+  }
+  & .bento__note {
+    background: var(--card);
+    box-shadow: var(--edge);
+  }
+  & .bento__note p {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-variation-settings: 'opsz' 72, 'SOFT' 0, 'WONK' 0;
+    font-size: 1.5rem;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+  }
+  & .bento__note code {
+    color: var(--muted);
+  }
 
-    & .bento__item--large {
-      grid-row: span 2;
-    }
+  @media (min-width: 40rem) {
+    grid-template-columns: 1fr 1fr;
+    & .bento__item--large { grid-column: 1 / -1; min-height: 24rem; }
+  }
+  @media (min-width: 64rem) {
+    grid-template-columns: 1.6fr 1fr 1fr;
+    grid-auto-rows: 16.25rem;
+    & .bento__item { min-height: 0; }
+    & .bento__item--large { grid-column: auto; grid-row: span 2; }
   }
 }
 </style>
