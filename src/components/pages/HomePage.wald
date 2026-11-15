@@ -31,7 +31,10 @@ const otherHtml = other.length
 // Technieken: de skills uit Centaur, of anders de stacks van de projecten (meest gebruikt eerst).
 const counts = new Map<string, number>()
 for (const item of [...featured, ...other].flatMap(project => project.stack)) counts.set(item, (counts.get(item) ?? 0) + 1)
-const tech = skills.length ? skills.map(skill => skill.name) : [...counts].sort((a, b) => b[1] - a[1]).map(([name]) => name).slice(0, 12)
+// Op de home alleen de development-skills (frontend, backend, CMS), maximaal 12; design staat op /over.
+const order = ['frontend', 'backend', 'cms']
+const devSkills = skills.filter(skill => order.includes(skill.category)).sort((a, b) => order.indexOf(a.category) - order.indexOf(b.category))
+const tech = (devSkills.length ? devSkills.map(skill => skill.name) : [...counts].sort((a, b) => b[1] - a[1]).map(([name]) => name)).slice(0, 12)
 const techHtml = tech.map(name => renderTemplate`<li class="tag">${name}</li>`).join('')
 
 const latest = posts.slice(0, 3)

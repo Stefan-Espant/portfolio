@@ -5,14 +5,14 @@ import Availability from '../Availability.wald'
 import { getStatus } from '../../lib/content'
 import { getSiteSettings } from '../../lib/cms'
 import { accent, localePath, t, type Locale } from '../../lib/i18n'
-import { CONTACT_EMAIL, GITHUB_URL } from '../../lib/site'
+import { CONTACT_EMAIL, GITHUB_URL, LINKEDIN_URL } from '../../lib/site'
 type Props = { locale: Locale }
 const { locale } = $$props
 const [status, site] = await Promise.all([getStatus(locale), getSiteSettings()])
 const statusHtml = status ? await Availability.render({ status, locale }) : ''
 const channels = ([
   ['GitHub', GITHUB_URL],
-  ['LinkedIn', site?.linkedIn ?? ''],
+  ['LinkedIn', site?.linkedIn || LINKEDIN_URL],
   ['Instagram', site?.instagram ?? '']
 ] as Array<[string, string]>).filter(([, href]) => href)
   .map(([label, href]) => renderTemplate`<li><a class="contact__big" href="${href}" rel="noopener">${label} ↗</a></li>`).join('')

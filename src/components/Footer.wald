@@ -1,6 +1,6 @@
 ---
 import { localePath, t, type Locale } from '../lib/i18n'
-import { GITHUB_URL } from '../lib/site'
+import { GITHUB_URL, LINKEDIN_URL } from '../lib/site'
 import { feedPath } from '../lib/extras'
 type Props = { locale: Locale }
 const { locale } = $$props
@@ -23,6 +23,7 @@ const year = new Date().getFullYear()
     <nav class="footer__col" aria-label={t('footer.elsewhere', locale)}>
       <p class="footer__head">{t('footer.elsewhere', locale)}</p>
       <a href={GITHUB_URL} rel="noopener">GitHub</a>
+      <a href={LINKEDIN_URL} rel="noopener">LinkedIn</a>
       <a href="https://waldjs.eu" rel="noopener">waldjs.eu</a>
       <a href="https://centaur-cms.app" rel="noopener">centaur-cms.app</a>
       <a href={feedPath(locale)}>RSS</a>

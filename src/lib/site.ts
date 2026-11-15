@@ -14,3 +14,6 @@ export function absoluteUrl(url: string): string {
 export const CONTACT_EMAIL = 'info@espant.com'
 
 export const GITHUB_URL = 'https://github.com/Stefan-Espant'
+
+/** LinkedIn; een waarde in de Centaur-site settings gaat voor (die kan alleen via het dashboard). */
+export const LINKEDIN_URL = 'https://www.linkedin.com/in/stefan-van-der-kort-196513158/'

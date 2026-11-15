@@ -38,12 +38,15 @@ const experienceHtml = experience.length
   ? renderTemplate`<section class="container" aria-labelledby="experience-title">${new SafeHtml(sectionHead('experience-title', 'about.experience'))}<ol class="about__jobs" role="list">${new SafeHtml(experienceItems)}</ol></section>`
   : ''
 
-// Skills per categorie, in de volgorde waarin de categorieën voor het eerst voorkomen.
+// Skills per categorie: bekende categorieën in een vaste volgorde met een nette naam, onbekende daarna.
+const CATEGORIES: Record<string, string> = { frontend: 'Frontend', backend: 'Backend', cms: 'CMS', design: 'Design', tools: 'Tools' }
 const groups = new Map<string, string[]>()
 for (const skill of skills) groups.set(skill.category, [...(groups.get(skill.category) ?? []), skill.name])
-const skillGroups = [...groups].map(([category, names]) => renderTemplate`
+const known = Object.keys(CATEGORIES)
+const rankOf = (category: string) => (known.includes(category) ? known.indexOf(category) : known.length)
+const skillGroups = [...groups].sort(([a], [b]) => rankOf(a) - rankOf(b)).map(([category, names]) => renderTemplate`
   <div class="card about__skill-group">
-    ${new SafeHtml(category ? renderTemplate`<h3 class="about__skill-category">${category}</h3>` : '')}
+    ${new SafeHtml(category ? renderTemplate`<h3 class="about__skill-category">${CATEGORIES[category] ?? category}</h3>` : '')}
     <ul class="tags" role="list">${new SafeHtml(names.map(name => renderTemplate`<li class="tag">${name}</li>`).join(''))}</ul>
   </div>`).join('')
 const skillsHtml = skills.length
@@ -195,7 +198,7 @@ const alternates = { nl: localePath('about', 'nl'), en: localePath('about', 'en'
   }
   & .about__skill-groups {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr));
     gap: var(--space-4);
   }
   & .about__skill-group {
