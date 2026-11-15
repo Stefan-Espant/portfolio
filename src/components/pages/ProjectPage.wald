@@ -3,6 +3,7 @@ import Layout from '../../layouts/Layout.wald'
 import Metrics from '../Metrics.wald'
 import Timeline from '../Timeline.wald'
 import HScroll from '../HScroll.wald'
+import Playground from '../Playground.wald'
 import { getProject, getProjects, projectAlternates, transitionName } from '../../lib/content'
 import { localePath, t, type Locale, type MessageKey } from '../../lib/i18n'
 type Props = { locale: Locale, slug: string }
@@ -37,6 +38,10 @@ const steps = ([
   [t('project.result', locale), project.resultHtml]
 ] as Array<[string, string]>).filter(([, html]) => html).map(([title, html]) => ({ title, html }))
 const timelineHtml = steps.length ? await Timeline.render({ id: 'process-title', title: t('project.process', locale), steps }) : ''
+// De playground hoort alleen bij WaldJS zelf.
+const isWald = project.npmPackage === '@waldjs/cli'
+const playgroundHtml = isWald ? await Playground.render({ locale }) : ''
+const playgroundScript = isWald ? '<script type="module" src="/playground/playground.js" data-wald-no-hoist></script>' : ''
 const galleryHtml = project.gallery.length
   ? await HScroll.render({
       id: 'gallery-title',
@@ -75,9 +80,11 @@ const nextHtml = next
     {new SafeHtml(cover)}
     {new SafeHtml(metricsHtml)}
     {new SafeHtml(timelineHtml)}
+    {new SafeHtml(playgroundHtml)}
     {new SafeHtml(galleryHtml)}
     {new SafeHtml(nextHtml)}
   </main>
+  {new SafeHtml(playgroundScript)}
 </Layout>
 
 <style>
