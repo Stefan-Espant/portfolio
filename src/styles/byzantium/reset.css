@@ -1,0 +1,38 @@
+/* Byzantium design system (MIT, © 2026 Stefan van der Kort): base/_reset.scss
+   Bron-commit 95d6972854f2b0b7b8067cd26db94b5fd6102310. Niet bewerken; bijwerken via scripts/vendor-byzantium.mjs. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  tab-size: 4;
+}
+
+body {
+  font-family: var(--byz-font-sans);
+  font-size: var(--byz-text-base);
+  line-height: var(--byz-leading-normal);
+  color: var(--byz-color-text-primary);
+  background-color: var(--byz-color-background);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--byz-font-serif);
+  font-weight: var(--byz-font-bold);
+  line-height: var(--byz-leading-tight);
+  letter-spacing: -0.02em;
+}
+
+img, video {
+  max-width: 100%;
+  display: block;
+}
+
+button, input, select, textarea {
+  font: inherit;
+}

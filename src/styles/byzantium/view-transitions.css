@@ -1,0 +1,25 @@
+/* Byzantium design system (MIT, © 2026 Stefan van der Kort): utilities/_view-transitions.scss
+   Bron-commit 95d6972854f2b0b7b8067cd26db94b5fd6102310. Niet bewerken; bijwerken via scripts/vendor-byzantium.mjs. */
+@keyframes byz-vt-out {
+  to { opacity: 0; }
+}
+
+@keyframes byz-vt-in {
+  from { opacity: 0; transform: translateY(6px); }
+}
+
+::view-transition-old(root) {
+  animation: 120ms ease both byz-vt-out;
+  -webkit-animation: 120ms ease both byz-vt-out;
+}
+
+::view-transition-new(root) {
+  animation: 200ms ease both byz-vt-in;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}

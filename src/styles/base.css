@@ -1,46 +1,73 @@
-*, *::before, *::after { box-sizing: border-box; }
-* { margin: 0; }
+/* Basis bovenop de Byzantium-reset (spec 2026-11-15). Componenten hebben hun eigen <style>. */
 
 /* Het hidden-attribuut wint altijd van display-regels in componenten. */
 [hidden] { display: none !important; }
 
-html { -webkit-text-size-adjust: 100%; }
+html { background: var(--bg); }
 
 body {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
   background: var(--bg);
-  color: var(--text);
-  font-family: var(--font-serif);
+  color: var(--ink);
+  font-family: var(--font-sans);
   font-size: var(--text-base);
   line-height: 1.6;
   isolation: isolate;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Stilstaande blauwe gloed op een vaste laag: geen repaint bij scrollen, geen filter. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 55% at 88% 0%, var(--byz-color-hero-glow-1), transparent 70%),
+    radial-gradient(50% 50% at 0% 100%, var(--byz-color-hero-glow-2), transparent 70%);
 }
 
 main { flex: 1; }
 
-h1, h2, h3 {
-  line-height: 1.05;
-  letter-spacing: -0.025em;
-  font-variation-settings: 'opsz' 144;
+/* Koppen in Bricolage (Byzantium zet ze standaard in de serif). */
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-stretch: 85%;
+  letter-spacing: -0.045em;
+  line-height: 1;
   text-wrap: balance;
 }
+h3, h4 { letter-spacing: -0.03em; line-height: 1.15; }
 
-img { max-width: 100%; display: block; }
-
-a { color: var(--accent); text-underline-offset: 0.2em; }
-a:hover { color: var(--text); }
-
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-  border-radius: 2px;
+/* Accentwoord in een kop: scherpe Fraunces cursief met het verloop (accent() in i18n.ts maakt de <em>). */
+:is(h1, h2, h3, .accent) em {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-stretch: normal;
+  font-variation-settings: var(--serif-sharp);
+  letter-spacing: -0.03em;
+  padding-right: 0.06em;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
-::selection { background: var(--selection-bg); color: var(--selection-text); }
+a { color: inherit; text-decoration: none; }
+/* Alleen links in lopende tekst onderstrepen; kaarten en menu's zijn zelf herkenbaar als link. */
+p a, dd a { text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 0.2em; }
+p a:hover, dd a:hover { text-decoration-color: currentColor; }
 
-/* Toegankelijk verborgen, wel voorgelezen. */
+code, pre { font-family: var(--font-mono); font-size: 0.9em; }
+
+::selection { background: var(--byz-brand-200); color: #0b0e4a; }
+
+/* Byzantium heet .byz-sr-only; de site gebruikte al .sr-only. */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -54,28 +81,16 @@ a:hover { color: var(--text); }
   position: absolute;
   top: var(--space-2);
   left: var(--space-2);
-  z-index: 10;
+  z-index: 50;
   padding: var(--space-2) var(--space-4);
-  background: var(--accent);
+  border-radius: var(--pill);
+  background: var(--ink);
   color: var(--bg);
-  font-family: var(--font-mono);
   font-size: var(--text-sm);
+  font-weight: 500;
   transform: translateY(-200%);
 }
 .skip-link:focus { transform: none; }
-
-/* Stenen achtergrond: vooraf donker gebakken (scripts/bake-stone.mjs), dus zonder CSS-filter.
-   Iets hoger dan het scherm, zodat de parallax uit plan 3 ruimte heeft. */
-.stone {
-  position: fixed;
-  inset: -10vh 0 auto;
-  z-index: -1;
-  width: 100%;
-  height: 120vh;
-  object-fit: cover;
-  pointer-events: none;
-  will-change: transform;
-}
 
 /* Inhoudsbreedte met vaste marges. */
 .container {
@@ -85,92 +100,82 @@ a:hover { color: var(--text); }
   padding-inline: var(--page-gutter);
 }
 
-/* Zuid-Duits accent (spec: Typografie): alleen logo, sectiekopjes en projectnamen. */
-.display {
-  font-family: var(--font-display);
-  font-weight: 400;
-  letter-spacing: 0.01em;
-  font-variation-settings: normal;
-  /* Breukletters lopen buiten de regel; zonder ruimte snijdt background-clip ze af. */
-  line-height: 1.2;
-  padding-block: 0.1em;
-  background: linear-gradient(90deg, var(--accent), var(--accent-2));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+/* Kop van een sectie: titel links, iets kleins rechts. */
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: end;
+  gap: var(--space-4);
+  padding-block: var(--space-24) var(--space-8);
 }
-/* Als link: bij hover en toetsenbordfocus bewust van verloop naar effen tekst. */
-a.display:hover,
-a.display:focus-visible {
-  color: var(--text);
-}
-/* Windows hoog contrast: geen verloop, systeemkleuren (links blijven herkenbaar als link). */
-@media (forced-colors: active) {
-  .display {
-    background: none;
-    color: CanvasText;
-  }
-  a.display {
-    color: LinkText;
-  }
-}
-@media print {
-  .display {
-    background: none;
-    color: #000;
-  }
-}
+.section-title { font-size: clamp(2.25rem, 1.5rem + 3vw, 4.25rem); }
+.section-note { color: var(--muted); font-size: var(--text-sm); font-weight: 500; font-variant-numeric: tabular-nums; }
 
-/* ── Motion (plan 3) ──────────────────────────────────────────────────────────────────── */
+/* Paginakop van subpagina's. */
+.page-head {
+  display: grid;
+  gap: var(--space-6);
+  padding-block: clamp(3rem, 8vw, 6.5rem) var(--space-8);
+}
+.page-title { font-size: var(--text-3xl); }
+.lead { max-width: 54ch; color: var(--muted); font-size: var(--text-lg); }
+
+/* Kaart, knop, pil en tag */
+.card {
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: var(--edge);
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.75rem 1.25rem;
+  border: 0;
+  border-radius: var(--pill);
+  background: var(--grad);
+  color: var(--on-accent);
+  font: 600 0.9375rem/1.2 var(--font-sans);
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn--ink { background: var(--ink); color: var(--bg); }
+.btn--ghost { background: var(--card); color: var(--ink); box-shadow: var(--edge), inset 0 0 0 1px var(--line); }
+.btn--sm { padding: 0.55rem 0.95rem; font-size: var(--text-sm); }
+.btn[aria-disabled='true'] { opacity: 0.6; cursor: progress; }
+.tags { display: flex; flex-wrap: wrap; gap: var(--space-2); padding: 0; list-style: none; }
+.tag {
+  display: inline-block;
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--pill);
+  background: var(--card);
+  box-shadow: var(--edge);
+  font-size: var(--text-sm);
+}
+.label { display: inline-flex; align-items: center; gap: var(--space-3); color: var(--muted); font-size: var(--text-sm); font-weight: 500; }
+
+/* ── Motion ─────────────────────────────────────────────────────────────────────────────── */
 
 /* Alleen de home-intro wacht op JavaScript; de fail-safe in <head> haalt `motion` na 3 s weg. */
-.motion [data-motion='intro'] {
-  visibility: hidden;
-}
+.motion [data-motion='intro'] { visibility: hidden; }
 
-/* Lichtbundel die de muis volgt (spec: Motion #2). Onzichtbaar tot motion.js hem aanzet. */
-.torch {
-  position: fixed;
-  top: -260px;
-  left: -260px;
-  z-index: -1;
-  width: 520px;
-  height: 520px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgb(255 214 150 / 0.13) 0%, rgb(255 214 150 / 0.05) 40%, transparent 70%);
-  opacity: 0;
-  pointer-events: none;
-  will-change: transform;
-}
+/* SplitText-maskers (motion/intro.js, reveal.js): ruimte voor de onderkant van g, j en p bij regelhoogte 1,
+   zonder dat de regels verder uit elkaar komen te staan. */
+.split-line-mask { padding-bottom: 0.14em; margin-bottom: -0.14em; }
 
-/* Pagina-overgang (spec: Motion #7). */
-.wipe {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: grid;
-  place-items: center;
-  border-top: 2px solid var(--accent);
-  background: var(--brand);
-  transform: scaleY(0);
-  transform-origin: bottom;
-  pointer-events: none;
-}
-.wipe__logo {
-  font-family: var(--font-display);
-  font-size: var(--text-2xl);
-  color: var(--accent);
-  opacity: 0;
-}
-.is-arriving .wipe {
-  transform: none;
-}
-.is-arriving .wipe__logo {
-  opacity: 1;
-}
-
+/* Pagina-overgang: Byzantium-fade plus doorschuivende cover en titel (view-transition-name per slug). */
 @media (prefers-reduced-motion: no-preference) {
-  @view-transition {
-    navigation: auto;
-  }
+  @view-transition { navigation: auto; }
+}
+::view-transition-group(*) { animation-duration: 0.5s; animation-timing-function: var(--ease-out); }
+
+/* ── Systeeminstellingen ────────────────────────────────────────────────────────────────── */
+
+@media (forced-colors: active) {
+  :is(h1, h2, h3, .accent) em { background: none; color: CanvasText; }
+}
+@media print {
+  body::before { display: none; }
+  :is(h1, h2, h3, .accent) em { background: none; color: #000; }
 }

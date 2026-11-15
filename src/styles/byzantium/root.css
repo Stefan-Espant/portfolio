@@ -1,0 +1,124 @@
+/* Byzantium design system (MIT, © 2026 Stefan van der Kort): base/_root.scss
+   Bron-commit 95d6972854f2b0b7b8067cd26db94b5fd6102310. Niet bewerken; bijwerken via scripts/vendor-byzantium.mjs. */
+:root {
+
+  --byz-brand-50:  #fff0f0;
+  --byz-brand-100: #ffd6d6;
+  --byz-brand-200: #ffaaaa;
+  --byz-brand-300: #ff7070;
+  --byz-brand-400: #e84050;
+  --byz-brand-500: #c01030;
+  --byz-brand-600: #9a0020;
+  --byz-brand-700: #720018;
+  --byz-brand-800: #480010;
+  --byz-brand-900: #1a0508;
+
+  --byz-color-background:     #0e0305;
+  --byz-color-surface:        #160608;
+  --byz-color-surface-raised: #320f14;
+  --byz-color-text-primary:   #ffffff;
+  --byz-color-text-secondary: rgba(255, 176, 176, 0.72);
+  --byz-color-text-muted:     rgba(255, 229, 229, 0.65);
+  --byz-color-border:         rgba(192, 16, 48, 0.18);
+  --byz-color-focus:          var(--byz-brand-400);
+  --byz-color-accent:         var(--byz-brand-400);
+
+  --byz-color-nav-bg:         rgba(14, 3, 5, 0.88);
+  --byz-color-hero-glow-1:    rgba(155, 0, 30, 0.38);
+  --byz-color-hero-glow-2:    rgba(80, 0, 15, 0.22);
+
+  --byz-color-success: #16a34a;
+  --byz-color-warning: #d97706;
+  --byz-color-error:   #dc2626;
+  --byz-color-info:    #2563eb;
+
+  --byz-space-1:  0.25rem;
+  --byz-space-2:  0.5rem;
+  --byz-space-3:  0.75rem;
+  --byz-space-4:  1rem;
+  --byz-space-5:  1.25rem;
+  --byz-space-6:  1.5rem;
+  --byz-space-8:  2rem;
+  --byz-space-10: 2.5rem;
+  --byz-space-12: 3rem;
+  --byz-space-16: 4rem;
+  --byz-space-20: 5rem;
+  --byz-space-24: 6rem;
+
+  --byz-font-sans:     "Syne", system-ui, sans-serif;
+  --byz-font-serif:    "Cormorant Garamond", "Lora", Georgia, serif;
+  --byz-font-mono:     "Source Code Pro", monospace;
+  --byz-text-xs:       clamp(0.75rem,  0.7rem   + 0.25vw, 0.875rem);
+  --byz-text-sm:       clamp(0.875rem, 0.825rem + 0.25vw, 1rem);
+  --byz-text-base:     clamp(1rem,     0.95rem  + 0.25vw, 1.125rem);
+  --byz-text-lg:       clamp(1.125rem, 1rem     + 0.5vw,  1.25rem);
+  --byz-text-xl:       clamp(1.25rem,  1.1rem   + 0.75vw, 1.5rem);
+  --byz-text-2xl:      clamp(1.5rem,   1.25rem  + 1vw,    2rem);
+  --byz-text-3xl:      clamp(1.875rem, 1.5rem   + 1.5vw,  2.5rem);
+  --byz-text-4xl:      clamp(2.25rem,  1.75rem  + 2vw,    3rem);
+  --byz-leading-tight:   1.05;
+  --byz-leading-normal:  1.5;
+  --byz-leading-relaxed: 1.625;
+  --byz-font-normal:   400;
+  --byz-font-medium:   500;
+  --byz-font-semibold: 600;
+  --byz-font-bold:     700;
+
+  --byz-duration-fast:   100ms;
+  --byz-duration-normal: 200ms;
+  --byz-duration-slow:   300ms;
+  --byz-ease-default:    cubic-bezier(0.4, 0, 0.2, 1);
+  --byz-ease-out:        cubic-bezier(0, 0, 0.2, 1);
+  --byz-ease-bounce:     cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --byz-z-base:     0;
+  --byz-z-raised:   330;
+  --byz-z-dropdown: 1000;
+  --byz-z-sticky:   1020;
+  --byz-z-overlay:  1030;
+  --byz-z-modal:    1100;
+  --byz-z-toast:    1200;
+  --byz-z-tooltip:  1453;
+
+  --byz-shadow-sm:   0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
+  --byz-shadow-md:   0 4px 6px -1px rgba(0,0,0,0.4), 0 2px 4px -1px rgba(0,0,0,0.2);
+  --byz-shadow-lg:   0 10px 25px -3px rgba(0,0,0,0.5), 0 4px 6px -2px rgba(0,0,0,0.3);
+  --byz-shadow-xl:   0 20px 40px -4px rgba(0,0,0,0.6);
+  --byz-shadow-glow: 0 0 20px rgba(192, 16, 48, 0.4);
+
+  --byz-bp-sm:  640px;
+  --byz-bp-md:  768px;
+  --byz-bp-lg:  1024px;
+  --byz-bp-xl:  1280px;
+  --byz-bp-2xl: 1536px;
+}
+
+[data-theme="light"] {
+  --byz-color-background:     #fff8f8;
+  --byz-color-surface:        #ffffff;
+  --byz-color-surface-raised: var(--byz-brand-50);
+  --byz-color-text-primary:   var(--byz-brand-900);
+  --byz-color-text-secondary: var(--byz-brand-700);
+  --byz-color-text-muted:     var(--byz-brand-600);
+  --byz-color-border:         var(--byz-brand-200);
+  --byz-color-nav-bg:         rgba(255, 248, 248, 0.92);
+  --byz-color-accent:         var(--byz-brand-500);
+  --byz-color-focus:          var(--byz-brand-500);
+  --byz-color-hero-glow-1:    rgba(192, 16, 48, 0.1);
+  --byz-color-hero-glow-2:    rgba(232, 64, 80, 0.05);
+
+  --byz-shadow-sm:   0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.05);
+  --byz-shadow-md:   0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+  --byz-shadow-lg:   0 10px 25px -3px rgba(0,0,0,0.12), 0 4px 6px -2px rgba(0,0,0,0.05);
+  --byz-shadow-xl:   0 20px 40px -4px rgba(0,0,0,0.15);
+  --byz-shadow-glow: 0 0 20px rgba(192, 16, 48, 0.2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --byz-duration-fast:   0ms;
+    --byz-duration-normal: 0ms;
+    --byz-duration-slow:   0ms;
+    --byz-ease-default:    linear;
+  }
+}

@@ -1,0 +1,13 @@
+/* Byzantium design system (MIT, © 2026 Stefan van der Kort): utilities/_sr-only.scss
+   Bron-commit 95d6972854f2b0b7b8067cd26db94b5fd6102310. Niet bewerken; bijwerken via scripts/vendor-byzantium.mjs. */
+.byz-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

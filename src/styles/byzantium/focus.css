@@ -1,0 +1,11 @@
+/* Byzantium design system (MIT, © 2026 Stefan van der Kort): utilities/_focus.scss
+   Bron-commit 95d6972854f2b0b7b8067cd26db94b5fd6102310. Niet bewerken; bijwerken via scripts/vendor-byzantium.mjs. */
+.byz-focus-ring {
+  outline: 2px solid var(--byz-color-focus);
+  outline-offset: 2px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--byz-color-focus);
+  outline-offset: 2px;
+}

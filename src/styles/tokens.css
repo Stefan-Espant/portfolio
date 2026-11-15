@@ -1,41 +1,112 @@
-/* Design tokens (spec: "Visueel systeem"). Donker thema; er is bewust geen light mode. */
-:root {
+/* Thema "Steefan" bovenop Byzantium (spec 2026-11-15). Byzantium (src/styles/byzantium/) levert de
+   tokenstructuur, reset en focus; hier staan alleen de eigen waarden. Licht is de standaard, donker volgt
+   de systeeminstelling of de themaknop (data-theme op <html>, gezet door het inline script in Layout). */
+:root,
+[data-theme='light'] {
+  color-scheme: light;
+
+  /* Merk: diep blauw, toon-op-toon */
+  --byz-brand-50: #f3f5ff;
+  --byz-brand-100: #e4e8ff;
+  --byz-brand-200: #c5cdff;
+  --byz-brand-300: #a9c4ff;
+  --byz-brand-400: #3a63f0;
+  --byz-brand-500: #3046ff;
+  --byz-brand-600: #2433e0;
+  --byz-brand-700: #1b22c9;
+  --byz-brand-800: #141a8f;
+  --byz-brand-900: #0b0e4a;
+
+  --byz-color-background: #f3f5ff;
+  --byz-color-surface: #ffffff;
+  --byz-color-surface-raised: #ffffff;
+  --byz-color-text-primary: #16161a;
+  --byz-color-text-secondary: #3a3a40;
+  --byz-color-text-muted: #5f5f66;
+  --byz-color-border: rgb(22 22 26 / 0.1);
+  --byz-color-focus: var(--byz-brand-500);
+  --byz-color-accent: var(--byz-brand-500);
+  --byz-color-hero-glow-1: rgb(48 70 255 / 0.14);
+  --byz-color-hero-glow-2: rgb(27 34 201 / 0.08);
+  --byz-color-success: #1f9d55;
+
+  --byz-shadow-sm: 0 1px 2px rgb(20 30 120 / 0.06);
+  --byz-shadow-md: 0 8px 24px -12px rgb(20 30 120 / 0.18);
+
+  --byz-font-sans: 'Inter', system-ui, sans-serif;
+  --byz-font-serif: 'Fraunces', Georgia, serif;
+  --byz-font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --grad: linear-gradient(120deg, var(--byz-brand-700), var(--byz-brand-500) 55%, var(--byz-brand-400));
+  --on-accent: #ffffff;
+  /* Verloop voor tekst op een donker vlak (de CTA-kaart in het lichte thema). */
+  --grad-on-dark: linear-gradient(120deg, #6f7bff, #8fa0ff 55%, #a9c4ff);
+}
+
+[data-theme='dark'] {
   color-scheme: dark;
 
-  --bg: #0b0d12;
-  --surface: rgb(21 25 36 / 0.9);
-  --border: #2a3245;
-  --text: #e8eaf0;
-  --text-muted: #9aa1b2;
-  --accent: #ffb000;
-  --accent-2: #f28c18;
-  --brand: #161208;
-  --selection-bg: #3a2a0a;
-  --selection-text: #ffd27a;
+  --byz-color-background: #0f0f12;
+  --byz-color-surface: #1b1b20;
+  --byz-color-surface-raised: #24242b;
+  --byz-color-text-primary: #f1f0ec;
+  --byz-color-text-secondary: #d6d5d0;
+  --byz-color-text-muted: #a3a3ab;
+  --byz-color-border: rgb(241 240 236 / 0.1);
+  --byz-color-focus: #8fa0ff;
+  --byz-color-accent: #7d8bff;
+  --byz-color-hero-glow-1: rgb(111 123 255 / 0.2);
+  --byz-color-hero-glow-2: rgb(169 196 255 / 0.08);
+  --byz-color-success: #4ade80;
 
-  --font-serif: 'Fraunces', Georgia, serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
-  --font-display: 'Germania One', var(--font-serif);
+  --byz-shadow-sm: none;
+  --byz-shadow-md: none;
+
+  --grad: linear-gradient(120deg, #6f7bff, #8fa0ff 55%, #a9c4ff);
+  --on-accent: #0f0f12;
+  --grad-on-dark: var(--grad);
+}
+
+/* Korte namen voor de componenten; ze verwijzen altijd naar de Byzantium-tokens. */
+:root {
+  --bg: var(--byz-color-background);
+  --card: var(--byz-color-surface);
+  --ink: var(--byz-color-text-primary);
+  --muted: var(--byz-color-text-muted);
+  --line: var(--byz-color-border);
+  --accent: var(--byz-color-accent);
+  --ok: var(--byz-color-success);
+  --edge: var(--byz-shadow-sm);
+
+  --font-display: 'Bricolage Grotesque', var(--byz-font-sans);
+  --font-sans: var(--byz-font-sans);
+  --font-serif: var(--byz-font-serif);
+  --font-mono: var(--byz-font-mono);
+  /* Scherpe Fraunces: accentwoorden en lange teksten. */
+  --serif-sharp: 'opsz' 144, 'SOFT' 0, 'WONK' 0;
+  --serif-text: 'SOFT' 0, 'WONK' 0;
 
   --text-sm: clamp(0.875rem, 0.85rem + 0.1vw, 0.9375rem);
-  --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
-  --text-lg: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
-  --text-xl: clamp(1.75rem, 1.4rem + 1.5vw, 2.5rem);
-  --text-2xl: clamp(2.5rem, 1.8rem + 3.2vw, 4.5rem);
+  --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.0625rem);
+  --text-lg: clamp(1.125rem, 1.05rem + 0.35vw, 1.1875rem);
+  --text-xl: clamp(1.5rem, 1.2rem + 1vw, 2.25rem);
+  --text-2xl: clamp(2.25rem, 1.6rem + 3vw, 4.25rem);
+  --text-3xl: clamp(2.75rem, 1.4rem + 6vw, 7rem);
 
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
-  --space-12: 3rem;
-  --space-16: 4rem;
-  --space-24: 6rem;
+  --space-1: var(--byz-space-1);
+  --space-2: var(--byz-space-2);
+  --space-3: var(--byz-space-3);
+  --space-4: var(--byz-space-4);
+  --space-6: var(--byz-space-6);
+  --space-8: var(--byz-space-8);
+  --space-12: var(--byz-space-12);
+  --space-16: var(--byz-space-16);
+  --space-24: var(--byz-space-24);
 
-  --radius-sm: 8px;
-  --radius-lg: 12px;
-  --page-width: 75rem;
-  --page-gutter: clamp(1rem, 4vw, 3rem);
-  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --radius: 18px;
+  --radius-lg: 24px;
+  --pill: 999px;
+  --page-width: 72.5rem;
+  --page-gutter: clamp(1rem, 4vw, 2.5rem);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }

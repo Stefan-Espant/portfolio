@@ -1,13 +1,15 @@
-// Downloadt de Latijnse subsets van Fraunces (variabel: opsz, wght, SOFT), JetBrains Mono
-// (variabel: wght) en Germania One van Google Fonts naar public/fonts/. Eenmalig draaien; alle drie OFL.
+// Downloadt de Latijnse subsets van Bricolage Grotesque (variabel: opsz, wdth, wght), Inter (wght) en
+// Fraunces rechtop en cursief (opsz, wght, SOFT, WONK) van Google Fonts naar public/fonts/.
+// Eenmalig draaien (npm run fonts); alle drie OFL.
 import { mkdirSync, writeFileSync } from 'node:fs'
 
 // Google Fonts geeft alleen woff2 aan een moderne browser-UA.
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36'
 const FONTS = [
-  ['fraunces-latin.woff2', 'Fraunces:opsz,wght,SOFT@9..144,300..800,0..100'],
-  ['jetbrains-mono-latin.woff2', 'JetBrains+Mono:wght@400..700'],
-  ['germania-one-latin.woff2', 'Germania+One']
+  ['bricolage-grotesque-latin.woff2', 'Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..700'],
+  ['inter-latin.woff2', 'Inter:wght@400..700'],
+  ['fraunces-latin.woff2', 'Fraunces:opsz,wght,SOFT,WONK@9..144,300..700,0..100,0..1'],
+  ['fraunces-italic-latin.woff2', 'Fraunces:ital,opsz,wght,SOFT,WONK@1,9..144,300..700,0..100,0..1']
 ]
 
 mkdirSync('public/fonts', { recursive: true })
