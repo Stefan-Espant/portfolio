@@ -4,6 +4,8 @@
 **Status:** goedgekeurd (herzien 2026-10-15: Germania One-accent; herzien 2026-10-18: saffraan, gebakken steen, zeven motion-effecten, extra's)
 **Branch:** `redesign`
 
+> **Let op:** *Visueel systeem*, *Motion* en de visuele *Extra's* zijn vervangen door [2026-11-15-portfolio-restyle-design.md](2026-11-15-portfolio-restyle-design.md) (licht en donker, Bricolage Grotesque, Byzantium-basis). De rest van deze spec blijft gelden.
+
 ## Doel
 
 Het portfolio op steefan.nl opnieuw ontwerpen en opnieuw bouwen met WaldJS, GSAP en Centaur CMS. De site toont WaldJS, Centaur CMS en Steva's Kookboek als uitgelichte projecten en is tegelijk een showcase van die eigen tools.

@@ -83,7 +83,7 @@ GSAP 3 + ScrollTrigger + SplitText blijven (uit `node_modules`, via `public/vend
 
 Vervallen: lichtbundel, steen-parallax, donkere wipe, letter-voor-letter koppen, 3D-tilt en lichtvlek.
 
-Performance-regels blijven: alleen `transform` en `opacity` animeren, `quickTo` voor muis-effecten, geen `backdrop-filter` of filters op grote vlakken (de gloed is een vaste laag), doorlopende animaties pauzeren buiten beeld. Bij `prefers-reduced-motion` start geen enkel effect, staan View Transitions uit en is de tijdlijn volledig actief. Zonder JavaScript is alle inhoud zichtbaar; alleen de home-intro wacht maximaal 3 seconden op het motion-script.
+Performance-regels blijven: alleen `transform` en `opacity` animeren, `quickTo` voor muis-effecten, geen `backdrop-filter` of filters op grote vlakken (de gloed is een vaste laag), doorlopende animaties pauzeren buiten beeld. Bij `prefers-reduced-motion` start geen enkel effect, staan View Transitions uit en is de tijdlijn volledig actief. Zonder JavaScript is alle inhoud zichtbaar; alleen de paginakop (`data-motion="intro"`) wacht maximaal 3 seconden op het motion-script. SplitText-maskers krijgen ruimte onder de regel (`.split-line-mask`), zodat de onderkant van letters als g en j niet wordt afgesneden.
 
 ## Opruimen
 
