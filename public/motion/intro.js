@@ -1,37 +1,28 @@
-// Home-intro (spec: Motion #1): de kopregels schuiven uit een masker omhoog terwijl Fraunces van dun
-// naar vet groeit, het logo-verloop veegt erdoorheen, de steen zoomt rustig in en de lead fadet in.
+// Binnenkomst (spec 2026-11-15, Motion: intro): de kopregels schuiven uit een masker omhoog, daarna
+// faden de andere onderdelen van de kop in. Op de home schalen de bento-tegels in en zoomen de covers uit.
 export function intro(gsap, SplitText) {
   const root = document.documentElement
   const hero = document.querySelector('[data-motion="intro"]')
-  const logo = document.querySelector('.nav__home')
-  const styles = getComputedStyle(root)
-  const accent = styles.getPropertyValue('--accent').trim()
-  const accent2 = styles.getPropertyValue('--accent-2').trim()
-  const tl = gsap.timeline({ defaults: { ease: 'expo.out' } })
-
-  tl.from('.stone', { scale: 1.08, duration: 1.6, ease: 'power2.out' }, 0)
-  if (logo) {
-    tl.fromTo(logo,
-      { backgroundImage: `linear-gradient(90deg, ${accent}, #fff3cf, ${accent2})`, backgroundSize: '200% 100%', backgroundPosition: '100% 0' },
-      { backgroundPosition: '0% 0', duration: 1.8, ease: 'power2.inOut', clearProps: 'backgroundImage,backgroundSize,backgroundPosition' }, 0.1)
-  }
-
   if (!hero) {
     root.classList.remove('motion')
     return
   }
   const title = hero.querySelector('h1')
   const rest = [...hero.children].filter(element => element !== title)
-  const split = title ? SplitText.create(title, { type: 'lines', mask: 'lines' }) : null
+  const split = title ? SplitText.create(title, { type: 'lines', mask: 'lines', linesClass: 'split-line' }) : null
+  const tiles = gsap.utils.toArray('[data-motion="tiles"] > *')
+  const covers = gsap.utils.toArray('[data-motion="tiles"] .project-card__img')
+
   // Beginstand zetten en dan pas zichtbaar maken: geen flits van de eindstand.
-  gsap.set(rest, { autoAlpha: 0, y: 20 })
+  gsap.set(rest, { autoAlpha: 0, y: 14 })
+  if (tiles.length) gsap.set(tiles, { autoAlpha: 0, scale: 0.94 })
   root.classList.remove('motion')
 
-  if (split) {
-    tl.from(split.lines, { yPercent: 110, duration: 1.1, stagger: 0.12, onComplete: () => split.revert() }, 0.2)
-      .fromTo(title,
-        { fontVariationSettings: "'opsz' 144, 'wght' 300" },
-        { fontVariationSettings: "'opsz' 144, 'wght' 700", duration: 1.6, ease: 'power3.out', clearProps: 'fontVariationSettings' }, 0.3)
+  const tl = gsap.timeline({ defaults: { ease: 'expo.out' } })
+  if (split) tl.from(split.lines, { yPercent: 110, duration: 1.1, stagger: 0.1, onComplete: () => split.revert() }, 0.1)
+  tl.to(rest, { autoAlpha: 1, y: 0, duration: 0.8, stagger: 0.08, ease: 'power2.out', clearProps: 'all' }, 0.45)
+  if (tiles.length) {
+    tl.to(tiles, { autoAlpha: 1, scale: 1, duration: 1.1, stagger: 0.07, clearProps: 'all' }, 0.6)
+    tl.from(covers, { scale: 1.35, duration: 1.5, stagger: 0.07, clearProps: 'transform' }, 0.6)
   }
-  tl.to(rest, { autoAlpha: 1, y: 0, duration: 0.9, stagger: 0.12, clearProps: 'all' }, 0.7)
 }

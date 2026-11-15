@@ -1,20 +1,21 @@
-// Beweging voor de hele site (spec: Motion). GSAP, ScrollTrigger en SplitText staan als defer-scripts
-// in <head>; dit module-script draait daarna. Bij prefers-reduced-motion of als GSAP ontbreekt
-// gebeurt er niets en blijft alles statisch zichtbaar.
+// Beweging voor de hele site (spec 2026-11-15, Motion: niveau 2). GSAP, ScrollTrigger en SplitText staan
+// als defer-scripts in <head>; dit module-script draait daarna. Bij prefers-reduced-motion of als GSAP
+// ontbreekt gebeurt er niets en blijft alles statisch zichtbaar. De pagina-overgang is puur CSS
+// (View Transitions) en staat daarom niet hier.
 import { intro } from './intro.js'
-import { parallax, torch } from './ambient.js'
-import { bento, chars } from './reveal.js'
+import { headings, rise } from './reveal.js'
+import { hover } from './hover.js'
+import { nav } from './nav.js'
 import { marquee } from './marquee.js'
 import { counts } from './count.js'
 import { hscroll, timeline } from './scroll.js'
-import { transitions } from './transition.js'
 
 const root = document.documentElement
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 const { gsap, ScrollTrigger, SplitText } = window
 
 function stop() {
-  root.classList.remove('motion', 'is-arriving')
+  root.classList.remove('motion')
 }
 
 if (reduced || !gsap || !ScrollTrigger || !SplitText) {
@@ -27,20 +28,19 @@ if (reduced || !gsap || !ScrollTrigger || !SplitText) {
   document.fonts.ready.then(() => {
     try {
       intro(gsap, SplitText)
-      parallax(gsap)
-      if (finePointer) torch(gsap)
-      chars(gsap, SplitText)
-      bento(gsap, finePointer)
+      nav(gsap)
+      headings(gsap, SplitText)
+      rise(gsap, ScrollTrigger)
+      if (finePointer) hover(gsap)
       marquee(gsap, ScrollTrigger)
       counts(gsap)
       hscroll(gsap)
       timeline(gsap)
-      transitions(gsap)
       ScrollTrigger.refresh()
     } catch (error) {
-      // Een fout in een effect mag de inhoud nooit verborgen laten.
-      // Halverwege een effect kan inhoud op opacity 0 staan: alles terugzetten.
-      gsap.set('[data-motion="intro"] > *, .wipe, .wipe__logo', { clearProps: 'all' })
+      // Een fout in een effect mag de inhoud nooit verborgen laten. Halverwege een effect kan inhoud op
+      // opacity 0 staan: alles wat een effect verbergt terugzetten.
+      gsap.set('[data-motion="intro"] > *, [data-motion="tiles"] > *, [data-motion="rise"] > *', { clearProps: 'all' })
       stop()
       console.error(error)
     } finally {
