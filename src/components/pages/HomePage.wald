@@ -1,0 +1,193 @@
+---
+import Layout from '../../layouts/Layout.wald'
+import Bento from '../Bento.wald'
+import Marquee from '../Marquee.wald'
+import ClientRow from '../ClientRow.wald'
+import HScroll from '../HScroll.wald'
+import ProjectCard from '../ProjectCard.wald'
+import PostCard from '../PostCard.wald'
+import Availability from '../Availability.wald'
+import { getClients, getFeaturedProjects, getOtherProjects, getPosts, getSkills, getStatus } from '../../lib/content'
+import { accent, localePath, t, type Locale, routeAlternates } from '../../lib/i18n'
+type Props = { locale: Locale }
+const { locale } = $$props
+const [featured, other, posts, clients, status, skills] = await Promise.all([
+  getFeaturedProjects(locale), getOtherProjects(locale), getPosts(locale), getClients(locale), getStatus(locale), getSkills(locale)
+])
+
+const featuredHtml = featured.length
+  ? await Bento.render({ projects: featured, locale })
+  : renderTemplate`<p class="lead">${t('home.empty', locale)}</p>`
+const names = [...featured, ...other].map(project => project.title)
+const marqueeHtml = names.length >= 3 ? await Marquee.render({ names }) : ''
+const clientsHtml = clients.length ? await ClientRow.render({ clients, locale }) : ''
+
+const years = other.map(project => project.year).filter(Boolean)
+const span = years.length ? `, ${Math.min(...years)}–${Math.max(...years)}` : ''
+const otherHtml = other.length
+  ? await HScroll.render({ id: 'other-work', title: t('home.other', locale), note: t('home.otherNote', locale) + span, items: await Promise.all(other.map(project => ProjectCard.render({ project, locale }))) })
+  : ''
+
+// Technieken: de skills uit Centaur, of anders de stacks van de projecten (meest gebruikt eerst).
+const counts = new Map<string, number>()
+for (const item of [...featured, ...other].flatMap(project => project.stack)) counts.set(item, (counts.get(item) ?? 0) + 1)
+// Op de home alleen de development-skills (frontend, backend, CMS), maximaal 12; design staat op /over.
+const order = ['frontend', 'backend', 'cms']
+const devSkills = skills.filter(skill => order.includes(skill.category)).sort((a, b) => order.indexOf(a.category) - order.indexOf(b.category))
+const tech = (devSkills.length ? devSkills.map(skill => skill.name) : [...counts].sort((a, b) => b[1] - a[1]).map(([name]) => name)).slice(0, 12)
+const techHtml = tech.map(name => renderTemplate`<li class="tag">${name}</li>`).join('')
+
+const latest = posts.slice(0, 3)
+const blogHtml = latest.length
+  ? renderTemplate`<section class="container" aria-labelledby="blog-title">
+      <div class="section-head"><h2 class="section-title" id="blog-title" data-motion="reveal">${new SafeHtml(accent(t('home.blog', locale)))}</h2><a class="btn btn--ghost btn--sm" href="${localePath('blog', locale)}">${t('home.blogAll', locale)} →</a></div>
+      <ul class="home__posts" role="list" data-motion="rise">${new SafeHtml((await Promise.all(latest.map(post => PostCard.render({ post, locale })))).map(card => `<li>${card}</li>`).join(''))}</ul>
+    </section>`
+  : ''
+const statusHtml = status ? await Availability.render({ status, locale }) : ''
+const alternates = routeAlternates('home')
+---
+<Layout title={t('home.title', locale)} fullTitle={true} description={t('home.description', locale)} path={localePath('home', locale)} locale={locale} alternates={alternates}>
+  <main id="main" class="home">
+    <header class="home__hero container" data-motion="intro">
+      {new SafeHtml(statusHtml)}
+      <h1 class="home__title">{new SafeHtml(accent(t('home.heading', locale)))}</h1>
+      <p class="lead">{t('home.lead', locale)}</p>
+    </header>
+
+    <section class="container" aria-labelledby="featured-title">
+      <h2 class="sr-only" id="featured-title">{t('home.featured', locale)}</h2>
+      {new SafeHtml(featuredHtml)}
+    </section>
+
+    {new SafeHtml(marqueeHtml)}
+    {new SafeHtml(clientsHtml)}
+    {new SafeHtml(otherHtml)}
+
+    <section class="container" aria-labelledby="about-title">
+      <div class="section-head"><h2 class="section-title" id="about-title" data-motion="reveal">{new SafeHtml(accent(t('home.about', locale)))}</h2></div>
+      <div class="home__about" data-motion="rise">
+        <div class="card home__about-text">
+          <p class="home__about-lead">{t('home.aboutText', locale)}</p>
+          <p class="home__muted">{t('home.aboutMore', locale)}</p>
+          <a class="btn btn--ink btn--sm" href={localePath('about', locale)}>{t('home.aboutLink', locale)} →</a>
+        </div>
+        <div class="card home__about-tech">
+          <p class="label">{t('home.skills', locale)}</p>
+          <ul class="tags" role="list">{new SafeHtml(techHtml)}</ul>
+        </div>
+      </div>
+    </section>
+
+    {new SafeHtml(blogHtml)}
+
+    <section class="container">
+      <div class="home__cta">
+        {new SafeHtml(statusHtml)}
+        <h2 class="home__cta-title" data-motion="reveal">{new SafeHtml(accent(t('home.ctaTitle', locale)))}</h2>
+        <p class="home__cta-text">{t('home.ctaText', locale)}</p>
+        <a class="btn home__cta-btn" href={localePath('contact', locale)}>{t('home.cta', locale)} →</a>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<style>
+.home {
+  & .home__hero {
+    display: grid;
+    gap: var(--space-6);
+    padding-block: clamp(3rem, 9vw, 7.5rem) var(--space-8);
+  }
+  & .home__title {
+    max-width: 22ch;
+    font-size: var(--text-3xl);
+  }
+  & .home__about {
+    display: grid;
+    gap: var(--space-4);
+
+    @media (min-width: 56rem) {
+      grid-template-columns: 1.1fr 1fr;
+    }
+  }
+  & .home__about-text,
+  & .home__about-tech {
+    display: grid;
+    align-content: start;
+    gap: var(--space-4);
+    padding: clamp(1.5rem, 3.4vw, 2.5rem);
+  }
+  & .home__about-text .btn {
+    justify-self: start;
+  }
+  & .home__about-lead {
+    font-family: var(--font-serif);
+    font-variation-settings: 'opsz' 72, 'SOFT' 0, 'WONK' 0;
+    font-size: clamp(1.4rem, 1.1rem + 1vw, 1.85rem);
+    line-height: 1.3;
+    letter-spacing: -0.015em;
+  }
+  & .home__muted {
+    color: var(--muted);
+  }
+  & .home__posts {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+    gap: var(--space-4);
+    list-style: none;
+  }
+  & .home__cta {
+    position: relative;
+    display: grid;
+    gap: var(--space-6);
+    margin-top: var(--space-24);
+    padding: clamp(2rem, 6vw, 4.5rem);
+    overflow: hidden;
+    border-radius: 28px;
+    background: var(--ink);
+    color: var(--bg);
+  }
+  /* Zachte verloopgloed in de hoek; een vaste laag, geen animatie. */
+  & .home__cta::after {
+    content: '';
+    position: absolute;
+    top: -40%;
+    right: -10%;
+    width: 60%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--grad);
+    filter: blur(60px);
+    opacity: 0.45;
+    pointer-events: none;
+  }
+  & .home__cta > * {
+    position: relative;
+    z-index: 1;
+  }
+  & .home__cta .availability {
+    color: color-mix(in srgb, var(--bg) 72%, transparent);
+  }
+  & .home__cta-title {
+    font-size: clamp(2.25rem, 1.5rem + 3vw, 4.25rem);
+  }
+  & .home__cta-title em {
+    background: var(--grad-on-dark);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+  & .home__cta-text {
+    max-width: 52ch;
+    opacity: 0.8;
+  }
+  & .home__cta-btn {
+    justify-self: start;
+    background: var(--bg);
+    color: var(--ink);
+  }
+}
+[data-theme='dark'] .home .home__cta { background: var(--card); color: var(--ink); }
+[data-theme='dark'] .home .home__cta .availability { color: var(--muted); }
+[data-theme='dark'] .home .home__cta-btn { background: var(--grad); color: var(--on-accent); }
+</style>

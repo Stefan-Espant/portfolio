@@ -1,0 +1,32 @@
+---
+import Layout from '../layouts/Layout.wald'
+import { localePath, t } from '../lib/i18n'
+---
+<Layout title={t('notFound.title', 'nl')} path="/404" locale="nl" noindex={true}>
+  <main id="main" class="not-found">
+    <header class="page-head container">
+      <h1 class="not-found__title">4<em>0</em>4</h1>
+      <p class="lead">{t('notFound.body', 'nl')}</p>
+      <p class="lead" lang="en">{t('notFound.body', 'en')}</p>
+      <div class="not-found__actions">
+        <a class="btn" href={localePath('home', 'nl')}>{t('notFound.back', 'nl')}</a>
+        <a class="btn btn--ghost" href={localePath('home', 'en')} lang="en">{t('notFound.back', 'en')}</a>
+      </div>
+    </header>
+  </main>
+</Layout>
+
+<style>
+.not-found {
+  & .not-found__title {
+    font-size: clamp(6rem, 3rem + 14vw, 14rem);
+    letter-spacing: -0.06em;
+    line-height: 0.85;
+  }
+  & .not-found__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+}
+</style>

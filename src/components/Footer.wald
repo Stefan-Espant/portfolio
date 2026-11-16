@@ -1,0 +1,107 @@
+---
+import Logo from './Logo.wald'
+import { localePath, t, type Locale } from '../lib/i18n'
+import { GITHUB_URL, LINKEDIN_URL } from '../lib/site'
+import { feedPath } from '../lib/extras'
+type Props = { locale: Locale }
+const { locale } = $$props
+const year = new Date().getFullYear()
+---
+<footer class="footer">
+  <div class="footer__inner container">
+    <div class="footer__brand">
+      <a class="footer__word" href={localePath('home', locale)}><Logo height={60} /></a>
+      <p>{t('footer.text', locale)}</p>
+      <p class="footer__copy">© {year} Stefan van der Kort · <a href="/licenses/byzantium.txt">Byzantium (MIT)</a></p>
+    </div>
+    <nav class="footer__col" aria-label={t('footer.pages', locale)}>
+      <p class="footer__head">{t('footer.pages', locale)}</p>
+      <a href={localePath('work', locale)}>{t('nav.work', locale)}</a>
+      <a href={localePath('blog', locale)}>{t('nav.blog', locale)}</a>
+      <a href={localePath('about', locale)}>{t('nav.about', locale)}</a>
+      <a href={localePath('contact', locale)}>{t('nav.contact', locale)}</a>
+    </nav>
+    <nav class="footer__col" aria-label={t('footer.elsewhere', locale)}>
+      <p class="footer__head">{t('footer.elsewhere', locale)}</p>
+      <a href={GITHUB_URL} rel="noopener">GitHub</a>
+      <a href={LINKEDIN_URL} rel="noopener">LinkedIn</a>
+      <a href="https://waldjs.eu" rel="noopener">waldjs.eu</a>
+      <a href="https://centaur-cms.app" rel="noopener">centaur-cms.app</a>
+      <a href={feedPath(locale)}>RSS</a>
+      <a href={localePath('project', locale, 'byzantium')}>Byzantium</a>
+    </nav>
+  </div>
+  <!-- Build-strip: src/build/extras.ts vult de waarden in na de build; in `wald grow` blijft het "–". -->
+  <div class="footer__build container" aria-label={t('build.label', locale)} role="group">
+    <span>{t('build.built', locale)} <b data-build="built">–</b></span>
+    <span>{t('build.html', locale)} <b data-build="html">–</b></span>
+    <span>{t('build.js', locale)} <b data-build="js">–</b></span>
+    <span>{t('build.jsTotal', locale)} <b data-build="js-total">–</b></span>
+    <span>{t('build.content', locale)} <b data-build="content">–</b></span>
+  </div>
+</footer>
+
+<style>
+.footer {
+  margin-top: var(--space-24);
+  border-top: 1px solid var(--line);
+  font-size: var(--text-sm);
+
+  & .footer__inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-8) var(--space-6);
+    padding-block: var(--space-12);
+
+    @media (min-width: 48rem) {
+      grid-template-columns: 2fr 1fr 1fr;
+    }
+  }
+  & .footer__brand {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+    max-width: 36ch;
+    color: var(--muted);
+
+    @media (min-width: 48rem) {
+      grid-column: auto;
+    }
+  }
+  & .footer__word {
+    display: inline-flex;
+    justify-self: start;
+    margin-bottom: var(--space-3);
+  }
+  & .footer__col {
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+  }
+  & .footer__head {
+    margin-bottom: var(--space-1);
+    font-weight: 600;
+  }
+  & .footer__col a {
+    color: var(--muted);
+  }
+  & .footer__col a:hover {
+    color: var(--ink);
+  }
+  & .footer__build {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-6);
+    padding-block: var(--space-4) var(--space-8);
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 0.8125rem;
+    font-variant-numeric: tabular-nums;
+  }
+  & .footer__build b {
+    color: var(--ink);
+    font-weight: 600;
+  }
+}
+</style>

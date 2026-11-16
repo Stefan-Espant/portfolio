@@ -1,24 +1,30 @@
 {
-  "name": "nuxt-app",
+  "name": "steefan-portfolio",
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "nuxt build",
-    "dev": "nuxt dev",
-    "generate": "nuxt generate",
-    "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
-  },
-  "devDependencies": {
-    "nuxt": "^3.9.3",
-    "vue": "^3.4.14",
-    "vue-router": "^4.2.5"
+    "dev": "wald grow",
+    "build": "node -e \"require('fs').rmSync('.vercel/output', { recursive: true, force: true })\" && wald build",
+    "preview": "wald preview",
+    "check": "wald check",
+    "test": "vitest run",
+    "migrate": "tsx scripts/migrate-datocms.ts",
+    "fonts": "node scripts/fetch-fonts.mjs",
+    "build:preview": "CENTAUR_PREVIEW=1 npm run build"
   },
   "dependencies": {
-    "@tabler/icons": "^2.47.0",
-    "axios": "^1.20.0",
-    "gsap": "^3.12.5",
-    "vite": "^5.2.8",
-    "vue-datocms": "^7.0.1"
+    "@waldjs/cli": "^0.12.1",
+    "gsap": "^3.15.0"
+  },
+  "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "marked": "^18.1.1",
+    "satori": "^0.63.2",
+    "sharp": "^0.33.5",
+    "tsx": "^4.23.15",
+    "vitest": "^5.0.4"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

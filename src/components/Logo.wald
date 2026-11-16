@@ -1,0 +1,34 @@
+---
+// Logo "Steefan / van der Kort" in een lichte en een donkere versie (eigen ontwerp, SVG).
+// CSS toont de versie die bij het thema past; de andere staat op display: none en telt dus niet mee
+// voor schermlezers.
+type Props = { height?: number }
+const { height = 36 } = $$props
+// Verhouding van de viewBox: 1718.08 × 438.79.
+const width = Math.round((height * 1718.08) / 438.79)
+---
+<span class="logo" style={`--logo-h: ${height}px`}>
+  <img class="logo__light" src="/images/logo/stefanvdkort-light.svg" alt="Stefan van der Kort" width={String(width)} height={String(height)} decoding="async" />
+  <img class="logo__dark" src="/images/logo/stefanvdkort-dark.svg" alt="Stefan van der Kort" width={String(width)} height={String(height)} decoding="async" />
+</span>
+
+<style>
+.logo {
+  display: inline-flex;
+
+  & img {
+    display: block;
+    width: auto;
+    height: var(--logo-h);
+  }
+  & .logo__dark {
+    display: none;
+  }
+  [data-theme='dark'] & .logo__light {
+    display: none;
+  }
+  [data-theme='dark'] & .logo__dark {
+    display: block;
+  }
+}
+</style>

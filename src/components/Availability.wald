@@ -1,0 +1,41 @@
+---
+import { t, type Locale } from '../lib/i18n'
+import type { Status } from '../lib/content'
+type Props = { status: Status, locale: Locale }
+const { status, locale } = $$props
+---
+<p class="availability" data-available={status.available ? 'true' : 'false'}>
+  <span class="availability__dot" aria-hidden="true"></span><span class="sr-only">{t(status.available ? 'status.available' : 'status.unavailable', locale)}</span> {status.text}
+</p>
+
+<style>
+.availability {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--muted);
+  font-size: var(--text-sm);
+  font-weight: 500;
+
+  & .availability__dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--muted);
+  }
+  &[data-available='true'] .availability__dot {
+    background: var(--ok);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--ok) 25%, transparent);
+    animation: availability-pulse 2.4s infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &[data-available='true'] .availability__dot {
+      animation: none;
+    }
+  }
+}
+@keyframes availability-pulse {
+  50% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--ok) 0%, transparent); }
+}
+</style>

@@ -1,0 +1,246 @@
+---
+import Layout from '../../layouts/Layout.wald'
+import { existsSync } from 'node:fs'
+import { getExperience, getSkills } from '../../lib/content'
+import { getRecentRepos } from '../../lib/github'
+import { accent, formatMonth, localePath, t, type Locale, type MessageKey, routeAlternates } from '../../lib/i18n'
+import { GITHUB_URL } from '../../lib/site'
+import { profilePageNode } from '../../lib/seo'
+type Props = { locale: Locale }
+const { locale } = $$props
+const [experience, skills, repos] = await Promise.all([getExperience(locale), getSkills(locale), getRecentRepos()])
+
+const sectionHead = (id: string, key: MessageKey) =>
+  renderTemplate`<div class="section-head"><h2 class="section-title" id="${id}" data-motion="reveal">${new SafeHtml(accent(t(key, locale)))}</h2></div>`
+
+const what = ([1, 2, 3] as const).map(n => renderTemplate`
+  <li class="card about__what-item">
+    <span class="about__what-num" aria-hidden="true">0${String(n)}</span>
+    <h3>${t(`about.what${n}Title` as MessageKey, locale)}</h3>
+    <p>${t(`about.what${n}Text` as MessageKey, locale)}</p>
+  </li>`).join('')
+
+const experienceItems = experience.map(item => {
+  const range = item.start && item.end
+    ? `${formatMonth(item.start, locale)} – ${formatMonth(item.end, locale)}`
+    : item.start ? `${formatMonth(item.start, locale)} – ${t('about.present', locale)}` : ''
+  return renderTemplate`
+  <li class="about__job">
+    <p class="about__job-when">${range}</p>
+    <div>
+      <h3 class="about__job-role">${item.role}</h3>
+      ${new SafeHtml(item.organisation ? renderTemplate`<p class="about__job-org">${item.organisation}</p>` : '')}
+      <div class="about__job-text">${new SafeHtml(item.descriptionHtml)}</div>
+    </div>
+    <span class="tag">${t(`about.kind.${item.kind}` as MessageKey, locale)}</span>
+  </li>`
+}).join('')
+const experienceHtml = experience.length
+  ? renderTemplate`<section class="container" aria-labelledby="experience-title">${new SafeHtml(sectionHead('experience-title', 'about.experience'))}<ol class="about__jobs" role="list">${new SafeHtml(experienceItems)}</ol></section>`
+  : ''
+
+// Skills per categorie: bekende categorieën in een vaste volgorde met een nette naam, onbekende daarna.
+const CATEGORIES: Record<string, string> = { frontend: 'Frontend', backend: 'Backend', cms: 'CMS', design: 'Design', tools: 'Tools' }
+const groups = new Map<string, string[]>()
+for (const skill of skills) groups.set(skill.category, [...(groups.get(skill.category) ?? []), skill.name])
+const known = Object.keys(CATEGORIES)
+const rankOf = (category: string) => (known.includes(category) ? known.indexOf(category) : known.length)
+const skillGroups = [...groups].sort(([a], [b]) => rankOf(a) - rankOf(b)).map(([category, names]) => renderTemplate`
+  <div class="card about__skill-group">
+    ${new SafeHtml(category ? renderTemplate`<h3 class="about__skill-category">${CATEGORIES[category] ?? category}</h3>` : '')}
+    <ul class="tags" role="list">${new SafeHtml(names.map(name => renderTemplate`<li class="tag">${name}</li>`).join(''))}</ul>
+  </div>`).join('')
+const skillsHtml = skills.length
+  ? renderTemplate`<section class="container" aria-labelledby="skills-title">${new SafeHtml(sectionHead('skills-title', 'about.skills'))}<div class="about__skill-groups" data-motion="rise">${new SafeHtml(skillGroups)}</div></section>`
+  : ''
+
+const repoItems = (repos ?? []).map(repo => renderTemplate`
+  <li><a class="card about__repo" href="${repo.url}" rel="noopener">
+    <span class="about__repo-name">${repo.name}</span>
+    ${new SafeHtml(repo.description ? renderTemplate`<span class="about__repo-desc">${repo.description}</span>` : '')}
+    <span class="about__repo-meta">${[repo.language, repo.stars ? `★ ${repo.stars}` : ''].filter(Boolean).join(' · ')}</span>
+  </a></li>`).join('')
+const githubHtml = repos?.length
+  ? renderTemplate`<section class="container" aria-labelledby="github-title">${new SafeHtml(sectionHead('github-title', 'about.github'))}<ul class="about__repos" role="list" data-motion="rise">${new SafeHtml(repoItems)}</ul></section>`
+  : ''
+
+// Cv alleen tonen als het bestand er echt is (public/cv/cv-nl.pdf of cv-en.pdf).
+const cvPath = `/cv/cv-${locale}.pdf`
+const cvHtml = existsSync(`public${cvPath}`)
+  ? renderTemplate`<a class="btn btn--sm" href="${cvPath}" download>${t('about.cv', locale)} ↓</a>`
+  : ''
+const alternates = routeAlternates('about')
+---
+<Layout title={t('about.title', locale)} description={t('about.description', locale)} path={localePath('about', locale)} locale={locale} alternates={alternates} current="about" jsonLd={[profilePageNode(locale)]}>
+  <main id="main" class="about">
+    <header class="page-head container" data-motion="intro">
+      <h1 class="page-title">{new SafeHtml(accent(t('about.heading', locale)))}</h1>
+    </header>
+    <section class="container about__intro" data-motion="rise">
+      <div class="card about__intro-text">
+        <p class="about__lead">{t('about.lead', locale)}</p>
+        <div class="about__actions">
+          {new SafeHtml(cvHtml)}
+          <a class="btn btn--ghost btn--sm" href={GITHUB_URL} rel="noopener">GitHub ↗</a>
+        </div>
+      </div>
+      <img class="about__portrait" src="/images/stefan/webp/stefan-376.webp" srcset="/images/stefan/webp/stefan-200.webp 200w, /images/stefan/webp/stefan-299.webp 299w, /images/stefan/webp/stefan-376.webp 376w" sizes="(min-width: 48rem) 376px, 100vw" alt={t('about.portrait', locale)} width="376" height="376" decoding="async" />
+    </section>
+
+    <section class="container" aria-labelledby="what-title">
+      {new SafeHtml(sectionHead('what-title', 'about.what'))}
+      <ul class="about__what" role="list" data-motion="rise">{new SafeHtml(what)}</ul>
+    </section>
+
+    {new SafeHtml(experienceHtml)}
+    {new SafeHtml(skillsHtml)}
+    {new SafeHtml(githubHtml)}
+  </main>
+</Layout>
+
+<style>
+.about {
+  & .about__intro {
+    display: grid;
+    gap: var(--space-4);
+
+    /* Het portret is maximaal 376 px breed: de kolom niet breder maken, dan blijft het scherp. */
+    @media (min-width: 48rem) {
+      grid-template-columns: 1fr minmax(0, 23.5rem);
+    }
+  }
+  & .about__intro-text {
+    display: grid;
+    align-content: space-between;
+    gap: var(--space-8);
+    padding: clamp(1.5rem, 3.4vw, 2.75rem);
+  }
+  & .about__lead {
+    font-family: var(--font-serif);
+    font-variation-settings: 'opsz' 72, 'SOFT' 0, 'WONK' 0;
+    font-size: clamp(1.4rem, 1.1rem + 1vw, 1.9rem);
+    line-height: 1.3;
+    letter-spacing: -0.015em;
+  }
+  & .about__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+  & .about__portrait {
+    width: 100%;
+    max-width: 23.5rem;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+  }
+  & .about__what {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: var(--space-4);
+    list-style: none;
+  }
+  & .about__what-item {
+    display: grid;
+    align-content: start;
+    gap: var(--space-3);
+    padding: 1.625rem;
+  }
+  & .about__what-item h3 {
+    font-size: 1.5rem;
+  }
+  & .about__what-item p {
+    color: var(--muted);
+  }
+  & .about__what-num {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 12px;
+    background: var(--grad);
+    color: var(--on-accent);
+    font-weight: 700;
+  }
+  & .about__jobs {
+    list-style: none;
+  }
+  & .about__job {
+    display: grid;
+    gap: var(--space-2) var(--space-6);
+    padding-block: var(--space-6);
+    border-top: 1px solid var(--line);
+    align-items: baseline;
+
+    @media (min-width: 48rem) {
+      grid-template-columns: 11rem 1fr auto;
+    }
+  }
+  & .about__job:last-child {
+    border-bottom: 1px solid var(--line);
+  }
+  & .about__job-when {
+    color: var(--muted);
+    font-size: var(--text-sm);
+    font-variant-numeric: tabular-nums;
+  }
+  & .about__job-role {
+    font-size: 1.5rem;
+  }
+  & .about__job-org,
+  & .about__job-text {
+    margin-top: var(--space-1);
+    max-width: 60ch;
+    color: var(--muted);
+  }
+  & .about__job .tag {
+    justify-self: start;
+  }
+  & .about__skill-groups {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr));
+    gap: var(--space-4);
+  }
+  & .about__skill-group {
+    display: grid;
+    align-content: start;
+    gap: var(--space-4);
+    padding: var(--space-6);
+  }
+  & .about__skill-category {
+    color: var(--muted);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+  & .about__repos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+    gap: var(--space-4);
+    list-style: none;
+  }
+  & .about__repo {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2);
+    height: 100%;
+    padding: var(--space-6);
+  }
+  & .about__repo-name {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 600;
+    font-stretch: 85%;
+    letter-spacing: -0.03em;
+  }
+  & .about__repo-desc,
+  & .about__repo-meta {
+    color: var(--muted);
+  }
+  & .about__repo-meta {
+    font-size: var(--text-sm);
+  }
+}
+</style>

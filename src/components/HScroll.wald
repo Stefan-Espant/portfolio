@@ -1,0 +1,86 @@
+---
+// Horizontale strook (spec 2026-11-15, Motion: hscroll). Zonder JavaScript, op mobiel en bij reduced
+// motion een swipe-lijst met scroll-snap; motion.js pint hem op desktop en toont dan teller en balk.
+import { accent } from '../lib/i18n'
+type Props = { id: string, title: string, note?: string, items: string[] }
+const { id, title, note = '', items } = $$props
+const list = items.map(item => `<li class="hscroll__item">${item}</li>`).join('')
+const count = String(items.length).padStart(2, '0')
+const dot = note ? ' · ' : ''
+---
+<section class="hscroll" data-motion="hscroll" aria-labelledby={id}>
+  <div class="hscroll__head container section-head">
+    <h2 class="hscroll__title section-title" id={id} data-motion="reveal">{new SafeHtml(accent(title))}</h2>
+    <p class="section-note"><span class="hscroll__counter" aria-hidden="true"><b data-hscroll-current>01</b> / {count}{dot}</span>{note}</p>
+  </div>
+  <ul class="hscroll__track" role="list">{new SafeHtml(list)}</ul>
+  <div class="hscroll__progress" aria-hidden="true"><i></i></div>
+</section>
+
+<style>
+.hscroll {
+  /* Start van de strook gelijk met de container, ook op brede schermen. */
+  --track-inset: max(var(--page-gutter), calc((100% - var(--page-width)) / 2));
+
+  & .hscroll__counter {
+    display: none;
+  }
+  & .hscroll__counter b {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  & .hscroll__track {
+    display: flex;
+    gap: var(--space-4);
+    padding: 0 var(--track-inset) var(--space-4);
+    list-style: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--track-inset);
+  }
+  & .hscroll__item {
+    flex: 0 0 min(78vw, 26rem);
+    scroll-snap-align: start;
+  }
+  & .hscroll__progress {
+    display: none;
+    height: 2px;
+    margin: var(--space-6) var(--track-inset) 0;
+    background: var(--line);
+  }
+  & .hscroll__progress i {
+    display: block;
+    height: 100%;
+    background: var(--grad);
+    transform-origin: left;
+    transform: scaleX(0);
+  }
+
+  /* Gepinde stand op desktop (motion.js zet .is-pinned). */
+  &.is-pinned {
+    min-height: 100svh;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: center;
+    overflow: clip;
+  }
+  /* Automatische marges in een grid laten de container krimpen; daarom expliciet 100%. */
+  &.is-pinned .hscroll__head {
+    width: 100%;
+    padding-top: 0;
+  }
+  &.is-pinned .hscroll__counter {
+    display: inline;
+  }
+  &.is-pinned .hscroll__progress {
+    display: block;
+  }
+  &.is-pinned .hscroll__track {
+    justify-self: start;
+    width: max-content;
+    overflow: visible;
+    scroll-snap-type: none;
+    will-change: transform;
+  }
+}
+</style>

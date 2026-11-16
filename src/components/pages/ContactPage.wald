@@ -1,0 +1,88 @@
+---
+import Layout from '../../layouts/Layout.wald'
+import ContactForm from '../ContactForm.wald'
+import Availability from '../Availability.wald'
+import { getStatus } from '../../lib/content'
+import { getSiteSettings } from '../../lib/cms'
+import { accent, localePath, t, type Locale, routeAlternates } from '../../lib/i18n'
+import { CONTACT_EMAIL, GITHUB_URL, LINKEDIN_URL } from '../../lib/site'
+type Props = { locale: Locale }
+const { locale } = $$props
+const [status, site] = await Promise.all([getStatus(locale), getSiteSettings()])
+const statusHtml = status ? await Availability.render({ status, locale }) : ''
+const channels = ([
+  ['GitHub', GITHUB_URL],
+  ['LinkedIn', site?.linkedIn || LINKEDIN_URL],
+  ['Instagram', site?.instagram ?? '']
+] as Array<[string, string]>).filter(([, href]) => href)
+  .map(([label, href]) => renderTemplate`<li><a class="contact__big" href="${href}" rel="noopener">${label} ↗</a></li>`).join('')
+const alternates = routeAlternates('contact')
+---
+<Layout title={t('contact.title', locale)} description={t('contact.description', locale)} path={localePath('contact', locale)} locale={locale} alternates={alternates} current="contact">
+  <main id="main" class="contact">
+    <header class="page-head container" data-motion="intro">
+      {new SafeHtml(statusHtml)}
+      <h1 class="page-title">{new SafeHtml(accent(t('contact.heading', locale)))}</h1>
+      <p class="lead">{t('contact.lead', locale)}</p>
+    </header>
+    <div class="container contact__grid" data-motion="rise">
+      <ContactForm locale={locale} />
+      <aside class="contact__side">
+        <div class="card contact__card">
+          <p class="label">{t('contact.mail', locale)}</p>
+          <a class="contact__big" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+        </div>
+        <div class="card contact__card">
+          <p class="label">{t('contact.other', locale)}</p>
+          <ul class="contact__channels" role="list">{new SafeHtml(channels)}</ul>
+        </div>
+        <div class="card contact__card">
+          <p class="label">{t('contact.code', locale)}</p>
+          <p class="contact__muted">{t('contact.codeText', locale)} <code>npm create wald</code>.</p>
+        </div>
+      </aside>
+    </div>
+  </main>
+  <script src="/contact.js" defer data-wald-no-hoist></script>
+</Layout>
+
+<style>
+.contact {
+  & .contact__grid {
+    display: grid;
+    gap: var(--space-4);
+    align-items: start;
+
+    @media (min-width: 56rem) {
+      grid-template-columns: 1.4fr 1fr;
+    }
+  }
+  & .contact__side {
+    display: grid;
+    gap: var(--space-4);
+  }
+  & .contact__card {
+    display: grid;
+    gap: var(--space-2);
+    padding: 1.625rem;
+  }
+  & .contact__big {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 600;
+    font-stretch: 85%;
+    letter-spacing: -0.03em;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+  & .contact__channels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-6);
+    list-style: none;
+  }
+  & .contact__muted {
+    color: var(--muted);
+  }
+}
+</style>

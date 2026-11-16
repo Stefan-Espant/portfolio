@@ -1,0 +1,165 @@
+---
+// Proces als tijdlijn (spec 2026-11-15, Motion: timeline). Statisch: verticale tijdlijn met alle stappen
+// actief. motion.js maakt er op desktop een gepinde horizontale tijdlijn van.
+import { accent } from '../lib/i18n'
+type Props = { id: string, title: string, steps: Array<{ title: string, html: string }> }
+const { id, title, steps } = $$props
+const list = steps.map((step, index) => renderTemplate`
+  <li class="timeline__step">
+    <span class="timeline__num" aria-hidden="true">${String(index + 1).padStart(2, '0')}</span>
+    <span class="timeline__dot" aria-hidden="true"></span>
+    <h3 class="timeline__step-title">${step.title}</h3>
+    <div class="timeline__text">${new SafeHtml(step.html)}</div>
+  </li>`).join('')
+---
+<section class="timeline" data-motion="timeline" aria-labelledby={id}>
+  <div class="container section-head">
+    <h2 class="section-title" id={id} data-motion="reveal">{new SafeHtml(accent(title))}</h2>
+  </div>
+  <div class="timeline__body container">
+    <div class="timeline__line" aria-hidden="true"><i></i></div>
+    <ol class="timeline__track" role="list">{new SafeHtml(list)}</ol>
+  </div>
+</section>
+
+<style>
+.timeline {
+  & .timeline__body {
+    position: relative;
+  }
+  /* Verticaal (standaard): een lijn met het verloop links, alle stappen actief. */
+  & .timeline__line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(var(--page-gutter) + 6px);
+    width: 2px;
+    background: var(--grad);
+  }
+  & .timeline__line i {
+    display: none;
+  }
+  & .timeline__track {
+    display: grid;
+    gap: var(--space-12);
+    padding: 0 0 0 var(--space-12);
+    list-style: none;
+  }
+  & .timeline__step {
+    position: relative;
+    display: grid;
+    gap: var(--space-3);
+  }
+  & .timeline__num {
+    font-family: var(--font-display);
+    font-size: 4.5rem;
+    font-weight: 600;
+    font-stretch: 85%;
+    letter-spacing: -0.05em;
+    line-height: 1;
+    background: var(--grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  & .timeline__dot {
+    position: absolute;
+    top: 1.75rem;
+    left: calc(-1 * var(--space-12));
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--grad);
+  }
+  & .timeline__step-title {
+    font-size: 1.625rem;
+  }
+  & .timeline__text {
+    max-width: 38ch;
+    font-family: var(--font-serif);
+    font-variation-settings: var(--serif-text);
+    font-size: 1.125rem;
+    line-height: 1.6;
+  }
+  & .timeline__text > * + * {
+    margin-top: var(--space-3);
+  }
+
+  /* Horizontale tijdlijn op desktop (motion.js zet .is-horizontal en .is-active per stap). */
+  &.is-horizontal {
+    min-height: 100svh;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: center;
+    overflow: clip;
+  }
+  &.is-horizontal > .container {
+    width: 100%;
+    padding-top: 0;
+  }
+  &.is-horizontal .timeline__body {
+    justify-self: start;
+    width: max-content;
+    max-width: none;
+    padding-inline: max(var(--page-gutter), calc((100vw - var(--page-width)) / 2));
+    will-change: transform;
+  }
+  &.is-horizontal .timeline__track {
+    display: flex;
+    gap: 0;
+    padding: 0;
+  }
+  &.is-horizontal .timeline__step {
+    width: min(70vw, 34rem);
+    padding-right: var(--space-16);
+    opacity: 0.4;
+    transition: opacity 0.4s;
+  }
+  &.is-horizontal .timeline__num {
+    height: 5.5rem;
+    font-size: 5rem;
+    background: none;
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--ink);
+  }
+  &.is-horizontal .timeline__line {
+    top: 6rem;
+    bottom: auto;
+    left: 0;
+    right: 0;
+    width: auto;
+    height: 2px;
+    background: var(--line);
+  }
+  &.is-horizontal .timeline__line i {
+    display: block;
+    position: absolute;
+    inset: 0;
+    background: var(--grad);
+    transform-origin: left;
+    transform: scaleX(0);
+  }
+  &.is-horizontal .timeline__dot {
+    position: static;
+    margin: 0.2rem 0 var(--space-3);
+    background: var(--bg);
+    box-shadow: inset 0 0 0 2px var(--ink);
+  }
+  &.is-horizontal .timeline__step.is-active {
+    opacity: 1;
+  }
+  &.is-horizontal .timeline__step.is-active .timeline__num {
+    -webkit-text-stroke-color: transparent;
+    background: var(--grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+  &.is-horizontal .timeline__step.is-active .timeline__dot {
+    background: var(--grad);
+    box-shadow: none;
+  }
+  @media (forced-colors: active) {
+    & .timeline__num { background: none; color: CanvasText; }
+  }
+}
+</style>

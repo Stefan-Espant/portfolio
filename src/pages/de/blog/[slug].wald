@@ -1,0 +1,11 @@
+---
+import BlogPostPage from '../../../components/pages/BlogPostPage.wald'
+import { getPosts } from '../../../lib/content'
+type Props = { slug: string }
+const { slug } = $$props
+export async function getStaticPaths() {
+  const posts = await getPosts('de')
+  return posts.map(post => ({ params: { slug: post.slug } }))
+}
+---
+<BlogPostPage locale="de" slug={slug} />

@@ -1,0 +1,98 @@
+---
+import Layout from '../../layouts/Layout.wald'
+import ProjectCard from '../ProjectCard.wald'
+import { getProjects, PROJECT_TYPES } from '../../lib/content'
+import { accent, localePath, t, type Locale, type MessageKey, routeAlternates } from '../../lib/i18n'
+type Props = { locale: Locale }
+const { locale } = $$props
+const projects = await getProjects(locale)
+// Het eerste uitgelichte project staat breed bovenaan.
+const cards = await Promise.all(projects.map(async (project, index) => {
+  const wide = index === 0 && project.featured
+  const card = await ProjectCard.render({ project, locale, headingLevel: 2, size: wide ? 'large' : 'normal' })
+  return renderTemplate`<li class="work__item${wide ? ' work__item--wide' : ''}" data-filter-item data-type="${project.type}">${new SafeHtml(card)}</li>`
+}))
+// Alleen types die echt voorkomen, in de vaste volgorde van PROJECT_TYPES.
+const types = PROJECT_TYPES.filter(type => projects.some(project => project.type === type))
+const count = (type?: string) => projects.filter(project => !type || project.type === type).length
+const buttons = [
+  renderTemplate`<button type="button" data-value="all" aria-pressed="true">${t('work.filterAll', locale)}<span class="work__n" aria-hidden="true">${String(count())}</span></button>`,
+  ...types.map(type => renderTemplate`<button type="button" data-value="${type}" aria-pressed="false">${t(`type.${type}` as MessageKey, locale)}<span class="work__n" aria-hidden="true">${String(count(type))}</span></button>`)
+].join('')
+const total = t('work.count', locale).replace('{n}', String(projects.length))
+const filters = types.length > 1
+  ? renderTemplate`<div class="work__bar">
+      <div class="work__filters" role="group" aria-label="${t('work.filterLabel', locale)}" data-filter hidden>${new SafeHtml(buttons)}</div>
+      <p class="section-note" aria-live="polite" data-filter-status data-template="${t('work.count', locale)}">${total}</p>
+    </div>`
+  : ''
+const list = projects.length
+  ? `<ul class="work__grid" role="list" data-motion="rise">${cards.join('')}</ul>`
+  : renderTemplate`<p class="lead">${t('home.empty', locale)}</p>`
+const alternates = routeAlternates('work')
+---
+<Layout title={t('work.title', locale)} description={t('work.description', locale)} path={localePath('work', locale)} locale={locale} alternates={alternates} current="work">
+  <main id="main" class="work">
+    <header class="page-head container" data-motion="intro">
+      <h1 class="page-title">{new SafeHtml(accent(t('work.heading', locale)))}</h1>
+      <p class="lead">{t('work.lead', locale)}</p>
+    </header>
+    <div class="container">
+      {new SafeHtml(filters)}
+      {new SafeHtml(list)}
+    </div>
+  </main>
+  <script src="/filter.js" defer data-wald-no-hoist></script>
+</Layout>
+
+<style>
+.work {
+  & .work__bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+  }
+  & .work__filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  & .work__filters button {
+    padding: 0.5rem 0.95rem;
+    border: 0;
+    border-radius: var(--pill);
+    background: var(--card);
+    box-shadow: var(--edge);
+    color: var(--ink);
+    font: 500 var(--text-sm) / 1.2 var(--font-sans);
+    cursor: pointer;
+  }
+  & .work__filters button[aria-pressed='true'] {
+    background: var(--ink);
+    color: var(--bg);
+  }
+  & .work__n {
+    margin-left: 0.3em;
+    font-size: 0.75em;
+    opacity: 0.6;
+    vertical-align: super;
+  }
+  & .work__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+    gap: var(--space-4);
+    list-style: none;
+  }
+  @media (min-width: 48rem) {
+    & .work__item--wide {
+      grid-column: span 2;
+    }
+  }
+  & .work__item[hidden] {
+    display: none;
+  }
+}
+</style>

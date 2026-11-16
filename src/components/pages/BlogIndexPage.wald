@@ -1,0 +1,39 @@
+---
+import Layout from '../../layouts/Layout.wald'
+import PostCard from '../PostCard.wald'
+import { getPosts } from '../../lib/content'
+import { accent, localePath, t, type Locale, routeAlternates } from '../../lib/i18n'
+type Props = { locale: Locale }
+const { locale } = $$props
+const posts = await getPosts(locale)
+// De nieuwste post staat breed bovenaan.
+const cards = await Promise.all(posts.map(async (post, index) =>
+  `<li class="${index === 0 ? 'blog__item blog__item--featured' : 'blog__item'}">${await PostCard.render({ post, locale, headingLevel: 2, featured: index === 0 })}</li>`))
+const list = posts.length
+  ? `<ul class="blog__grid" role="list" data-motion="rise">${cards.join('')}</ul>`
+  : renderTemplate`<p class="lead">${t('blog.empty', locale)}</p>`
+const alternates = routeAlternates('blog')
+---
+<Layout title={t('blog.title', locale)} description={t('blog.description', locale)} path={localePath('blog', locale)} locale={locale} alternates={alternates} current="blog">
+  <main id="main" class="blog">
+    <header class="page-head container" data-motion="intro">
+      <h1 class="page-title">{new SafeHtml(accent(t('blog.heading', locale)))}</h1>
+      <p class="lead">{t('blog.lead', locale)}</p>
+    </header>
+    <div class="container">{new SafeHtml(list)}</div>
+  </main>
+</Layout>
+
+<style>
+.blog {
+  & .blog__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+    gap: var(--space-4);
+    list-style: none;
+  }
+  & .blog__item--featured {
+    grid-column: 1 / -1;
+  }
+}
+</style>

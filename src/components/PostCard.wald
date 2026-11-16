@@ -1,0 +1,94 @@
+---
+import { formatDate, localePath, t, type Locale } from '../lib/i18n'
+import { readingMinutes, type Post } from '../lib/content'
+type Props = { post: Post, locale: Locale, headingLevel?: 2 | 3, featured?: boolean }
+const { post, locale, headingLevel = 3, featured = false } = $$props
+const heading = new SafeHtml(headingLevel === 2 ? 'h2' : 'h3')
+const title = renderTemplate`<${heading} class="post-card__title">${post.title}</${heading}>`
+// Decoratief: de titel is de linktekst. Zonder cover een abstract verloop.
+const cover = post.cover
+  ? renderTemplate`<img class="post-card__img" src="${post.cover}" alt="" loading="lazy" decoding="async">`
+  : '<span class="post-card__art" aria-hidden="true"></span>'
+const date = post.publishedAt ? renderTemplate`<time datetime="${post.publishedAt}">${formatDate(post.publishedAt, locale)}</time>` : ''
+const tag = post.tags[0] ? renderTemplate`<span>${post.tags[0]}</span>` : ''
+const minutes = renderTemplate`<span>${t('post.readingTime', locale).replace('{n}', String(readingMinutes(post.bodyHtml)))}</span>`
+const meta = [tag, date, minutes].filter(Boolean).join('<span aria-hidden="true">·</span>')
+---
+<a class="post-card" data-featured={featured ? 'true' : 'false'} href={localePath('post', locale, post.slug)}>
+  <span class="post-card__cover">{new SafeHtml(cover)}</span>
+  <span class="post-card__body">
+    <span class="post-card__meta">{new SafeHtml(meta)}</span>
+    {new SafeHtml(title)}
+    <span class="post-card__excerpt">{post.excerpt}</span>
+  </span>
+</a>
+
+<style>
+.post-card {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: var(--edge);
+
+  & .post-card__cover {
+    display: block;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+  }
+  & .post-card__img,
+  & .post-card__art {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  & .post-card__art {
+    background:
+      radial-gradient(80% 90% at 20% 20%, var(--byz-brand-300), transparent 60%),
+      radial-gradient(80% 90% at 90% 80%, var(--byz-brand-700), transparent 60%),
+      var(--byz-brand-500);
+  }
+  & .post-card__body {
+    display: grid;
+    align-content: start;
+    gap: var(--space-3);
+    padding: 1.125rem 1.25rem 1.375rem;
+  }
+  & .post-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    color: var(--muted);
+    font-size: var(--text-sm);
+  }
+  & .post-card__title {
+    font-size: 1.45rem;
+    line-height: 0.8;
+  }
+  & .post-card__excerpt {
+    color: var(--muted);
+  }
+
+  @media (min-width: 48rem) {
+    &[data-featured='true'] {
+      grid-template-columns: 1.3fr 1fr;
+      grid-template-rows: none;
+    }
+    &[data-featured='true'] .post-card__cover {
+      aspect-ratio: auto;
+      min-height: 21rem;
+    }
+    &[data-featured='true'] .post-card__body {
+      align-content: center;
+      gap: var(--space-4);
+      padding: clamp(1.5rem, 3.4vw, 2.75rem);
+    }
+    &[data-featured='true'] .post-card__title {
+      font-size: clamp(1.75rem, 1rem + 2vw, 2.6rem);
+    }
+  }
+}
+</style>

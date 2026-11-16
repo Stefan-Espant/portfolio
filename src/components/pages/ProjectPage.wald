@@ -1,0 +1,185 @@
+---
+import Layout from '../../layouts/Layout.wald'
+import Metrics from '../Metrics.wald'
+import Timeline from '../Timeline.wald'
+import Gallery from '../Gallery.wald'
+import Playground from '../Playground.wald'
+import { getProject, getProjects, projectAlternates, transitionName } from '../../lib/content'
+import { localePath, t, type Locale, type MessageKey } from '../../lib/i18n'
+import { breadcrumbNode, projectNode } from '../../lib/seo'
+type Props = { locale: Locale, slug: string }
+const { locale, slug } = $$props
+const [project, all] = await Promise.all([getProject(slug, locale), getProjects(locale)])
+// Alleen bereikbaar in `wald grow`; de build rendert alleen gepubliceerde projecten.
+if (!project) throw new Error(`Project "${slug}" (${locale}) staat niet (gepubliceerd) in Centaur`)
+const alternates = await projectAlternates(project)
+const jsonLd = [projectNode(project, locale), breadcrumbNode([[t('nav.work', locale), localePath('work', locale)], [project.title, localePath('project', locale, project.slug)]])]
+
+const links = ([
+  [t('project.live', locale), project.liveUrl],
+  [t('project.repo', locale), project.repoUrl],
+  [t('project.design', locale), project.designUrl],
+  [t('project.npm', locale), project.npmPackage ? `https://www.npmjs.com/package/${project.npmPackage}` : '']
+] as Array<[string, string]>).filter(([, href]) => href)
+  .map(([label, href]) => renderTemplate`<a href="${href}" rel="noopener">${label} ↗</a>`).join('<span aria-hidden="true"> · </span>')
+const facts = ([
+  [t('project.type', locale), renderTemplate`${t(`type.${project.type}` as MessageKey, locale)}`],
+  [t('project.year', locale), project.year ? String(project.year) : ''],
+  [t('project.client', locale), renderTemplate`${project.client}`],
+  [t('project.stack', locale), renderTemplate`${project.stack.join(', ')}`],
+  [t('project.links', locale), links]
+] as Array<[string, string]>).filter(([, value]) => value)
+  .map(([label, value]) => renderTemplate`<div><dt>${label}</dt><dd>${new SafeHtml(value)}</dd></div>`).join('')
+
+const metricsHtml = project.metrics.length
+  ? await Metrics.render({ id: 'metrics-title', title: t('project.metrics', locale), metrics: project.metrics })
+  : ''
+const steps = ([
+  [t('project.problem', locale), project.problemHtml],
+  [t('project.approach', locale), project.approachHtml],
+  [t('project.result', locale), project.resultHtml]
+] as Array<[string, string]>).filter(([, html]) => html).map(([title, html]) => ({ title, html }))
+const timelineHtml = steps.length ? await Timeline.render({ id: 'process-title', title: t('project.process', locale), steps }) : ''
+// De playground hoort alleen bij WaldJS zelf.
+const isWald = project.npmPackage === '@waldjs/cli'
+const playgroundHtml = isWald ? await Playground.render({ locale }) : ''
+const playgroundScript = isWald ? '<script type="module" src="/playground/playground.js" data-wald-no-hoist></script>' : ''
+const galleryHtml = project.gallery.length
+  ? await Gallery.render({ id: 'gallery-title', title: t('project.gallery', locale), images: project.gallery, locale })
+  : ''
+// Cover en titel krijgen dezelfde view-transition-name als op de projectkaart: ze schuiven door.
+const cover = project.cover
+  ? renderTemplate`<div class="container"><div class="case__cover"><img src="${project.cover}" alt="${project.coverAlt}" decoding="async" fetchpriority="high" style="view-transition-name: ${transitionName('cover', project.slug)}"></div></div>`
+  : ''
+const summaryHtml = project.summary ? renderTemplate`<p class="case__summary">${project.summary}</p>` : ''
+
+// Volgend project in de vaste volgorde, aan het eind weer het eerste.
+const index = all.findIndex(item => item.slug === project.slug)
+const next = all.length > 1 ? all[(index + 1) % all.length] : null
+const nextHtml = next
+  ? renderTemplate`<section class="container case__next" aria-label="${t('project.next', locale)}">
+      <a class="card case__next-link" href="${localePath('project', locale, next.slug)}">
+        <span class="label">${t('project.next', locale)}</span>
+        <span class="case__next-title">${next.title}</span>
+        ${new SafeHtml(next.summary ? renderTemplate`<span class="case__next-sum">${next.summary}</span>` : '')}
+      </a>
+      ${new SafeHtml(next.cover ? renderTemplate`<span class="case__next-img" aria-hidden="true"><img src="${next.cover}" alt="" loading="lazy" decoding="async"></span>` : '')}
+    </section>`
+  : ''
+---
+<Layout title={project.title} description={project.summary} path={localePath('project', locale, project.slug)} locale={locale} alternates={alternates} current="work" jsonLd={jsonLd}>
+  <main id="main" class="case">
+    <header class="case__header container" data-motion="intro">
+      <nav class="case__crumb" aria-label={t('nav.breadcrumb', locale)}><a href={localePath('work', locale)}>{t('nav.work', locale)}</a> <span aria-hidden="true">/</span> {t(`type.${project.type}` as MessageKey, locale)}</nav>
+      <h1 class="case__title" style={`view-transition-name: ${transitionName('title', project.slug)}`}>{project.title}</h1>
+      {new SafeHtml(summaryHtml)}
+      <dl class="case__facts">{new SafeHtml(facts)}</dl>
+    </header>
+    {new SafeHtml(cover)}
+    {new SafeHtml(metricsHtml)}
+    {new SafeHtml(timelineHtml)}
+    {new SafeHtml(playgroundHtml)}
+    {new SafeHtml(galleryHtml)}
+    {new SafeHtml(nextHtml)}
+  </main>
+  {new SafeHtml(playgroundScript)}
+</Layout>
+
+<style>
+.case {
+  & .case__header {
+    display: grid;
+    gap: var(--space-6);
+    padding-block: clamp(3rem, 8vw, 6.5rem) var(--space-6);
+  }
+  & .case__crumb {
+    color: var(--muted);
+    font-size: var(--text-sm);
+  }
+  & .case__crumb a:hover {
+    color: var(--ink);
+  }
+  & .case__title {
+    font-size: clamp(3.5rem, 1.5rem + 9vw, 11rem);
+    letter-spacing: -0.02em;
+    line-height: 0.8;
+  }
+  & .case__summary {
+    max-width: 34ch;
+    font-family: var(--font-serif);
+    font-variation-settings: 'opsz' 72, 'SOFT' 0, 'WONK' 0;
+    font-size: clamp(1.35rem, 1rem + 1.2vw, 1.9rem);
+    line-height: 1.3;
+    letter-spacing: -0.015em;
+  }
+  & .case__facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: var(--space-4) var(--space-6);
+    margin-top: var(--space-4);
+    padding-block: var(--space-6);
+    border-block: 1px solid var(--line);
+  }
+  & .case__facts dt {
+    margin-bottom: var(--space-1);
+    color: var(--muted);
+    font-size: var(--text-sm);
+  }
+  & .case__facts dd {
+    font-weight: 500;
+  }
+  /* De cover heel tonen, in zijn eigen verhouding: illustraties en posters mogen niet bijgesneden worden.
+     Staande beelden worden hooguit 80vh hoog en staan dan gecentreerd op de kaart. */
+  & .case__cover {
+    display: grid;
+    place-items: center;
+    margin-top: var(--space-8);
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: var(--card);
+    box-shadow: var(--edge);
+  }
+  & .case__cover img {
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 80vh;
+  }
+  & .case__next {
+    display: grid;
+    gap: var(--space-4);
+    margin-top: var(--space-24);
+
+    @media (min-width: 56rem) {
+      grid-template-columns: 1fr 1.2fr;
+    }
+  }
+  & .case__next-link {
+    display: grid;
+    align-content: space-between;
+    gap: var(--space-6);
+    padding: var(--space-8);
+  }
+  & .case__next-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.25rem, 1.5rem + 3vw, 4.25rem);
+    font-weight: 600;
+    font-stretch: 85%;
+    letter-spacing: -0.045em;
+    line-height: 0.8;
+  }
+  & .case__next-sum {
+    color: var(--muted);
+  }
+  & .case__next-img {
+    min-height: 16rem;
+    overflow: hidden;
+    border-radius: var(--radius);
+  }
+  & .case__next-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+</style>
