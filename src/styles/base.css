@@ -32,6 +32,9 @@ body::before {
 
 main { flex: 1; }
 
+/* Open mobiel menu (Nav.wald): de pagina eronder scrolt niet mee. */
+html:has(.nav__overlay[open]) { overflow: hidden; }
+
 /* Koppen in Bricolage (Byzantium zet ze standaard in de serif). */
 h1, h2, h3, h4 {
   font-family: var(--font-display);
