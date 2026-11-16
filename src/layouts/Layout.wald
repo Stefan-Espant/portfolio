@@ -80,7 +80,7 @@ const inlineCss = `<style data-wald-no-hoist>${CSS_FILES
 // 1. Thema: de eigen keuze (localStorage, gezet door /theme.js) of anders de systeeminstelling.
 // 2. Beweging: `motion` op <html> laat alleen de home-intro wachten op het motion-script. Start dat
 //    niet binnen 3 s, dan gaat de class eraf: inhoud blijft nooit onzichtbaar.
-const headScript = `<script data-wald-no-hoist>(function(){var d=document.documentElement,t;try{t=localStorage.getItem('theme')}catch(e){}d.dataset.theme=t==='dark'||t==='light'?t:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;d.classList.add('motion');setTimeout(function(){if(!window.__motionReady)d.classList.remove('motion')},3000)})()</script>
+const headScript = `<script data-wald-no-hoist>(function(){var d=document.documentElement,t;d.classList.add('js');try{t=localStorage.getItem('theme')}catch(e){}d.dataset.theme=t==='dark'||t==='light'?t:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;d.classList.add('motion');setTimeout(function(){if(!window.__motionReady)d.classList.remove('motion')},3000)})()</script>
     <script src="/theme.js" defer data-wald-no-hoist></script>
     <script src="/vendor/gsap.min.js" defer data-wald-no-hoist></script>
     <script src="/vendor/ScrollTrigger.min.js" defer data-wald-no-hoist></script>

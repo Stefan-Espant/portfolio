@@ -14,6 +14,15 @@ const items = routes.map(([route, label]) => {
   const ariaCurrent = new SafeHtml(route === current ? ' aria-current="page"' : '')
   return renderTemplate`<li><a class="nav__link" href="${localePath(route, locale)}"${ariaCurrent}>${t(label, locale)}</a></li>`
 }).join('')
+// Mobiel menu (overlay): dezelfde routes, groot, met een volgnummer; de huidige pagina cursief.
+const bigItems = routes.map(([route, label], index) => {
+  const ariaCurrent = new SafeHtml(route === current ? ' aria-current="page"' : '')
+  return renderTemplate`<li><a class="nav__big-link" href="${localePath(route, locale)}"${ariaCurrent}><span>${t(label, locale)}</span><sup aria-hidden="true">0${String(index + 1)}</sup></a></li>`
+}).join('')
+const overlayLanguages = LOCALES.map(target => {
+  const current = new SafeHtml(target === locale ? ' aria-current="true"' : '')
+  return renderTemplate`<a class="nav__overlay-lang" href="${langHref(alternates, target)}" hreflang="${target}" lang="${target}" aria-label="${LANGUAGE_NAMES[target]}"${current}>${target.toUpperCase()}</a>`
+}).join('')
 // Taalmenu: <details> werkt zonder JavaScript; /lang-menu.js sluit het bij Esc of een klik ernaast.
 const languages = LOCALES.map(target => {
   const current = new SafeHtml(target === locale ? ' aria-current="true"' : '')
@@ -39,9 +48,27 @@ const langMenu = renderTemplate`<details class="nav__lang" data-lang-menu>
     <button class="nav__pill nav__theme" type="button" data-theme-toggle aria-pressed="false" aria-label={t('theme.label', locale)} hidden>
       <span class="nav__moon" aria-hidden="true">☾</span><span class="nav__sun" aria-hidden="true">☀</span>
     </button>
+    <button class="nav__pill nav__menu-btn" type="button" data-nav-open aria-haspopup="dialog" aria-controls="nav-overlay">
+      <span class="nav__burger" aria-hidden="true"><i></i><i></i><i></i></span>{t('nav.menu', locale)}
+    </button>
   </div>
+  <dialog class="nav__overlay" id="nav-overlay" aria-label={t('nav.label', locale)} data-nav-overlay>
+    <div class="nav__overlay-top">
+      <a class="nav__overlay-home" href={localePath('home', locale)}><Logo height={34} /></a>
+      <button class="nav__pill nav__overlay-close" type="button" data-nav-close aria-label={t('nav.close', locale)}>✕</button>
+    </div>
+    <nav aria-label={t('nav.label', locale)}>
+      <ul class="nav__big" role="list">{new SafeHtml(bigItems)}</ul>
+    </nav>
+    <div class="nav__overlay-foot">
+      <div class="nav__overlay-langs" role="group" aria-label={t('lang.label', locale)}>{new SafeHtml(overlayLanguages)}</div>
+      <button class="nav__overlay-tool" type="button" data-nav-theme aria-label={t('theme.label', locale)}><span class="nav__moon" aria-hidden="true">☾</span><span class="nav__sun" aria-hidden="true">☀</span></button>
+      <button class="nav__overlay-tool" type="button" data-nav-search>{t('palette.open', locale)} <kbd aria-hidden="true">⌘K</kbd></button>
+    </div>
+  </dialog>
 </header>
 <script src="/lang-menu.js" defer data-wald-no-hoist></script>
+<script src="/nav-menu.js" defer data-wald-no-hoist></script>
 
 <style>
 /* Links, taalwissel en knop worden deels in de frontmatter gebouwd: genest onder .nav gestyled. */
@@ -215,6 +242,163 @@ const langMenu = renderTemplate`<details class="nav__lang" data-lang-menu>
 }
 [data-theme='dark'] .nav .nav__moon { display: none; }
 [data-theme='dark'] .nav .nav__sun { display: inline; }
+
+/* Mobiel menu (overlay). De knop en de overlay bestaan alleen met JavaScript (.js op <html>, gezet in <head>
+   vóór de eerste paint); zonder JavaScript blijft de pil met links gewoon onder het logo staan. */
+.nav {
+  & .nav__menu-btn,
+  & .nav__overlay:not([open]) {
+    display: none;
+  }
+  & .nav__menu-btn {
+    gap: 0.5rem;
+    align-items: center;
+    font-weight: 600;
+  }
+  & .nav__burger {
+    display: grid;
+    gap: 3px;
+    width: 14px;
+  }
+  & .nav__burger i {
+    display: block;
+    height: 1.5px;
+    border-radius: 1px;
+    background: currentColor;
+  }
+  & .nav__overlay {
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: var(--space-4) var(--page-gutter) max(var(--space-6), env(safe-area-inset-bottom));
+    border: 0;
+    color: var(--ink);
+    background:
+      radial-gradient(80% 45% at 100% 0%, color-mix(in srgb, var(--accent) 28%, transparent), transparent 70%),
+      var(--bg);
+  }
+  & .nav__overlay[open] {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+  }
+  & .nav__overlay::backdrop {
+    background: var(--bg);
+  }
+  & .nav__overlay-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  & .nav__overlay-close {
+    font-size: 1rem;
+  }
+  & .nav__overlay nav {
+    align-self: center;
+  }
+  & .nav__big {
+    display: grid;
+    gap: 0.35rem;
+    list-style: none;
+  }
+  & .nav__big-link {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding-block: 0.1em;
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 15vw, 5.5rem);
+    font-weight: 600;
+    font-stretch: 85%;
+    letter-spacing: -0.05em;
+    line-height: 0.85;
+  }
+  & .nav__big-link sup {
+    margin-top: 0.4em;
+    font-family: var(--font-body, Inter, sans-serif);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0;
+    color: var(--muted);
+  }
+  & .nav__big-link[aria-current='page'] span {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.03em;
+    background: var(--grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  & .nav__overlay-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--line);
+    font-size: var(--text-sm);
+  }
+  & .nav__overlay-langs {
+    display: flex;
+    gap: var(--space-2);
+  }
+  & .nav__overlay-lang,
+  & .nav__overlay-tool {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 2.5rem;
+    padding: 0 0.85rem;
+    border: 0;
+    border-radius: var(--pill);
+    background: var(--card);
+    color: var(--ink);
+    font: inherit;
+    cursor: pointer;
+  }
+  & .nav__overlay-lang[aria-current] {
+    background: var(--ink);
+    color: var(--bg);
+  }
+  & .nav__overlay-tool kbd {
+    font: inherit;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    & .nav__overlay[open] .nav__big li {
+      animation: nav-rise 0.6s var(--ease-out) both;
+    }
+    & .nav__overlay[open] .nav__big li:nth-child(2) { animation-delay: 0.05s; }
+    & .nav__overlay[open] .nav__big li:nth-child(3) { animation-delay: 0.1s; }
+    & .nav__overlay[open] .nav__big li:nth-child(4) { animation-delay: 0.15s; }
+  }
+}
+@keyframes nav-rise {
+  from { opacity: 0; transform: translateY(0.6em); }
+}
+
+/* Mobiel met JavaScript: alleen logo + Menu; links, taal, thema en zoeken zitten in de overlay. */
+@media (max-width: 47.99rem) {
+  .js .nav {
+    grid-template-areas: 'home tools';
+
+    & .nav__menu,
+    & .nav__lang,
+    & .nav__theme,
+    & .nav__search {
+      display: none;
+    }
+    & .nav__menu-btn {
+      display: flex;
+    }
+  }
+}
 
 /* Vanaf tablet alles op één regel, het menu in het midden. */
 @media (min-width: 48rem) {

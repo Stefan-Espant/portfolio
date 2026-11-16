@@ -19,10 +19,14 @@ export function nav(gsap) {
   menu.classList.add('is-gliding')
   moveTo(current, true)
   links.forEach(link => {
-    link.addEventListener('pointerenter', () => moveTo(link))
+    // Alleen een echte muis: op een touchscreen telt een tik als pointerenter, zonder pointerleave erna,
+    // waardoor de indicator op de getikte link bleef hangen (bv. "Contact" op de home).
+    link.addEventListener('pointerenter', event => { if (event.pointerType === 'mouse') moveTo(link) })
     link.addEventListener('focus', () => moveTo(link))
   })
   menu.addEventListener('pointerleave', () => moveTo(current))
+  // Terug via de browserknop (bfcache): de indicator weer op de huidige pagina.
+  addEventListener('pageshow', () => moveTo(current, true))
   menu.addEventListener('focusout', event => { if (!menu.contains(event.relatedTarget)) moveTo(current) })
   // Fonts of schermbreedte kunnen de links verschuiven.
   addEventListener('resize', () => moveTo(current, true), { passive: true })
