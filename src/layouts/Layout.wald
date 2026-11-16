@@ -88,6 +88,14 @@ const headScript = `<script data-wald-no-hoist>(function(){var d=document.docume
     <script type="module" src="/motion/index.js" data-wald-no-hoist></script>
     <script type="module" src="/palette/palette.js" data-wald-no-hoist></script>`
 
+// Vercel Web Analytics (zonder cookies): het officiële snippet voor statische sites. Vercel serveert het
+// script zelf onder /_vercel/insights/, dus het telt niet als framework-JavaScript. Alleen in builds op Vercel;
+// lokaal bestaat dat pad niet.
+const analytics = process.env.VERCEL
+  ? `<script data-wald-no-hoist>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)}</script>
+    <script defer src="/_vercel/insights/script.js" data-wald-no-hoist></script>`
+  : ''
+
 const nav = await Nav.render({ locale, alternates, current })
 const footer = await Footer.render({ locale })
 const palette = await CommandPalette.render({ locale, alternates })
@@ -108,6 +116,7 @@ const palette = await CommandPalette.render({ locale, alternates })
     <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
     {new SafeHtml(inlineCss)}
     {new SafeHtml(headScript)}
+    {new SafeHtml(analytics)}
   </head>
   <body>
     <a class="skip-link" href="#main">{t('skip', locale)}</a>
