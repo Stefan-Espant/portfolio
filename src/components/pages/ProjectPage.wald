@@ -128,22 +128,20 @@ const nextHtml = next
   & .case__facts dd {
     font-weight: 500;
   }
-  /* De cover heel tonen, in zijn eigen verhouding: illustraties en posters mogen niet bijgesneden worden.
-     Staande beelden worden hooguit 80vh hoog en staan dan gecentreerd op de kaart. */
+  /* Covers zijn 16:10 (ijsblauw met browserframe of beeld, zie Centaur): het kader heeft dezelfde verhouding,
+     dus ze vullen het precies, zonder witte randen of bijsnijden. */
   & .case__cover {
-    display: grid;
-    place-items: center;
     margin-top: var(--space-8);
     overflow: hidden;
+    aspect-ratio: 16 / 10;
     border-radius: var(--radius-lg);
     background: var(--card);
     box-shadow: var(--edge);
   }
   & .case__cover img {
-    width: auto;
-    max-width: 100%;
-    height: auto;
-    max-height: 80vh;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
   & .case__next {
     display: grid;
