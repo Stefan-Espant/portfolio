@@ -19,6 +19,12 @@ describe('cms', () => {
     vi.unstubAllGlobals()
   })
 
+  test('zonder CENTAUR_API_BASE een duidelijke fout in plaats van "Failed to parse URL"', async () => {
+    delete process.env.CENTAUR_API_BASE
+    await expect(getCollection('projecten')).rejects.toThrow('CENTAUR_API_BASE ontbreekt')
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
   test('getCollection haalt gepubliceerde entries op met de API-sleutel', async () => {
     fetchMock.mockResolvedValue(json([{ id: 'a', data: { title: 'WaldJS' } }]))
 
