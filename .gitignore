@@ -22,3 +22,6 @@ public/vendor
 
 # Brainstorm-mockups
 .superpowers/
+
+# Tijdelijke bestanden van Vite bij het laden van wald.config.ts
+*.timestamp-*.mjs

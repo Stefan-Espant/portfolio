@@ -38,10 +38,10 @@ h1, h2, h3, h4 {
   font-weight: 600;
   font-stretch: 85%;
   letter-spacing: -0.045em;
-  line-height: 1;
+  line-height: 0.8;
   text-wrap: balance;
 }
-h3, h4 { letter-spacing: -0.03em; line-height: 1.15; }
+h3, h4 { letter-spacing: -0.03em; }
 
 /* Accentwoord in een kop: scherpe Fraunces cursief met het verloop (accent() in i18n.ts maakt de <em>). */
 :is(h1, h2, h3, .accent) em {
@@ -149,9 +149,20 @@ code, pre { font-family: var(--font-mono); font-size: 0.9em; }
   display: inline-block;
   padding: 0.3rem 0.75rem;
   border-radius: var(--pill);
-  background: var(--card);
-  box-shadow: var(--edge);
+  /* Blauwe tint van het accent, met blauwe tekst (contrast ≥ 4,5:1 in licht en donker). */
+  background: color-mix(in srgb, var(--accent) 10%, var(--card));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--accent);
   font-size: var(--text-sm);
+  font-weight: 500;
+}
+[data-theme='dark'] .tag {
+  background: color-mix(in srgb, var(--accent) 24%, var(--card));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent);
+  color: #a9c4ff;
+}
+@media (forced-colors: active) {
+  .tag { border: 1px solid CanvasText; }
 }
 .label { display: inline-flex; align-items: center; gap: var(--space-3); color: var(--muted); font-size: var(--text-sm); font-weight: 500; }
 
@@ -162,7 +173,8 @@ code, pre { font-family: var(--font-mono); font-size: 0.9em; }
 
 /* SplitText-maskers (motion/intro.js, reveal.js): ruimte voor de onderkant van g, j en p bij regelhoogte 1,
    zonder dat de regels verder uit elkaar komen te staan. */
-.split-line-mask { padding-bottom: 0.14em; margin-bottom: -0.14em; }
+/* Ruimte boven en onder de regel: bij line-height 0.8 steken umlauten (Ü) en staarten (g, p) buiten de regel. */
+.split-line-mask { padding-block: 0.16em 0.24em; margin-block: -0.16em -0.24em; }
 
 /* Pagina-overgang: Byzantium-fade plus doorschuivende cover en titel (view-transition-name per slug). */
 @media (prefers-reduced-motion: no-preference) {
