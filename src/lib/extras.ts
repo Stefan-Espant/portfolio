@@ -8,8 +8,9 @@ import { absoluteUrl } from './site'
 const xml = (text: string) => text.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' })[char]!)
 
 const FEED = {
-  nl: { title: 'Steefan — blog', description: 'Artikelen van Stefan over webdevelopment, design en het bouwen van eigen tools.', language: 'nl-NL', path: '/rss.xml' },
-  en: { title: 'Steefan — blog', description: 'Articles by Stefan about web development, design and building your own tools.', language: 'en-GB', path: '/en/rss.xml' }
+  nl: { title: 'Stefan van der Kort — blog', description: 'Artikelen van Stefan over webdevelopment, design en het bouwen van eigen tools.', language: 'nl-NL', path: '/rss.xml' },
+  en: { title: 'Stefan van der Kort — blog', description: 'Articles by Stefan about web development, design and building your own tools.', language: 'en-GB', path: '/en/rss.xml' },
+  de: { title: 'Stefan van der Kort — Blog', description: 'Artikel von Stefan über Webentwicklung, Design und das Bauen eigener Werkzeuge.', language: 'de-DE', path: '/de/rss.xml' }
 } as const
 
 /** Pad van de feed per taal, voor de <link rel="alternate"> in de head en de footer. */
@@ -53,7 +54,7 @@ export function ogImagePath(path: string): string {
 /** Bytes als "1,5 kB" (nl) of "1.5 kB" (en); hele getallen zonder decimaal. */
 export function formatKb(bytes: number, locale: Locale): string {
   const kb = Math.round((bytes / 1024) * 10) / 10
-  return `${Number.isInteger(kb) ? kb : kb.toFixed(1).replace('.', locale === 'nl' ? ',' : '.')} kB`
+  return `${Number.isInteger(kb) ? kb : kb.toFixed(1).replace('.', locale === 'en' ? '.' : ',')} kB`
 }
 
 /** Vult de inhoud van elementen met data-build="<sleutel>" in; onbekende sleutels blijven staan. */

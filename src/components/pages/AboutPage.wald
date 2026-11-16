@@ -3,8 +3,9 @@ import Layout from '../../layouts/Layout.wald'
 import { existsSync } from 'node:fs'
 import { getExperience, getSkills } from '../../lib/content'
 import { getRecentRepos } from '../../lib/github'
-import { accent, formatMonth, localePath, t, type Locale, type MessageKey } from '../../lib/i18n'
+import { accent, formatMonth, localePath, t, type Locale, type MessageKey, routeAlternates } from '../../lib/i18n'
 import { GITHUB_URL } from '../../lib/site'
+import { profilePageNode } from '../../lib/seo'
 type Props = { locale: Locale }
 const { locale } = $$props
 const [experience, skills, repos] = await Promise.all([getExperience(locale), getSkills(locale), getRecentRepos()])
@@ -68,9 +69,9 @@ const cvPath = `/cv/cv-${locale}.pdf`
 const cvHtml = existsSync(`public${cvPath}`)
   ? renderTemplate`<a class="btn btn--sm" href="${cvPath}" download>${t('about.cv', locale)} ↓</a>`
   : ''
-const alternates = { nl: localePath('about', 'nl'), en: localePath('about', 'en') }
+const alternates = routeAlternates('about')
 ---
-<Layout title={t('about.title', locale)} description={t('about.description', locale)} path={localePath('about', locale)} locale={locale} alternates={alternates} current="about">
+<Layout title={t('about.title', locale)} description={t('about.description', locale)} path={localePath('about', locale)} locale={locale} alternates={alternates} current="about" jsonLd={[profilePageNode(locale)]}>
   <main id="main" class="about">
     <header class="page-head container" data-motion="intro">
       <h1 class="page-title">{new SafeHtml(accent(t('about.heading', locale)))}</h1>
@@ -213,10 +214,6 @@ const alternates = { nl: localePath('about', 'nl'), en: localePath('about', 'en'
     font-size: var(--text-sm);
     font-weight: 600;
     letter-spacing: 0;
-  }
-  & .about__skill-group .tag {
-    background: var(--bg);
-    box-shadow: none;
   }
   & .about__repos {
     display: grid;

@@ -11,21 +11,21 @@ const post = (over: Partial<Post>): Post => ({
 
 describe('buildRss', () => {
   test('maakt een geldige RSS 2.0-feed met absolute links en geëscapete tekst', () => {
-    process.env.SITE_URL = 'https://steefan.nl'
+    process.env.SITE_URL = 'https://stefanvanderkort.nl'
     const xml = buildRss([post({})], 'nl', '2026-11-16T10:00:00Z')
     expect(xml.startsWith('<?xml version="1.0" encoding="UTF-8"?>')).toBe(true)
     expect(xml).toContain('<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">')
-    expect(xml).toContain('<link>https://steefan.nl/blog/eerste-post</link>')
-    expect(xml).toContain('<guid isPermaLink="true">https://steefan.nl/blog/eerste-post</guid>')
+    expect(xml).toContain('<link>https://stefanvanderkort.nl/blog/eerste-post</link>')
+    expect(xml).toContain('<guid isPermaLink="true">https://stefanvanderkort.nl/blog/eerste-post</guid>')
     expect(xml).toContain('<description>Over &lt;tools&gt; &amp; meer</description>')
     expect(xml).toContain('<pubDate>Thu, 12 Nov 2026 00:00:00 GMT</pubDate>')
-    expect(xml).toContain('<atom:link href="https://steefan.nl/rss.xml" rel="self" type="application/rss+xml"/>')
+    expect(xml).toContain('<atom:link href="https://stefanvanderkort.nl/rss.xml" rel="self" type="application/rss+xml"/>')
     expect(xml).toContain('<language>nl-NL</language>')
   })
   test('Engelse feed staat onder /en en mag leeg zijn', () => {
-    process.env.SITE_URL = 'https://steefan.nl'
+    process.env.SITE_URL = 'https://stefanvanderkort.nl'
     const xml = buildRss([], 'en', '2026-11-16T10:00:00Z')
-    expect(xml).toContain('<atom:link href="https://steefan.nl/en/rss.xml"')
+    expect(xml).toContain('<atom:link href="https://stefanvanderkort.nl/en/rss.xml"')
     expect(xml).toContain('<language>en-GB</language>')
     expect(xml).not.toContain('<item>')
   })

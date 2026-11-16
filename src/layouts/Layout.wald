@@ -3,13 +3,13 @@ import Nav from '../components/Nav.wald'
 import Footer from '../components/Footer.wald'
 import CommandPalette from '../components/CommandPalette.wald'
 import { readFileSync } from 'node:fs'
-import { getSiteSettings } from '../lib/cms'
 import { t, type Locale } from '../lib/i18n'
-import { absoluteUrl } from '../lib/site'
+import { SITE_NAME, absoluteUrl } from '../lib/site'
+import { jsonLdScript, personNode, websiteNode } from '../lib/seo'
 import { feedPath, ogImagePath } from '../lib/extras'
 type Props = {
   title: string
-  /** true: titel zoals hij is, zonder " — Steefan" (de home). */
+  /** true: titel zoals hij is, zonder " — Stefan van der Kort" (de home). */
   fullTitle?: boolean
   description?: string
   /** Pad van deze pagina, bv. "/werk": voor canonical en og:url. */
@@ -19,12 +19,16 @@ type Props = {
   alternates?: Partial<Record<Locale, string>>
   current?: 'work' | 'blog' | 'about' | 'contact'
   noindex?: boolean
+  /** 'article' voor blogposts (met publishedTime); anders 'website'. */
+  ogType?: 'website' | 'article'
+  publishedTime?: string
+  /** Extra schema.org-nodes voor deze pagina; Person en WebSite staan er altijd in. */
+  jsonLd?: Array<Record<string, unknown>>
   pond?: unknown
 }
-const { title, fullTitle = false, description = '', path, locale, alternates = {}, current, noindex = false, pond } = $$props
-const site = await getSiteSettings()
-const siteName = site?.siteName || 'Steefan'
-const documentTitle = fullTitle ? title : `${title} — ${siteName}`
+const { title, fullTitle = false, description = '', path, locale, alternates = {}, current, noindex = false, ogType = 'website', publishedTime = '', jsonLd = [], pond } = $$props
+// De naam staat vast in de code (SITE_NAME); de siteName uit Centaur ('Mijn website') wordt niet gebruikt.
+const documentTitle = fullTitle ? title : `${title} — ${SITE_NAME}`
 const canonical = absoluteUrl(path)
 
 const hreflang = Object.entries(alternates).map(([lang, href]) =>
@@ -35,17 +39,25 @@ const headTags = [
   description ? renderTemplate`<meta name="description" content="${description}">` : '',
   noindex ? '<meta name="robots" content="noindex, follow">' : '',
   renderTemplate`<link rel="canonical" href="${canonical}">`,
+  renderTemplate`<meta name="author" content="${SITE_NAME}">`,
+  renderTemplate`<meta property="og:site_name" content="${SITE_NAME}">`,
+  renderTemplate`<meta property="og:type" content="${ogType}">`,
   renderTemplate`<meta property="og:title" content="${documentTitle}">`,
+  publishedTime ? renderTemplate`<meta property="article:published_time" content="${publishedTime}">` : '',
+  publishedTime ? renderTemplate`<meta property="article:author" content="${SITE_NAME}">` : '',
   description ? renderTemplate`<meta property="og:description" content="${description}">` : '',
   renderTemplate`<meta property="og:url" content="${canonical}">`,
-  renderTemplate`<meta property="og:locale" content="${locale === 'nl' ? 'nl_NL' : 'en_GB'}">`,
+  renderTemplate`<meta property="og:locale" content="${({ nl: 'nl_NL', en: 'en_GB', de: 'de_DE' } as const)[locale]}">`,
   // Social-afbeelding per pagina; src/build/extras.ts maakt het bestand na de build.
   renderTemplate`<meta property="og:image" content="${absoluteUrl(ogImagePath(path))}">`,
   '<meta property="og:image:width" content="1200">',
   '<meta property="og:image:height" content="630">',
   '<meta name="twitter:card" content="summary_large_image">',
-  renderTemplate`<link rel="alternate" type="application/rss+xml" title="Steefan — blog" href="${absoluteUrl(feedPath(locale))}">`,
-  ...hreflang
+  renderTemplate`<meta name="twitter:title" content="${documentTitle}">`,
+  description ? renderTemplate`<meta name="twitter:description" content="${description}">` : '',
+  renderTemplate`<link rel="alternate" type="application/rss+xml" title="${SITE_NAME} — blog" href="${absoluteUrl(feedPath(locale))}">`,
+  ...hreflang,
+  noindex ? '' : jsonLdScript([personNode(locale), websiteNode(locale), ...jsonLd])
 ].filter(Boolean).join('\n    ')
 
 // Fonts, Byzantium-basis, thema en basis-CSS zijn klein: inline in <head> in plaats van een blokkerende
@@ -87,7 +99,11 @@ const palette = await CommandPalette.render({ locale, alternates })
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{documentTitle}</title>
     {new SafeHtml(headTags)}
-    <link rel="icon" href="/favicon.png" type="image/png" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#3046ff" />
     <link rel="preload" href="/fonts/bricolage-grotesque-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
     {new SafeHtml(inlineCss)}

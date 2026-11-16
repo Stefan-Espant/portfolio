@@ -4,10 +4,11 @@
 import { mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs'
 import { dirname, join, relative } from 'node:path'
 import { gzipSync } from 'node:zlib'
-import { getLastContentUpdate, getPosts } from '../lib/content'
+import { getLastContentUpdate, getPosts, getProjects } from '../lib/content'
 import { buildRss, feedPath, fillBuildStrip, formatKb } from '../lib/extras'
-import { formatDate, type Locale } from '../lib/i18n'
-import { siteUrl } from '../lib/site'
+import { LOCALES, formatDate, isLocale, type Locale } from '../lib/i18n'
+import { SITE_NAME, absoluteUrl, siteUrl } from '../lib/site'
+import { buildLlms, buildRobots, buildSitemap, type SitemapPage } from '../lib/seo'
 
 type Context = { outDir: string }
 
@@ -33,12 +34,12 @@ function scriptFiles(html: string, outDir: string): string[] {
 async function writeFeeds(outDir: string, builtAt: string) {
   // RSS-lezers hebben absolute links nodig; lokaal zonder SITE_URL worden ze relatief.
   if (!siteUrl()) console.warn('  ⚠ geen SITE_URL of Vercel-domein: de links in de RSS-feeds zijn relatief')
-  for (const locale of ['nl', 'en'] as Locale[]) {
+  for (const locale of LOCALES) {
     const file = join(outDir, feedPath(locale))
     mkdirSync(dirname(file), { recursive: true })
     writeFileSync(file, buildRss(await getPosts(locale), locale, builtAt))
   }
-  console.log('  ✓ rss.xml en en/rss.xml')
+  console.log(`  ✓ RSS-feeds: ${LOCALES.map(feedPath).join(', ')}`)
 }
 
 async function fillStrips(outDir: string, builtAt: string) {
@@ -46,7 +47,8 @@ async function fillStrips(outDir: string, builtAt: string) {
   for (const file of htmlFiles(outDir)) {
     const html = readFileSync(file, 'utf8')
     if (!html.includes('data-build=')) continue
-    const locale: Locale = /<html[^>]*\slang="en"/.test(html) ? 'en' : 'nl'
+    const lang = html.match(/<html[^>]*\slang="([a-z]{2})"/)?.[1]
+      const locale: Locale = isLocale(lang) ? lang : 'nl'
     const scripts = scriptFiles(html, outDir)
     // WaldJS-runtime staat in /assets/; GSAP en de eigen scripts tellen alleen mee in het totaal.
     const framework = scripts.filter(script => relative(outDir, script).startsWith('assets'))
@@ -64,10 +66,10 @@ async function fillStrips(outDir: string, builtAt: string) {
   console.log('  ✓ build-strip ingevuld')
 }
 
-/** Titel voor de afbeelding: zonder " — Steefan"; bij de home het deel na "Steefan — ". */
+/** Titel voor de afbeelding: zonder " — Stefan van der Kort"; bij de home het deel na "Stefan van der Kort — ". */
 function ogTitle(title: string): string {
   const [first, ...rest] = title.split(' — ')
-  if (first === 'Steefan' && rest.length) return rest.join(' — ').replace(/^./, char => char.toUpperCase())
+  if (first === SITE_NAME && rest.length) return rest.join(' — ').replace(/^./, char => char.toUpperCase())
   return first
 }
 
@@ -100,6 +102,8 @@ async function writeOgImages(outDir: string) {
   console.log(`  ✓ ${count} social-afbeeldingen`)
 }
 
+const TAGLINES: Record<Locale, string> = { nl: 'van framework tot frontend', en: 'from framework to frontend', de: 'vom Framework bis zum Frontend' }
+
 /** De kaart van 1200×630: ijsblauw met de blauwe gloed, het woordmerk en de titel in Bricolage. */
 function card(title: string, locale: Locale) {
   const size = title.length > 48 ? 76 : title.length > 28 ? 92 : 112
@@ -114,14 +118,14 @@ function card(title: string, locale: Locale) {
         backgroundImage: 'radial-gradient(60% 70% at 92% 0%, rgba(48,70,255,0.22), rgba(243,245,255,0) 70%), radial-gradient(50% 60% at 0% 100%, rgba(27,34,201,0.12), rgba(243,245,255,0) 70%)'
       },
       children: [
-        { type: 'div', props: { style: { display: 'flex', fontFamily: 'Bricolage', fontSize: 40, letterSpacing: -1.6 }, children: 'Steefan' } },
+        { type: 'div', props: { style: { display: 'flex', fontFamily: 'Bricolage', fontSize: 40, letterSpacing: -1.6 }, children: SITE_NAME } },
         { type: 'div', props: { style: { display: 'flex', fontFamily: 'Bricolage', fontSize: size, lineHeight: 1, letterSpacing: -size * 0.045, maxWidth: 1000 }, children: title } },
         {
           type: 'div',
           props: {
             style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 28, color: '#5f5f66' },
             children: [
-              { type: 'div', props: { style: { display: 'flex', fontFamily: 'Fraunces', fontStyle: 'italic', fontSize: 34, color: '#3046ff' }, children: locale === 'en' ? 'from framework to frontend' : 'van framework tot frontend' } },
+              { type: 'div', props: { style: { display: 'flex', fontFamily: 'Fraunces', fontStyle: 'italic', fontSize: 34, color: '#3046ff' }, children: TAGLINES[locale] } },
               { type: 'div', props: { style: { display: 'flex', width: 180, height: 10, borderRadius: 10, backgroundImage: 'linear-gradient(90deg, #1b22c9, #3046ff, #3a63f0)' }, children: '' } }
             ]
           }
@@ -131,10 +135,29 @@ function card(title: string, locale: Locale) {
   }
 }
 
+/** sitemap.xml, robots.txt en llms.txt. De sitemap leest canonical en hreflang uit de gebouwde HTML,
+ *  zodat hij altijd precies de pagina's bevat die er zijn; noindex-pagina's (404) vallen af. */
+async function writeCrawlerFiles(outDir: string, builtAt: string) {
+  const pages: SitemapPage[] = []
+  for (const file of htmlFiles(outDir)) {
+    const html = readFileSync(file, 'utf8')
+    if (/<meta name="robots" content="noindex/.test(html)) continue
+    const loc = html.match(/<link rel="canonical" href="([^"]+)"/)?.[1]
+    if (!loc) continue
+    const alternates = Object.fromEntries([...html.matchAll(/<link rel="alternate" hreflang="([\w-]+)" href="([^"]+)"/g)].map(([, lang, href]) => [lang, href]))
+    pages.push({ loc, alternates })
+  }
+  writeFileSync(join(outDir, 'sitemap.xml'), buildSitemap(pages, builtAt.slice(0, 10)))
+  writeFileSync(join(outDir, 'robots.txt'), buildRobots(absoluteUrl('/sitemap.xml')))
+  writeFileSync(join(outDir, 'llms.txt'), buildLlms({ projects: await getProjects('en'), posts: await getPosts('en') }))
+  console.log(`  ✓ sitemap.xml (${pages.length} pagina's), robots.txt en llms.txt`)
+}
+
 export async function writeExtras({ outDir }: Context): Promise<void> {
   const builtAt = new Date().toISOString()
   console.log('  Extra\'s')
   await writeFeeds(outDir, builtAt)
+  await writeCrawlerFiles(outDir, builtAt)
   await fillStrips(outDir, builtAt)
   await writeOgImages(outDir)
 }

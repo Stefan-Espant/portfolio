@@ -2,16 +2,18 @@
 import Layout from '../../layouts/Layout.wald'
 import Metrics from '../Metrics.wald'
 import Timeline from '../Timeline.wald'
-import HScroll from '../HScroll.wald'
+import Gallery from '../Gallery.wald'
 import Playground from '../Playground.wald'
 import { getProject, getProjects, projectAlternates, transitionName } from '../../lib/content'
 import { localePath, t, type Locale, type MessageKey } from '../../lib/i18n'
+import { breadcrumbNode, projectNode } from '../../lib/seo'
 type Props = { locale: Locale, slug: string }
 const { locale, slug } = $$props
 const [project, all] = await Promise.all([getProject(slug, locale), getProjects(locale)])
 // Alleen bereikbaar in `wald grow`; de build rendert alleen gepubliceerde projecten.
 if (!project) throw new Error(`Project "${slug}" (${locale}) staat niet (gepubliceerd) in Centaur`)
 const alternates = await projectAlternates(project)
+const jsonLd = [projectNode(project, locale), breadcrumbNode([[t('nav.work', locale), localePath('work', locale)], [project.title, localePath('project', locale, project.slug)]])]
 
 const links = ([
   [t('project.live', locale), project.liveUrl],
@@ -43,11 +45,7 @@ const isWald = project.npmPackage === '@waldjs/cli'
 const playgroundHtml = isWald ? await Playground.render({ locale }) : ''
 const playgroundScript = isWald ? '<script type="module" src="/playground/playground.js" data-wald-no-hoist></script>' : ''
 const galleryHtml = project.gallery.length
-  ? await HScroll.render({
-      id: 'gallery-title',
-      title: t('project.gallery', locale),
-      items: project.gallery.map(image => renderTemplate`<figure class="case__shot"><img src="${image.src}" alt="${image.alt}" loading="lazy" decoding="async">${new SafeHtml(image.alt ? renderTemplate`<figcaption>${image.alt}</figcaption>` : '')}</figure>`)
-    })
+  ? await Gallery.render({ id: 'gallery-title', title: t('project.gallery', locale), images: project.gallery, locale })
   : ''
 // Cover en titel krijgen dezelfde view-transition-name als op de projectkaart: ze schuiven door.
 const cover = project.cover
@@ -69,7 +67,7 @@ const nextHtml = next
     </section>`
   : ''
 ---
-<Layout title={project.title} description={project.summary} path={localePath('project', locale, project.slug)} locale={locale} alternates={alternates} current="work">
+<Layout title={project.title} description={project.summary} path={localePath('project', locale, project.slug)} locale={locale} alternates={alternates} current="work" jsonLd={jsonLd}>
   <main id="main" class="case">
     <header class="case__header container" data-motion="intro">
       <nav class="case__crumb" aria-label={t('nav.breadcrumb', locale)}><a href={localePath('work', locale)}>{t('nav.work', locale)}</a> <span aria-hidden="true">/</span> {t(`type.${project.type}` as MessageKey, locale)}</nav>
@@ -103,8 +101,8 @@ const nextHtml = next
   }
   & .case__title {
     font-size: clamp(3.5rem, 1.5rem + 9vw, 11rem);
-    letter-spacing: -0.06em;
-    line-height: 0.9;
+    letter-spacing: -0.02em;
+    line-height: 0.8;
   }
   & .case__summary {
     max-width: 34ch;
@@ -130,28 +128,22 @@ const nextHtml = next
   & .case__facts dd {
     font-weight: 500;
   }
+  /* De cover heel tonen, in zijn eigen verhouding: illustraties en posters mogen niet bijgesneden worden.
+     Staande beelden worden hooguit 80vh hoog en staan dan gecentreerd op de kaart. */
   & .case__cover {
+    display: grid;
+    place-items: center;
     margin-top: var(--space-8);
     overflow: hidden;
-    aspect-ratio: 21 / 9;
     border-radius: var(--radius-lg);
+    background: var(--card);
     box-shadow: var(--edge);
   }
   & .case__cover img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  & .case__shot img {
-    width: 100%;
-    aspect-ratio: 16 / 10;
-    object-fit: cover;
-    border-radius: var(--radius);
-  }
-  & .case__shot figcaption {
-    margin-top: var(--space-2);
-    color: var(--muted);
-    font-size: var(--text-sm);
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 80vh;
   }
   & .case__next {
     display: grid;
@@ -174,7 +166,7 @@ const nextHtml = next
     font-weight: 600;
     font-stretch: 85%;
     letter-spacing: -0.045em;
-    line-height: 1;
+    line-height: 0.8;
   }
   & .case__next-sum {
     color: var(--muted);

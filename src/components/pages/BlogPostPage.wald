@@ -2,11 +2,13 @@
 import Layout from '../../layouts/Layout.wald'
 import { getPost, getPosts, postAlternates, readingMinutes } from '../../lib/content'
 import { formatDate, localePath, t, type Locale } from '../../lib/i18n'
+import { breadcrumbNode, postNode } from '../../lib/seo'
 type Props = { locale: Locale, slug: string }
 const { locale, slug } = $$props
 const [post, posts] = await Promise.all([getPost(slug, locale), getPosts(locale)])
 if (!post) throw new Error(`Blogpost "${slug}" (${locale}) staat niet (gepubliceerd) in Centaur`)
 const alternates = await postAlternates(post)
+const jsonLd = [postNode(post, locale), breadcrumbNode([[t('blog.title', locale), localePath('blog', locale)], [post.title, localePath('post', locale, post.slug)]])]
 const tags = post.tags.length ? `<ul class="tags post__tags" role="list">${post.tags.map(tag => renderTemplate`<li class="tag">${tag}</li>`).join('')}</ul>` : ''
 const cover = post.cover ? renderTemplate`<div class="container"><img class="post__cover" src="${post.cover}" alt="${post.coverAlt}" decoding="async" fetchpriority="high"></div>` : ''
 const date = post.publishedAt ? renderTemplate`<time datetime="${post.publishedAt}">${formatDate(post.publishedAt, locale)}</time>` : ''
@@ -26,7 +28,7 @@ const nextHtml = next
     </section>`
   : ''
 ---
-<Layout title={post.title} description={post.excerpt} path={localePath('post', locale, post.slug)} locale={locale} alternates={alternates} current="blog">
+<Layout title={post.title} description={post.excerpt} path={localePath('post', locale, post.slug)} locale={locale} alternates={alternates} current="blog" ogType="article" publishedTime={post.publishedAt} jsonLd={jsonLd}>
   <main id="main" class="post">
     <article>
       <header class="post__header container" data-motion="intro">
@@ -95,7 +97,7 @@ const nextHtml = next
   & .post__body h3 {
     margin-top: 2em;
     font-size: 2.1rem;
-    line-height: 1.1;
+    line-height: 0.8;
   }
   & .post__body h3 {
     font-size: 1.6rem;
@@ -165,7 +167,7 @@ const nextHtml = next
     font-weight: 600;
     font-stretch: 85%;
     letter-spacing: -0.04em;
-    line-height: 1.05;
+    line-height: 0.8;
   }
   /* Genest: pre en p komen uit de Centaur-HTML en hebben geen scope-attribuut. */
   [data-theme='dark'] & .post__body pre {
