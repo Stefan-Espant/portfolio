@@ -44,6 +44,8 @@ class CentaurError extends Error {
 }
 
 async function get<T>(path: string, key = apiKey()): Promise<T> {
+  // Fail fast met een uitleg, in plaats van fetch's "Failed to parse URL" (bv. op Vercel zonder env-variabelen).
+  if (!apiBase()) throw new Error('CENTAUR_API_BASE ontbreekt. Zet CENTAUR_API_BASE, CENTAUR_API_KEY en CENTAUR_TENANT_SLUG in .env of in de omgevingsvariabelen van Vercel (Production én Preview).')
   const response = await fetch(`${apiBase()}${path}`, {
     headers: { 'X-Api-Key': key },
     signal: AbortSignal.timeout(FETCH_TIMEOUT_MS)
