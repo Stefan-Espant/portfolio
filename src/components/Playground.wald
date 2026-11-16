@@ -4,10 +4,12 @@
 import { accent, t, type Locale } from '../lib/i18n'
 type Props = { locale: Locale }
 const { locale } = $$props
-const example = locale === 'nl'
-  ? `---\nconst titel = "Mijn eerste boom"\nconst soorten = ["eik", "beuk", "den"]\n---\n<h1>{titel}</h1>\n<p>Er groeien {soorten.length} soorten in dit bos:</p>\n<ul>\n  {soorten.map(s => '<li>' + s + '</li>').join('')}\n</ul>`
-  : `---\nconst title = "My first tree"\nconst species = ["oak", "beech", "pine"]\n---\n<h1>{title}</h1>\n<p>{species.length} species grow in this forest:</p>\n<ul>\n  {species.map(s => '<li>' + s + '</li>').join('')}\n</ul>`
-const file = locale === 'nl' ? 'speeltuin.wald' : 'playground.wald'
+const EXAMPLES: Record<Locale, { file: string, code: string }> = {
+  nl: { file: 'speeltuin.wald', code: `---\nconst titel = "Mijn eerste boom"\nconst soorten = ["eik", "beuk", "den"]\n---\n<h1>{titel}</h1>\n<p>Er groeien {soorten.length} soorten in dit bos:</p>\n<ul>\n  {soorten.map(s => '<li>' + s + '</li>').join('')}\n</ul>` },
+  en: { file: 'playground.wald', code: `---\nconst title = "My first tree"\nconst species = ["oak", "beech", "pine"]\n---\n<h1>{title}</h1>\n<p>{species.length} species grow in this forest:</p>\n<ul>\n  {species.map(s => '<li>' + s + '</li>').join('')}\n</ul>` },
+  de: { file: 'spielplatz.wald', code: `---\nconst titel = "Mein erster Baum"\nconst arten = ["Eiche", "Buche", "Kiefer"]\n---\n<h1>{titel}</h1>\n<p>In diesem Wald wachsen {arten.length} Arten:</p>\n<ul>\n  {arten.map(a => '<li>' + a + '</li>').join('')}\n</ul>` }
+}
+const { file, code: example } = EXAMPLES[locale]
 ---
 <section class="playground container" aria-labelledby="playground-title" data-playground hidden>
   <div class="section-head">

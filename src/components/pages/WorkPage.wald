@@ -2,7 +2,7 @@
 import Layout from '../../layouts/Layout.wald'
 import ProjectCard from '../ProjectCard.wald'
 import { getProjects, PROJECT_TYPES } from '../../lib/content'
-import { accent, localePath, t, type Locale, type MessageKey } from '../../lib/i18n'
+import { accent, localePath, t, type Locale, type MessageKey, routeAlternates } from '../../lib/i18n'
 type Props = { locale: Locale }
 const { locale } = $$props
 const projects = await getProjects(locale)
@@ -29,7 +29,7 @@ const filters = types.length > 1
 const list = projects.length
   ? `<ul class="work__grid" role="list" data-motion="rise">${cards.join('')}</ul>`
   : renderTemplate`<p class="lead">${t('home.empty', locale)}</p>`
-const alternates = { nl: localePath('work', 'nl'), en: localePath('work', 'en') }
+const alternates = routeAlternates('work')
 ---
 <Layout title={t('work.title', locale)} description={t('work.description', locale)} path={localePath('work', locale)} locale={locale} alternates={alternates} current="work">
   <main id="main" class="work">

@@ -64,7 +64,7 @@ describe('content-loaders', () => {
 
   test('waarschuwt voor ontbrekende vertalingen', async () => {
     await getProjects('nl')
-    expect(console.warn).toHaveBeenCalledWith('⚠ projecten: "centaur" heeft geen vertaling in en')
+    expect(console.warn).toHaveBeenCalledWith('⚠ projecten: "centaur" heeft geen vertaling in en, de')
   })
 
   test('getFeaturedProjects en getProject', async () => {

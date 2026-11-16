@@ -1,22 +1,23 @@
-// Talen, routes en UI-teksten. Nederlands staat zonder prefix, Engels onder /en.
+// Talen, routes en UI-teksten. Nederlands staat zonder prefix, Engels onder /en en Duits onder /de.
 // Content-teksten (projecten, posts) komen uit Centaur; hier alleen de vaste UI-teksten.
 
-export const LOCALES = ['nl', 'en'] as const
+export const LOCALES = ['nl', 'en', 'de'] as const
 export type Locale = (typeof LOCALES)[number]
 
 export const isLocale = (value: unknown): value is Locale => LOCALES.includes(value as Locale)
-export const otherLocale = (locale: Locale): Locale => (locale === 'nl' ? 'en' : 'nl')
+/** Naam van elke taal in die taal zelf, voor het taalmenu. */
+export const LANGUAGE_NAMES: Record<Locale, string> = { nl: 'Nederlands', en: 'English', de: 'Deutsch' }
 
 export type RouteName = 'home' | 'work' | 'project' | 'blog' | 'post' | 'about' | 'contact'
 
 const ROUTES: Record<RouteName, Record<Locale, string>> = {
-  home: { nl: '/', en: '/en' },
-  work: { nl: '/werk', en: '/en/work' },
-  project: { nl: '/werk/:slug', en: '/en/work/:slug' },
-  blog: { nl: '/blog', en: '/en/blog' },
-  post: { nl: '/blog/:slug', en: '/en/blog/:slug' },
-  about: { nl: '/over', en: '/en/about' },
-  contact: { nl: '/contact', en: '/en/contact' }
+  home: { nl: '/', en: '/en', de: '/de' },
+  work: { nl: '/werk', en: '/en/work', de: '/de/arbeiten' },
+  project: { nl: '/werk/:slug', en: '/en/work/:slug', de: '/de/arbeiten/:slug' },
+  blog: { nl: '/blog', en: '/en/blog', de: '/de/blog' },
+  post: { nl: '/blog/:slug', en: '/en/blog/:slug', de: '/de/blog/:slug' },
+  about: { nl: '/over', en: '/en/about', de: '/de/ueber-mich' },
+  contact: { nl: '/contact', en: '/en/contact', de: '/de/kontakt' }
 }
 
 export function localePath(route: RouteName, locale: Locale, slug?: string): string {
@@ -24,6 +25,11 @@ export function localePath(route: RouteName, locale: Locale, slug?: string): str
   if (!pattern.includes(':slug')) return pattern
   if (!slug) throw new Error(`Route "${route}" heeft een slug nodig`)
   return pattern.replace(':slug', encodeURIComponent(slug))
+}
+
+/** Een vaste pagina (zonder slug) in elke taal: de alternates voor hreflang en het taalmenu. */
+export function routeAlternates(route: Exclude<RouteName, 'project' | 'post'>): Record<Locale, string> {
+  return Object.fromEntries(LOCALES.map(locale => [locale, localePath(route, locale)])) as Record<Locale, string>
 }
 
 // Accentwoorden staan tussen sterretjes: accent() maakt er een cursieve <em> van, plain() haalt ze weg.
@@ -35,8 +41,7 @@ const nl = {
   'nav.about': 'Over',
   'nav.contact': 'Contact',
   'skip': 'Naar de inhoud',
-  'lang.switch': 'EN',
-  'lang.label': 'English',
+  'lang.label': 'Taal kiezen',
   'theme.label': 'Donker thema',
   'palette.open': 'Zoeken',
   'palette.label': 'Zoek pagina\'s, projecten en artikelen',
@@ -47,7 +52,7 @@ const nl = {
   'palette.projects': 'Projecten',
   'palette.posts': 'Artikelen',
   'palette.language': 'Taal',
-  'home.title': 'Steefan — frontend developer en designer',
+  'home.title': 'Stefan van der Kort — frontend developer en designer',
   'home.description': 'Portfolio van Stefan, frontend developer en designer en maker van WaldJS en Centaur CMS: snelle, toegankelijke websites, van framework tot frontend.',
   'home.heading': 'Snelle, toegankelijke websites, *van framework tot frontend.*',
   'home.lead': 'Ik ben Stefan, frontend developer en designer. Ik ontwerp en bouw websites en de tools daarachter: een eigen webframework, WaldJS, en een eigen CMS, Centaur. Zo heb ik elke laag in handen, van het eerste ontwerp tot de laatste kilobyte.',
@@ -76,6 +81,8 @@ const nl = {
   'type.framework': 'Framework',
   'type.product': 'Product',
   'type.website': 'Website',
+  'type.print': 'Drukwerk',
+  'type.hobby': 'Hobbyproject',
   'type.school': 'Studieproject',
   'work.title': 'Werk',
   'work.description': 'Alle projecten van Stefan: een eigen framework en CMS, websites en studieprojecten.',
@@ -98,6 +105,12 @@ const nl = {
   'project.design': 'Ontwerp',
   'project.npm': 'npm-pakket',
   'project.gallery': '*Beelden*',
+  'gallery.images': 'beelden',
+  'gallery.view': 'Bekijk afbeelding',
+  'gallery.dialog': 'Afbeelding',
+  'gallery.close': 'Sluiten',
+  'gallery.prev': 'Vorige afbeelding',
+  'gallery.next': 'Volgende afbeelding',
   'project.client': 'Klant',
   'project.next': 'Volgend project',
   'playground.title': 'Probeer *het zelf*',
@@ -172,8 +185,7 @@ const en: Record<MessageKey, string> = {
   'nav.about': 'About',
   'nav.contact': 'Contact',
   'skip': 'Skip to content',
-  'lang.switch': 'NL',
-  'lang.label': 'Nederlands',
+  'lang.label': 'Choose language',
   'theme.label': 'Dark theme',
   'palette.open': 'Search',
   'palette.label': 'Search pages, projects and articles',
@@ -184,7 +196,7 @@ const en: Record<MessageKey, string> = {
   'palette.projects': 'Projects',
   'palette.posts': 'Articles',
   'palette.language': 'Language',
-  'home.title': 'Steefan — frontend developer and designer',
+  'home.title': 'Stefan van der Kort — frontend developer and designer',
   'home.description': 'Portfolio of Stefan, frontend developer and designer and creator of WaldJS and Centaur CMS: fast, accessible websites, from framework to frontend.',
   'home.heading': 'Fast, accessible websites, *from framework to frontend.*',
   'home.lead': "I'm Stefan, a frontend developer and designer. I design and build websites and the tools behind them: my own web framework, WaldJS, and my own CMS, Centaur. That puts every layer in my hands, from the first design to the last kilobyte.",
@@ -213,6 +225,8 @@ const en: Record<MessageKey, string> = {
   'type.framework': 'Framework',
   'type.product': 'Product',
   'type.website': 'Website',
+  'type.print': 'Print',
+  'type.hobby': 'Side project',
   'type.school': 'Study project',
   'work.title': 'Work',
   'work.description': "All of Stefan's projects: his own framework and CMS, websites and study projects.",
@@ -235,6 +249,12 @@ const en: Record<MessageKey, string> = {
   'project.design': 'Design',
   'project.npm': 'npm package',
   'project.gallery': '*Images*',
+  'gallery.images': 'images',
+  'gallery.view': 'View image',
+  'gallery.dialog': 'Image',
+  'gallery.close': 'Close',
+  'gallery.prev': 'Previous image',
+  'gallery.next': 'Next image',
   'project.client': 'Client',
   'project.next': 'Next project',
   'playground.title': 'Try *it yourself*',
@@ -298,7 +318,148 @@ const en: Record<MessageKey, string> = {
   'notFound.back': 'Back to home'
 }
 
-const MESSAGES: Record<Locale, Record<MessageKey, string>> = { nl, en }
+const de: Record<MessageKey, string> = {
+  'nav.label': 'Hauptnavigation',
+  'nav.breadcrumb': 'Brotkrumennavigation',
+  'nav.work': 'Arbeiten',
+  'nav.blog': 'Blog',
+  'nav.about': 'Über mich',
+  'nav.contact': 'Kontakt',
+  'skip': 'Zum Inhalt springen',
+  'lang.label': 'Sprache wählen',
+  'theme.label': 'Dunkles Design',
+  'palette.open': 'Suchen',
+  'palette.label': 'Seiten, Projekte und Artikel durchsuchen',
+  'palette.placeholder': 'Seite, Projekt oder Artikel suchen…',
+  'palette.empty': 'Nichts gefunden.',
+  'palette.hint': '↑↓ auswählen · Enter öffnen · Esc schließen',
+  'palette.pages': 'Seiten',
+  'palette.projects': 'Projekte',
+  'palette.posts': 'Artikel',
+  'palette.language': 'Sprache',
+  'home.title': 'Stefan van der Kort — Frontend-Entwickler und Designer',
+  'home.description': 'Portfolio von Stefan, Frontend-Entwickler und Designer und Entwickler von WaldJS und Centaur CMS: schnelle, barrierefreie Websites, vom Framework bis zum Frontend.',
+  'home.heading': 'Schnelle, barrierefreie Websites, *vom Framework bis zum Frontend.*',
+  'home.lead': 'Ich bin Stefan, Frontend-Entwickler und Designer. Ich gestalte und baue Websites und die Werkzeuge dahinter: ein eigenes Webframework, WaldJS, und ein eigenes CMS, Centaur. So habe ich jede Ebene in der Hand, vom ersten Entwurf bis zum letzten Kilobyte.',
+  'home.featured': 'Ausgewählte Arbeiten',
+  'home.empty': 'Hier erscheinen bald die Projekte.',
+  'home.statLabel': 'Framework-JavaScript pro Seite',
+  'home.statValue': '0 KB',
+  'home.statNote': 'Standard in WaldJS. Interaktion nur dort, wo sie nötig ist.',
+  'home.noteText': 'Open Source auf npm, mit CLI, Projektgenerator und VS-Code-Erweiterung.',
+  'home.noteCode': 'npm create wald',
+  'home.clients': 'Gearbeitet *mit*',
+  'status.available': 'Verfügbar:',
+  'status.unavailable': 'Nicht verfügbar:',
+  'home.other': 'Frühere *Arbeiten*',
+  'home.otherNote': 'Kunden- und Studienprojekte',
+  'home.about': 'Über *mich*',
+  'home.aboutText': 'Frontend-Entwickler und Designer, Absolvent von Frontend Design & Development an der Hogeschool van Amsterdam.',
+  'home.aboutMore': 'Ich arbeite am liebsten dort, wo Design und Code sich treffen: eine Oberfläche, die bis ins Detail stimmt, mit Technik darunter, die genauso sorgfältig gebaut ist. Deshalb schreibe ich auch meine eigenen Werkzeuge.',
+  'home.aboutLink': 'Mehr über mich',
+  'home.skills': 'Arbeitet mit',
+  'home.blog': 'Aus dem *Blog*',
+  'home.blogAll': 'Alle Artikel',
+  'home.ctaTitle': 'Ein Projekt *im Kopf?*',
+  'home.ctaText': 'Eine neue Website, eine bestehende, die schneller werden soll, oder eine Zusammenarbeit rund um WaldJS oder Centaur. Erzählen Sie mir, woran Sie arbeiten.',
+  'home.cta': 'Kontakt aufnehmen',
+  'type.framework': 'Framework',
+  'type.product': 'Produkt',
+  'type.website': 'Website',
+  'type.print': 'Druck',
+  'type.hobby': 'Hobbyprojekt',
+  'type.school': 'Studienprojekt',
+  'work.title': 'Arbeiten',
+  'work.description': 'Alle Projekte von Stefan: eigenes Framework und CMS, Websites und Studienprojekte.',
+  'work.heading': 'Meine *Arbeiten*',
+  'work.lead': 'Vom eigenen Framework und CMS bis zu Websites und Studienprojekten. Jedes Projekt mit den Entscheidungen dahinter.',
+  'work.filterLabel': 'Nach Typ filtern',
+  'work.filterAll': 'Alle',
+  'work.count': '{n} Projekte',
+  'project.process': 'Problem, Ansatz, *Ergebnis*',
+  'project.problem': 'Problem',
+  'project.approach': 'Ansatz',
+  'project.result': 'Ergebnis',
+  'project.metrics': 'In *Zahlen*',
+  'project.type': 'Art',
+  'project.year': 'Jahr',
+  'project.stack': 'Stack',
+  'project.links': 'Links',
+  'project.live': 'Live ansehen',
+  'project.repo': 'Quellcode',
+  'project.design': 'Design',
+  'project.npm': 'npm-Paket',
+  'project.gallery': '*Bilder*',
+  'gallery.images': 'Bilder',
+  'gallery.view': 'Bild ansehen',
+  'gallery.dialog': 'Bild',
+  'gallery.close': 'Schließen',
+  'gallery.prev': 'Vorheriges Bild',
+  'gallery.next': 'Nächstes Bild',
+  'project.client': 'Kunde',
+  'project.next': 'Nächstes Projekt',
+  'playground.title': 'Selbst *ausprobieren*',
+  'playground.lead': 'Bearbeiten Sie links die .wald-Datei und sehen Sie rechts, wie die Seite wächst. Ein vereinfachter Compiler, direkt im Browser.',
+  'playground.editor': 'Wald-Editor',
+  'playground.preview': 'Vorschau des Ergebnisses',
+  'blog.title': 'Blog',
+  'blog.description': 'Artikel von Stefan über Webentwicklung, Design und das Bauen eigener Werkzeuge.',
+  'blog.heading': '*Blog*',
+  'blog.lead': 'Über Webentwicklung, Design und das Bauen eigener Werkzeuge. Mit den Entscheidungen, den Fehlern und dem, was ich daraus gelernt habe.',
+  'blog.empty': 'Hier erscheinen bald die ersten Artikel.',
+  'post.back': 'Blog',
+  'post.readingTime': '{n} Min. Lesezeit',
+  'post.next': 'Nächster Artikel',
+  'about.title': 'Über mich',
+  'about.description': 'Über Stefan: was ich mache, Erfahrung und Fähigkeiten.',
+  'about.heading': 'Über *mich*',
+  'about.lead': 'Ich bin Stefan, Frontend-Entwickler und Designer. Ich habe Frontend Design & Development an der Hogeschool van Amsterdam abgeschlossen und baue meine eigenen Werkzeuge: ein Webframework und ein CMS.',
+  'about.portrait': 'Porträt von Stefan',
+  'about.what': 'Was ich *mache*',
+  'about.what1Title': 'Design',
+  'about.what1Text': 'Oberflächen und Websites, von der ersten Skizze bis zu einem Entwurf, den Entwickler ohne Rückfragen umsetzen können.',
+  'about.what2Title': 'Frontend',
+  'about.what2Text': 'Schnelle, barrierefreie Websites mit semantischem HTML, modernem CSS und JavaScript nur dort, wo es etwas beiträgt.',
+  'about.what3Title': 'Werkzeuge',
+  'about.what3Text': 'Ein eigenes Framework und CMS, damit die Technik zum Projekt passt und nicht umgekehrt.',
+  'about.experience': '*Erfahrung*',
+  'about.present': 'heute',
+  'about.kind.werk': 'Arbeit',
+  'about.kind.opleiding': 'Ausbildung',
+  'about.skills': '*Fähigkeiten*',
+  'about.github': 'Zuletzt auf *GitHub*',
+  'about.cv': 'Lebenslauf herunterladen (PDF)',
+  'contact.title': 'Kontakt',
+  'contact.description': 'Nehmen Sie Kontakt mit Stefan auf, für ein Projekt, eine Zusammenarbeit oder eine Frage.',
+  'contact.heading': 'Lassen Sie uns etwas *bauen.*',
+  'contact.lead': 'Ein Projekt, eine Zusammenarbeit oder einfach eine Frage? Erzählen Sie mir kurz, woran Sie arbeiten, und ich melde mich so schnell wie möglich.',
+  'contact.mail': 'Lieber per E-Mail?',
+  'contact.other': 'Anderswo',
+  'contact.code': 'Auf der Suche nach Code?',
+  'contact.codeText': 'WaldJS ist Open Source auf GitHub und npm. Starten Sie mit',
+  'form.name': 'Name',
+  'form.email': 'E-Mail-Adresse',
+  'form.message': 'Nachricht',
+  'form.send': 'Nachricht senden',
+  'form.sending': 'Wird gesendet…',
+  'form.success': 'Danke! Ihre Nachricht wurde gesendet.',
+  'form.error': 'Senden fehlgeschlagen. Bitte versuchen Sie es später erneut oder schreiben Sie mir direkt eine E-Mail.',
+  'form.noJs': 'Das Formular benötigt JavaScript. Schreiben Sie mir sonst direkt eine E-Mail:',
+  'footer.text': 'Gestaltet und gebaut von Stefan, mit WaldJS, Centaur CMS und Byzantium.',
+  'footer.pages': 'Seiten',
+  'footer.elsewhere': 'Anderswo',
+  'build.label': 'Vom Build gemessen',
+  'build.built': 'gebaut',
+  'build.html': 'HTML',
+  'build.js': 'Framework-JS',
+  'build.jsTotal': 'JS gesamt',
+  'build.content': 'Inhalt aktualisiert',
+  'notFound.title': 'Seite nicht gefunden',
+  'notFound.body': 'Diese Seite gibt es nicht (mehr).',
+  'notFound.back': 'Zurück zur Startseite'
+}
+
+const MESSAGES: Record<Locale, Record<MessageKey, string>> = { nl, en, de }
 
 export function t(key: MessageKey, locale: Locale): string {
   return MESSAGES[locale][key]
@@ -316,13 +477,13 @@ export function plain(text: string): string {
   return text.replace(/\*([^*]+)\*/g, '$1')
 }
 
-/** Taalwissel: naar dezelfde pagina in de andere taal, of naar die home als er geen vertaling is. */
-export function langSwitchHref(alternates: Partial<Record<Locale, string>>, locale: Locale): string {
-  const other = otherLocale(locale)
-  return alternates[other] ?? localePath('home', other)
+/** Taalmenu: naar dezelfde pagina in de gekozen taal, of naar de home van die taal als er geen vertaling is. */
+export function langHref(alternates: Partial<Record<Locale, string>>, target: Locale): string {
+  return alternates[target] ?? localePath('home', target)
 }
 
-const intlLocale = (locale: Locale) => (locale === 'nl' ? 'nl-NL' : 'en-GB')
+const INTL_LOCALES: Record<Locale, string> = { nl: 'nl-NL', en: 'en-GB', de: 'de-DE' }
+const intlLocale = (locale: Locale) => INTL_LOCALES[locale]
 
 function toDate(iso: string): Date | null {
   if (!iso) return null

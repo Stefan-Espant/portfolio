@@ -4,7 +4,7 @@ import ContactForm from '../ContactForm.wald'
 import Availability from '../Availability.wald'
 import { getStatus } from '../../lib/content'
 import { getSiteSettings } from '../../lib/cms'
-import { accent, localePath, t, type Locale } from '../../lib/i18n'
+import { accent, localePath, t, type Locale, routeAlternates } from '../../lib/i18n'
 import { CONTACT_EMAIL, GITHUB_URL, LINKEDIN_URL } from '../../lib/site'
 type Props = { locale: Locale }
 const { locale } = $$props
@@ -16,7 +16,7 @@ const channels = ([
   ['Instagram', site?.instagram ?? '']
 ] as Array<[string, string]>).filter(([, href]) => href)
   .map(([label, href]) => renderTemplate`<li><a class="contact__big" href="${href}" rel="noopener">${label} ↗</a></li>`).join('')
-const alternates = { nl: localePath('contact', 'nl'), en: localePath('contact', 'en') }
+const alternates = routeAlternates('contact')
 ---
 <Layout title={t('contact.title', locale)} description={t('contact.description', locale)} path={localePath('contact', locale)} locale={locale} alternates={alternates} current="contact">
   <main id="main" class="contact">

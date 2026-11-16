@@ -71,7 +71,7 @@ function localized(entry: CentaurEntry): Localized | null {
 
 // ── Projecten ────────────────────────────────────────────────────────────────────────────
 
-export const PROJECT_TYPES = ['framework', 'product', 'website', 'school'] as const
+export const PROJECT_TYPES = ['framework', 'product', 'website', 'print', 'hobby', 'school'] as const
 export type ProjectType = (typeof PROJECT_TYPES)[number]
 
 export interface Project extends Localized {

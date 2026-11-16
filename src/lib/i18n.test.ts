@@ -1,14 +1,23 @@
 import { describe, expect, test } from 'vitest'
-import { LOCALES, MESSAGE_KEYS, accent, formatDate, formatMonth, isLocale, langSwitchHref, localePath, otherLocale, plain, t } from './i18n'
+import { LANGUAGE_NAMES, LOCALES, MESSAGE_KEYS, accent, formatDate, formatMonth, isLocale, langHref, localePath, plain, routeAlternates, t } from './i18n'
 
 describe('i18n', () => {
-  test('ondersteunt nl en en', () => {
-    expect(LOCALES).toEqual(['nl', 'en'])
+  test('ondersteunt nl, en en de', () => {
+    expect(LOCALES).toEqual(['nl', 'en', 'de'])
     expect(isLocale('nl')).toBe(true)
-    expect(isLocale('de')).toBe(false)
+    expect(isLocale('de')).toBe(true)
+    expect(isLocale('fr')).toBe(false)
     expect(isLocale(undefined)).toBe(false)
-    expect(otherLocale('nl')).toBe('en')
-    expect(otherLocale('en')).toBe('nl')
+    expect(LANGUAGE_NAMES).toEqual({ nl: 'Nederlands', en: 'English', de: 'Deutsch' })
+  })
+
+  test('Duits staat onder /de met Duitse paden', () => {
+    expect(localePath('home', 'de')).toBe('/de')
+    expect(localePath('work', 'de')).toBe('/de/arbeiten')
+    expect(localePath('project', 'de', 'waldjs')).toBe('/de/arbeiten/waldjs')
+    expect(localePath('about', 'de')).toBe('/de/ueber-mich')
+    expect(localePath('contact', 'de')).toBe('/de/kontakt')
+    expect(routeAlternates('blog')).toEqual({ nl: '/blog', en: '/en/blog', de: '/de/blog' })
   })
 
   test('localePath geeft NL zonder prefix en EN onder /en', () => {
@@ -35,17 +44,19 @@ describe('i18n', () => {
   test('t vertaalt per taal', () => {
     expect(t('nav.work', 'nl')).toBe('Werk')
     expect(t('nav.work', 'en')).toBe('Work')
+    expect(t('nav.work', 'de')).toBe('Arbeiten')
   })
 
-  test('langSwitchHref linkt naar de vertaling, of naar de home van de andere taal', () => {
-    expect(langSwitchHref({ nl: '/werk/waldjs', en: '/en/work/waldjs' }, 'nl')).toBe('/en/work/waldjs')
-    expect(langSwitchHref({ nl: '/blog/alleen-nl' }, 'nl')).toBe('/en')
-    expect(langSwitchHref({}, 'en')).toBe('/')
+  test('langHref linkt naar de vertaling, of naar de home van die taal', () => {
+    expect(langHref({ nl: '/werk/waldjs', en: '/en/work/waldjs' }, 'en')).toBe('/en/work/waldjs')
+    expect(langHref({ nl: '/blog/alleen-nl' }, 'de')).toBe('/de')
+    expect(langHref({}, 'nl')).toBe('/')
   })
 
   test('formatDate en formatMonth per taal', () => {
     expect(formatDate('2024-05-01', 'nl')).toBe('1 mei 2024')
     expect(formatDate('2024-05-01', 'en')).toBe('1 May 2024')
+    expect(formatDate('2024-05-01', 'de')).toBe('1. Mai 2024')
     expect(formatMonth('2023-09-01', 'nl')).toBe('sep 2023')
     expect(formatMonth('2023-09-01', 'en')).toBe('Sept 2023')
     expect(formatDate('', 'nl')).toBe('')
@@ -80,6 +91,7 @@ describe('accent en plain', () => {
     for (const key of MESSAGE_KEYS) {
       const count = (text: string) => (text.match(/\*/g) ?? []).length
       expect(count(t(key, 'en')), key).toBe(count(t(key, 'nl')))
+      expect(count(t(key, 'de')), key).toBe(count(t(key, 'nl')))
     }
   })
 })

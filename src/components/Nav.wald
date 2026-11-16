@@ -1,5 +1,6 @@
 ---
-import { langSwitchHref, localePath, otherLocale, t, type Locale, type MessageKey } from '../lib/i18n'
+import Logo from './Logo.wald'
+import { LANGUAGE_NAMES, LOCALES, langHref, localePath, t, type Locale, type MessageKey } from '../lib/i18n'
 type NavRoute = 'work' | 'blog' | 'about' | 'contact'
 type Props = {
   locale: Locale
@@ -13,11 +14,18 @@ const items = routes.map(([route, label]) => {
   const ariaCurrent = new SafeHtml(route === current ? ' aria-current="page"' : '')
   return renderTemplate`<li><a class="nav__link" href="${localePath(route, locale)}"${ariaCurrent}>${t(label, locale)}</a></li>`
 }).join('')
-const other = otherLocale(locale)
-const langSwitch = renderTemplate`<a class="nav__pill nav__lang" href="${langSwitchHref(alternates, locale)}" hreflang="${other}" lang="${other}" aria-label="${t('lang.label', locale)}">${t('lang.switch', locale)}</a>`
+// Taalmenu: <details> werkt zonder JavaScript; /lang-menu.js sluit het bij Esc of een klik ernaast.
+const languages = LOCALES.map(target => {
+  const current = new SafeHtml(target === locale ? ' aria-current="true"' : '')
+  return renderTemplate`<li><a class="nav__lang-link" href="${langHref(alternates, target)}" hreflang="${target}" lang="${target}"${current}><span>${LANGUAGE_NAMES[target]}</span><span class="nav__lang-code" aria-hidden="true">${target.toUpperCase()}</span></a></li>`
+}).join('')
+const langMenu = renderTemplate`<details class="nav__lang" data-lang-menu>
+  <summary class="nav__pill nav__lang-btn" aria-label="${t('lang.label', locale)}: ${LANGUAGE_NAMES[locale]}"><span aria-hidden="true">${locale.toUpperCase()}</span><svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="m2 3.5 3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+  <ul class="nav__lang-list" role="list">${new SafeHtml(languages)}</ul>
+</details>`
 ---
 <header class="nav container">
-  <a class="nav__home" href={localePath('home', locale)}>Steefan</a>
+  <a class="nav__home" href={localePath('home', locale)}><Logo height={34} /></a>
   <nav class="nav__menu" aria-label={t('nav.label', locale)} data-motion="nav">
     <span class="nav__indicator" aria-hidden="true"></span>
     <ul class="nav__list" role="list">{new SafeHtml(items)}</ul>
@@ -27,12 +35,13 @@ const langSwitch = renderTemplate`<a class="nav__pill nav__lang" href="${langSwi
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.6"/><path d="m11 11 3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
       <kbd class="nav__kbd">⌘K</kbd>
     </button>
-    {new SafeHtml(langSwitch)}
+    {new SafeHtml(langMenu)}
     <button class="nav__pill nav__theme" type="button" data-theme-toggle aria-pressed="false" aria-label={t('theme.label', locale)} hidden>
       <span class="nav__moon" aria-hidden="true">☾</span><span class="nav__sun" aria-hidden="true">☀</span>
     </button>
   </div>
 </header>
+<script src="/lang-menu.js" defer data-wald-no-hoist></script>
 
 <style>
 /* Links, taalwissel en knop worden deels in de frontmatter gebouwd: genest onder .nav gestyled. */
@@ -53,11 +62,8 @@ const langSwitch = renderTemplate`<a class="nav__pill nav__lang" href="${langSwi
   & .nav__home {
     grid-area: home;
     justify-self: start;
-    font-family: var(--font-display);
-    font-size: 1.3rem;
-    font-weight: 700;
-    font-stretch: 85%;
-    letter-spacing: -0.04em;
+    display: inline-flex;
+    align-items: center;
   }
   & .nav__menu {
     grid-area: menu;
@@ -126,6 +132,59 @@ const langSwitch = renderTemplate`<a class="nav__pill nav__lang" href="${langSwi
     color: var(--ink);
     font: inherit;
     cursor: pointer;
+  }
+  /* Taalmenu */
+  & .nav__lang {
+    position: relative;
+  }
+  & .nav__lang-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    list-style: none;
+  }
+  & .nav__lang-btn::-webkit-details-marker {
+    display: none;
+  }
+  & .nav__lang[open] .nav__lang-btn svg {
+    rotate: 180deg;
+  }
+  & .nav__lang-list {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    z-index: 30;
+    display: grid;
+    gap: 2px;
+    min-width: 11rem;
+    padding: 6px;
+    list-style: none;
+    border-radius: 16px;
+    background: var(--card);
+    box-shadow: var(--edge), 0 18px 40px -18px rgb(11 14 74 / 0.35);
+  }
+  & .nav__lang-link {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: 0.55rem 0.75rem;
+    border-radius: 10px;
+  }
+  & .nav__lang-link:hover {
+    background: var(--bg);
+  }
+  & .nav__lang-link[aria-current] {
+    background: var(--ink);
+    color: var(--bg);
+  }
+  & .nav__lang-code {
+    color: var(--muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+  }
+  & .nav__lang-link[aria-current] .nav__lang-code {
+    color: inherit;
+    opacity: 0.7;
   }
   & .nav__theme {
     padding: 0;

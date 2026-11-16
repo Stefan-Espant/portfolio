@@ -66,7 +66,7 @@ describe('toProject', () => {
   })
 
   test('geeft null zonder locale, translation_key, slug of titel', () => {
-    expect(toProject(entry({ ...waldNl, locale: 'de' }))).toBeNull()
+    expect(toProject(entry({ ...waldNl, locale: 'fr' }))).toBeNull()
     expect(toProject(entry({ ...waldNl, translation_key: '' }))).toBeNull()
     expect(toProject(entry({ ...waldNl, slug: '' }))).toBeNull()
     expect(toProject(entry({ ...waldNl, title: '  ' }))).toBeNull()
@@ -165,7 +165,10 @@ describe('locale-helpers', () => {
   })
 
   test('missingTranslations meldt items zonder vertaling', () => {
-    expect(missingTranslations(items)).toEqual([{ translationKey: 'oud', missing: ['en'] }])
+    expect(missingTranslations(items)).toEqual([
+      { translationKey: 'waldjs', missing: ['de'] },
+      { translationKey: 'oud', missing: ['en', 'de'] }
+    ])
   })
 })
 

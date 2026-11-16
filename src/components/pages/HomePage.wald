@@ -8,7 +8,7 @@ import ProjectCard from '../ProjectCard.wald'
 import PostCard from '../PostCard.wald'
 import Availability from '../Availability.wald'
 import { getClients, getFeaturedProjects, getOtherProjects, getPosts, getSkills, getStatus } from '../../lib/content'
-import { accent, localePath, t, type Locale } from '../../lib/i18n'
+import { accent, localePath, t, type Locale, routeAlternates } from '../../lib/i18n'
 type Props = { locale: Locale }
 const { locale } = $$props
 const [featured, other, posts, clients, status, skills] = await Promise.all([
@@ -45,7 +45,7 @@ const blogHtml = latest.length
     </section>`
   : ''
 const statusHtml = status ? await Availability.render({ status, locale }) : ''
-const alternates = { nl: localePath('home', 'nl'), en: localePath('home', 'en') }
+const alternates = routeAlternates('home')
 ---
 <Layout title={t('home.title', locale)} fullTitle={true} description={t('home.description', locale)} path={localePath('home', locale)} locale={locale} alternates={alternates}>
   <main id="main" class="home">
@@ -100,7 +100,7 @@ const alternates = { nl: localePath('home', 'nl'), en: localePath('home', 'en') 
     padding-block: clamp(3rem, 9vw, 7.5rem) var(--space-8);
   }
   & .home__title {
-    max-width: 15ch;
+    max-width: 22ch;
     font-size: var(--text-3xl);
   }
   & .home__about {

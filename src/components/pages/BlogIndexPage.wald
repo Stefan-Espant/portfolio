@@ -2,7 +2,7 @@
 import Layout from '../../layouts/Layout.wald'
 import PostCard from '../PostCard.wald'
 import { getPosts } from '../../lib/content'
-import { accent, localePath, t, type Locale } from '../../lib/i18n'
+import { accent, localePath, t, type Locale, routeAlternates } from '../../lib/i18n'
 type Props = { locale: Locale }
 const { locale } = $$props
 const posts = await getPosts(locale)
@@ -12,7 +12,7 @@ const cards = await Promise.all(posts.map(async (post, index) =>
 const list = posts.length
   ? `<ul class="blog__grid" role="list" data-motion="rise">${cards.join('')}</ul>`
   : renderTemplate`<p class="lead">${t('blog.empty', locale)}</p>`
-const alternates = { nl: localePath('blog', 'nl'), en: localePath('blog', 'en') }
+const alternates = routeAlternates('blog')
 ---
 <Layout title={t('blog.title', locale)} description={t('blog.description', locale)} path={localePath('blog', locale)} locale={locale} alternates={alternates} current="blog">
   <main id="main" class="blog">

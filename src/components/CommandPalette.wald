@@ -3,7 +3,7 @@
 // combobox over pagina's, projecten, artikelen en de taalwissel. De index staat inline in de pagina, zodat
 // hij ook in `wald grow` werkt. Zonder JavaScript is er gewone navigatie en blijft de knop verborgen.
 import { getPosts, getProjects } from '../lib/content'
-import { langSwitchHref, localePath, otherLocale, plain, t, type Locale, type MessageKey } from '../lib/i18n'
+import { LANGUAGE_NAMES, LOCALES, langHref, localePath, plain, t, type Locale, type MessageKey } from '../lib/i18n'
 type Props = { locale: Locale, alternates: Partial<Record<Locale, string>> }
 const { locale, alternates } = $$props
 const [projects, posts] = await Promise.all([getProjects(locale), getPosts(locale)])
@@ -13,7 +13,7 @@ const items = [
   ...(['work', 'blog', 'about', 'contact'] as const).map(route => ({ label: t(`nav.${route}` as MessageKey, locale), group: pages, href: localePath(route, locale) })),
   ...projects.map(project => ({ label: project.title, group: t('palette.projects', locale), href: localePath('project', locale, project.slug), keywords: [t(`type.${project.type}` as MessageKey, locale), ...project.stack].join(' ') })),
   ...posts.map(post => ({ label: post.title, group: t('palette.posts', locale), href: localePath('post', locale, post.slug), keywords: post.tags.join(' ') })),
-  { label: plain(t('lang.label', locale)), group: t('palette.language', locale), href: langSwitchHref(alternates, locale), lang: otherLocale(locale) }
+  ...LOCALES.filter(other => other !== locale).map(other => ({ label: LANGUAGE_NAMES[other], group: t('palette.language', locale), href: langHref(alternates, other), lang: other }))
 ]
 // JSON in een <script>: "<" escapen zodat een titel de tag nooit kan sluiten.
 const index = JSON.stringify(items).replace(/</g, '\\u003c')
