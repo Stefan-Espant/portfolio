@@ -27,7 +27,7 @@ if (reduced || !gsap || !ScrollTrigger || !SplitText) {
 
   document.fonts.ready.then(() => {
     try {
-      intro(gsap, SplitText)
+      intro()
       nav(gsap)
       headings(gsap, SplitText)
       rise(gsap, ScrollTrigger)

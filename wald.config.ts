@@ -1,4 +1,4 @@
-import { copyFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs'
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, join } from 'node:path'
 import { parseEnv } from 'node:util'
@@ -20,6 +20,21 @@ if (existsSync('.env')) {
   for (const [key, value] of Object.entries(env)) process.env[key] ??= value
 }
 
+// Cache-headers als echte routes in .vercel/output/config.json. De adapter zet ze onder `overrides`, maar
+// de Build Output API kent daar geen headers: Vercel stuurde overal max-age=0. Gehashte bestanden in
+// /assets mogen een jaar; fonts, GSAP en afbeeldingen hebben vaste namen (inhoud kan wijzigen), dus een week
+// met stale-while-revalidate. `continue: true` laat de filesystem-route daarna het bestand serveren.
+const CACHE_ROUTES = [
+  { src: '^/assets/(.*)$', headers: { 'cache-control': 'public, max-age=31536000, immutable' }, continue: true },
+  { src: '^/(fonts|vendor|images)/(.*)$', headers: { 'cache-control': 'public, max-age=604800, stale-while-revalidate=86400' }, continue: true }
+]
+function addCacheRoutes(staticDir: string) {
+  const file = join(dirname(staticDir), 'config.json')
+  const config = JSON.parse(readFileSync(file, 'utf8')) as { routes?: unknown[] }
+  config.routes = [...CACHE_ROUTES, ...(config.routes ?? [])]
+  writeFileSync(file, JSON.stringify(config, null, 2))
+}
+
 // De Vercel-adapter, met eerst de extra's (RSS, build-strip, social-afbeeldingen) op de gebouwde output.
 const vercel = vercelAdapter()
 export default defineConfig({
@@ -29,6 +44,7 @@ export default defineConfig({
     async adapt(context) {
       await writeExtras(context)
       await vercel.adapt?.(context)
+      addCacheRoutes(vercel.outDir)
     }
   })
 })
