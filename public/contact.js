@@ -5,7 +5,16 @@ document.querySelectorAll('[data-contact-form]').forEach(function (root) {
   var button = form.querySelector('button[type=submit]')
   var status = root.querySelector('[data-contact-status]')
   var sending = false
+  // Tijdscontrole: een mens heeft meer dan een paar seconden nodig om dit formulier in te vullen.
+  var shownAt = Date.now()
+  var MIN_MS = 3000
   form.hidden = false
+
+  var succeed = function () {
+    form.reset()
+    status.textContent = root.dataset.success
+    status.dataset.state = 'success'
+  }
 
   form.addEventListener('submit', function (event) {
     event.preventDefault()
@@ -16,10 +25,18 @@ document.querySelectorAll('[data-contact-form]').forEach(function (root) {
     })
     if (!form.reportValidity()) return
     var data = new FormData(form)
+    var website = String(data.get('website') || '')
+    // Waarschijnlijk een bot (honeypot ingevuld of veel te snel): doe alsof het gelukt is, verstuur niets.
+    if (website || Date.now() - shownAt < MIN_MS) {
+      succeed()
+      return
+    }
     var fields = {
       naam: String(data.get('naam') || '').trim(),
       email: String(data.get('email') || '').trim(),
-      bericht: String(data.get('bericht') || '').trim()
+      bericht: String(data.get('bericht') || '').trim(),
+      // Altijd meesturen: Centaur controleert de honeypot ook zelf en slaat een leeg veld niet op.
+      website: website
     }
     var signal = typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function' ? AbortSignal.timeout(8000) : undefined
     sending = true
@@ -36,9 +53,7 @@ document.querySelectorAll('[data-contact-form]').forEach(function (root) {
     })
       .then(function (response) {
         if (!response.ok) throw new Error('Status ' + response.status)
-        form.reset()
-        status.textContent = root.dataset.success
-        status.dataset.state = 'success'
+        succeed()
       })
       .catch(function () {
         status.textContent = root.dataset.error

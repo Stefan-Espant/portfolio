@@ -22,6 +22,10 @@ const tenant = process.env.CENTAUR_TENANT_SLUG ?? ''
       <span>{t('form.message', locale)}</span>
       <textarea name="bericht" rows="6" required></textarea>
     </label>
+    <!-- Honeypot: mensen zien dit veld niet en laten het leeg; bots vullen het in (Centaur gooit die inzending weg). -->
+    <div class="contact-form__hp" aria-hidden="true">
+      <label>Website <input name="website" type="text" tabindex="-1" autocomplete="off" /></label>
+    </div>
     <button class="contact-form__submit btn" type="submit">{t('form.send', locale)}</button>
     <p class="contact-form__status" role="status" aria-live="polite" data-contact-status></p>
   </form>
@@ -32,6 +36,14 @@ const tenant = process.env.CENTAUR_TENANT_SLUG ?? ''
 
 <style>
 .contact-form {
+  /* Buiten beeld in plaats van display: none; op dat laatste letten sommige bots. */
+  & .contact-form__hp {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
   & form {
     display: grid;
     gap: var(--space-6);
