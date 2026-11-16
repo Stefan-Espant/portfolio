@@ -1,5 +1,6 @@
 // Downloadt de Latijnse subsets van Bricolage Grotesque (variabel: opsz, wdth, wght), Inter (wght) en
-// Fraunces rechtop en cursief (opsz, wght, SOFT, WONK) van Google Fonts naar public/fonts/.
+// Fraunces rechtop en cursief (opsz, wght) van Google Fonts naar public/fonts/. Alleen de assen die de site
+// gebruikt (performance): Bricolage op optische grootte 96 en breedte 80-85%, Fraunces met SOFT en WONK op 0.
 // Daarnaast vaste TTF-versies voor de social-afbeeldingen (satori leest geen woff2 of variabele assen)
 // naar src/build/fonts/; die gaan niet mee naar de site. Eenmalig draaien (npm run fonts); alle drie OFL.
 import { mkdirSync, writeFileSync } from 'node:fs'
@@ -7,10 +8,10 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 // Google Fonts geeft alleen woff2 aan een moderne browser-UA.
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36'
 const FONTS = [
-  ['bricolage-grotesque-latin.woff2', 'Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..700'],
+  ['bricolage-grotesque-latin.woff2', 'Bricolage+Grotesque:opsz,wdth,wght@96,80..85,400..700'],
   ['inter-latin.woff2', 'Inter:wght@400..700'],
-  ['fraunces-latin.woff2', 'Fraunces:opsz,wght,SOFT,WONK@9..144,300..700,0..100,0..1'],
-  ['fraunces-italic-latin.woff2', 'Fraunces:ital,opsz,wght,SOFT,WONK@1,9..144,300..700,0..100,0..1']
+  ['fraunces-latin.woff2', 'Fraunces:opsz,wght,SOFT,WONK@9..144,300..700,0,0'],
+  ['fraunces-italic-latin.woff2', 'Fraunces:ital,opsz,wght,SOFT,WONK@1,9..144,300..700,0,0']
 ]
 
 mkdirSync('public/fonts', { recursive: true })
