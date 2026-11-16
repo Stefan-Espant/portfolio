@@ -2,7 +2,7 @@
 export const SITE_NAME = 'Stefan van der Kort'
 
 /** Het domein van de live site. Canonicals, sitemap, RSS en JSON-LD wijzen hiernaar. */
-export const PRODUCTION_URL = 'https://stefanvanderkort.nl'
+export const PRODUCTION_URL = 'https://www.stefanvanderkort.nl'
 
 // Publieke basis-URL van de site: SITE_URL, of op Vercel het vaste productiedomein. Niet Vercels eigen
 // VERCEL_PROJECT_PRODUCTION_URL: die kiest bij meerdere domeinen het kortste (steefan.nl). Lokaal leeg,
