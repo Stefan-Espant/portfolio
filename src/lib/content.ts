@@ -69,6 +69,19 @@ function localized(entry: CentaurEntry): Localized | null {
   return { id: entry.id, locale, translationKey, slug: text(entry.data.slug) }
 }
 
+// ── Media ────────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Centaur geeft media-URL's in path-style (https://fsn1.your-objectstorage.com/<bucket>/...). KPN "Veilig
+ * browsen" blokkeert dat domein via DNS, waardoor bezoekers met KPN geen afbeeldingen zagen. Dezelfde
+ * bestanden staan ook op het virtual-hosted adres (https://<bucket>.fsn1.your-objectstorage.com/...): dat
+ * wordt niet geblokkeerd. Andere URL's blijven ongewijzigd.
+ */
+const PATH_STYLE_MEDIA = /https:\/\/(fsn1|nbg1|hel1)\.your-objectstorage\.com\/([a-z0-9-]+)\//g
+export function mediaUrl(url: string): string {
+  return url.replace(PATH_STYLE_MEDIA, 'https://$2.$1.your-objectstorage.com/')
+}
+
 // ── Projecten ────────────────────────────────────────────────────────────────────────────
 
 export const PROJECT_TYPES = ['framework', 'product', 'website', 'print', 'hobby', 'school'] as const
@@ -112,12 +125,12 @@ export function toProject(entry: CentaurEntry): Project | null {
     year: num(data.year),
     client: text(data.client),
     stack: list(data.stack),
-    cover: text(data.cover),
+    cover: mediaUrl(text(data.cover)),
     coverAlt: text(data.cover_alt) || title,
     problemHtml: text(data.problem),
     approachHtml: text(data.approach),
     resultHtml: text(data.result),
-    gallery: rows(data.gallery).map(row => ({ src: text(row.image), alt: text(row.alt) })).filter(image => image.src),
+    gallery: rows(data.gallery).map(row => ({ src: mediaUrl(text(row.image)), alt: text(row.alt) })).filter(image => image.src),
     liveUrl: safeUrl(data.live_url),
     repoUrl: safeUrl(data.repo_url),
     designUrl: safeUrl(data.design_url),
@@ -148,8 +161,8 @@ export function toPost(entry: CentaurEntry): Post | null {
     ...base,
     title,
     excerpt: text(data.excerpt),
-    bodyHtml: text(data.body),
-    cover: text(data.cover),
+    bodyHtml: mediaUrl(text(data.body)),
+    cover: mediaUrl(text(data.cover)),
     coverAlt: text(data.cover_alt) || title,
     publishedAt: text(data.published_at),
     tags: list(data.tags)
@@ -225,7 +238,7 @@ export function toClient(entry: CentaurEntry): Client | null {
   const data = entry.data
   const name = text(data.name)
   if (!base || !name) return null
-  return { ...base, name, logo: text(data.logo), url: safeUrl(data.url), quote: text(data.quote), quoteAuthor: text(data.quote_author), order: num(data.order) }
+  return { ...base, name, logo: mediaUrl(text(data.logo)), url: safeUrl(data.url), quote: text(data.quote), quoteAuthor: text(data.quote_author), order: num(data.order) }
 }
 
 // ── Locale-helpers ───────────────────────────────────────────────────────────────────────

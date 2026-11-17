@@ -187,3 +187,15 @@ describe('readingMinutes', () => {
     expect(readingMinutes('<h2>Kop</h2><p>' + 'woord '.repeat(450) + '</p>')).toBe(2)
   })
 })
+
+describe('mediaUrl', () => {
+  test('zet path-style object storage om naar virtual-hosted (KPN blokkeert het path-style domein)', async () => {
+    const { mediaUrl } = await import('./content')
+    expect(mediaUrl('https://fsn1.your-objectstorage.com/centaur-media/abc/cover.webp'))
+      .toBe('https://centaur-media.fsn1.your-objectstorage.com/abc/cover.webp')
+    expect(mediaUrl('<p><img src="https://fsn1.your-objectstorage.com/centaur-media/a.webp"> en <img src="https://fsn1.your-objectstorage.com/centaur-media/b.webp"></p>'))
+      .toBe('<p><img src="https://centaur-media.fsn1.your-objectstorage.com/a.webp"> en <img src="https://centaur-media.fsn1.your-objectstorage.com/b.webp"></p>')
+    expect(mediaUrl('https://cdn.example/x.png')).toBe('https://cdn.example/x.png')
+    expect(mediaUrl('')).toBe('')
+  })
+})
