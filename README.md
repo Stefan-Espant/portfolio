@@ -1,4 +1,4 @@
-# Stefan van der Kort, portfolio
+# Stefan van der Kort, mijn portfolio
 
 ![De homepagina van stefanvanderkort.nl in een Safari-venster: de kop "Snelle, toegankelijke websites, van framework tot frontend." met daaronder de projecten WaldJS en Centaur CMS](docs/images/portfolio-2026.webp)
 
