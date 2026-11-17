@@ -103,8 +103,8 @@ const alternates = routeAlternates('home')
     max-width: 22ch;
     font-size: var(--text-3xl);
   }
-  /* Het cursieve deel springt 3rem in en staat iets hoger; bij binnenkomst schuift het daar na 0,5 s naartoe.
-     Animatie via `translate` (compositor, blijft vloeiend als de pagina nog laadt; `left` haperde). Dat telt op
+  /* Het cursieve deel springt 3rem in en staat iets hoger; na 0,5 s schuift het vanaf daar 2rem verder naar
+     rechts en blijft daar. Animatie via `translate` (compositor, blijft vloeiend als de pagina nog laadt; `left` haperde). Dat telt op
      bij de scroll-beweging van GSAP (transform) in motion/drift.js. display: block: op mobiel springt het hele
      cursieve blok in, niet alleen de eerste regel. Bij reduced motion meteen op de eindpositie. */
   & .home__title em {
@@ -112,6 +112,7 @@ const alternates = routeAlternates('home')
     position: relative;
     top: -0.25rem;
     margin-left: 3rem;
+    translate: 2rem 0;
   }
   @media (prefers-reduced-motion: no-preference) {
     & .home__title em {
@@ -208,6 +209,6 @@ const alternates = routeAlternates('home')
 [data-theme='dark'] .home .home__cta .availability { color: var(--muted); }
 [data-theme='dark'] .home .home__cta-btn { background: var(--grad); color: var(--on-accent); }
 @keyframes home-em-shift {
-  from { translate: -3rem 0; }
+  from { translate: 0 0; }
 }
 </style>
