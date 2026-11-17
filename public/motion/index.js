@@ -3,6 +3,7 @@
 // ontbreekt gebeurt er niets en blijft alles statisch zichtbaar. De pagina-overgang is puur CSS
 // (View Transitions) en staat daarom niet hier.
 import { intro } from './intro.js'
+import { drift } from './drift.js'
 import { headings, rise } from './reveal.js'
 import { hover } from './hover.js'
 import { nav } from './nav.js'
@@ -28,6 +29,7 @@ if (reduced || !gsap || !ScrollTrigger || !SplitText) {
   document.fonts.ready.then(() => {
     try {
       intro()
+      drift(gsap)
       nav(gsap)
       headings(gsap, SplitText)
       rise(gsap, ScrollTrigger)

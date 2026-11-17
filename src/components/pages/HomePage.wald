@@ -103,6 +103,23 @@ const alternates = routeAlternates('home')
     max-width: 22ch;
     font-size: var(--text-3xl);
   }
+  /* Het cursieve deel springt 3rem in en staat iets hoger; bij binnenkomst schuift het daar na 0,5 s naartoe.
+     Animatie via `translate` (compositor, blijft vloeiend als de pagina nog laadt; `left` haperde). Dat telt op
+     bij de scroll-beweging van GSAP (transform) in motion/drift.js. display: block: op mobiel springt het hele
+     cursieve blok in, niet alleen de eerste regel. Bij reduced motion meteen op de eindpositie. */
+  & .home__title em {
+    display: block;
+    position: relative;
+    top: -0.25rem;
+    margin-left: 3rem;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    & .home__title em {
+      /* Rustige in-en-uit-curve: --ease-out is aan het begin zo snel dat het als een sprong voelt. */
+      animation: home-em-shift 1.6s cubic-bezier(0.45, 0, 0.2, 1) 0.5s backwards;
+      will-change: translate;
+    }
+  }
   & .home__about {
     display: grid;
     gap: var(--space-4);
@@ -190,4 +207,7 @@ const alternates = routeAlternates('home')
 [data-theme='dark'] .home .home__cta { background: var(--card); color: var(--ink); }
 [data-theme='dark'] .home .home__cta .availability { color: var(--muted); }
 [data-theme='dark'] .home .home__cta-btn { background: var(--grad); color: var(--on-accent); }
+@keyframes home-em-shift {
+  from { translate: -3rem 0; }
+}
 </style>
