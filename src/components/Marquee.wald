@@ -24,15 +24,21 @@ const run = names.map((name, index) => index % 2 ? renderTemplate`<span class="m
     font-weight: 600;
     font-stretch: 80%;
     letter-spacing: -0.04em;
-    line-height: 1.1;
+    line-height: 1.25;
     will-change: transform;
   }
   & .marquee__track span {
     padding-right: 0.6em;
   }
-  /* Elke tweede naam in scherpe Fraunces cursief met het verloop. */
+  /* Elke tweede naam in scherpe Fraunces cursief met het verloop. background-clip: text kleurt alleen binnen het
+     kader van het element: als inline-block met ruimte boven, onder en links vallen de staarten (j, p, y) en
+     de cursieve overhang (J) erbinnen in plaats van afgekapt te worden. De negatieve marges houden de
+     tussenruimte in de strook gelijk. */
   & .marquee__alt {
-    padding-right: 0.7em;
+    display: inline-block;
+    padding: 0.1em 0.7em 0.3em 0.15em;
+    margin-block: -0.1em -0.3em;
+    margin-left: -0.15em;
     font-family: var(--font-serif);
     font-style: italic;
     font-weight: 400;
