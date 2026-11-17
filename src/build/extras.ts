@@ -23,7 +23,11 @@ function htmlFiles(dir: string): string[] {
 
 /** Lokale scripts van een pagina, plus de modules die /motion/index.js importeert. */
 function scriptFiles(html: string, outDir: string): string[] {
-  const srcs = [...html.matchAll(/<script\b[^>]*\ssrc="(\/[^"]+\.js)"/g)].map(match => match[1])
+  const srcs = [
+    ...html.matchAll(/<script\b[^>]*\ssrc="(\/[^"]+\.js)"/g),
+    // Scripts die de loader in <head> pas na het load-event toevoegt (GSAP en /motion, Layout.wald).
+    ...html.matchAll(/'(\/(?:vendor|motion)\/[\w.-]+\.js)'/g)
+  ].map(match => match[1])
   const files = srcs.map(src => join(outDir, src)).filter(file => { try { return statSync(file).isFile() } catch { return false } })
   for (const file of [...files]) {
     for (const [, spec] of readFileSync(file, 'utf8').matchAll(/from\s+'(\.\/[\w-]+\.js)'/g)) files.push(join(dirname(file), spec))
