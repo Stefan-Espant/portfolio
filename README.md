@@ -1,6 +1,6 @@
 # Stefan van der Kort, portfolio
 
-![De homepagina van stefanvanderkort.nl in een Safari-venster: de kop "Snelle, toegankelijke websites, van framework tot frontend." met daaronder de projecten WaldJS en Centaur CMS](docs/images/portfolio-2026.webp)
+![De homepagina van stefanvanderkort.nl in een browservenster: de kop "Snelle, toegankelijke websites, van framework tot frontend." met daaronder de projecten WaldJS en Centaur CMS](docs/images/portfolio-2026.webp)
 
 Het portfolio van Stefan van der Kort, frontend developer en designer. De site draait op mijn eigen stack: het webframework [WaldJS](https://waldjs.eu), de content komt uit mijn headless CMS [Centaur](https://centaur-cms.app), en de basislaag is mijn design system [Byzantium](https://byzantium.steefan.nl).
 
