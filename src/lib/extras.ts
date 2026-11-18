@@ -52,8 +52,9 @@ export function ogImagePath(path: string): string {
 }
 
 /** Bytes als "1,5 kB" (nl) of "1.5 kB" (en); hele getallen zonder decimaal. */
+/** Decimale kilobytes (1 kB = 1000 bytes), op één decimaal. */
 export function formatKb(bytes: number, locale: Locale): string {
-  const kb = Math.round((bytes / 1024) * 10) / 10
+  const kb = Math.round((bytes / 1000) * 10) / 10
   return `${Number.isInteger(kb) ? kb : kb.toFixed(1).replace('.', locale === 'en' ? '.' : ',')} kB`
 }
 
@@ -61,4 +62,28 @@ export function formatKb(bytes: number, locale: Locale): string {
 export function fillBuildStrip(html: string, values: Record<string, string>): string {
   return html.replace(/(<(\w+)[^>]*\sdata-build="([\w-]+)"[^>]*>)[^<]*(<\/\2>)/g, (match, open, _tag, key, close) =>
     key in values ? open + xml(values[key]) + close : match)
+}
+
+/** Relatieve imports van een ES-module: `import … from './x.js'`, `import './x.js'` en `import('./x.js')`. */
+export function moduleImports(source: string): string[] {
+  const specs = [...source.matchAll(/(?:\bfrom\s*|\bimport\s*\(?\s*)['"](\.{1,2}\/[^'"]+\.js)['"]/g)].map(match => match[1])
+  return [...new Set(specs)]
+}
+
+/**
+ * Alle scripts die een pagina laadt: de startbestanden plus wat die (ook genest) importeren. `read` geeft de
+ * broncode van een pad, of null als het bestand niet bestaat; `resolve` maakt van een import een pad.
+ */
+export function collectScripts(entries: string[], read: (path: string) => string | null, resolve: (from: string, spec: string) => string): string[] {
+  const found: string[] = []
+  const queue = [...entries]
+  while (queue.length) {
+    const path = queue.shift()!
+    if (found.includes(path)) continue
+    const source = read(path)
+    if (source === null) continue
+    found.push(path)
+    queue.push(...moduleImports(source).map(spec => resolve(path, spec)))
+  }
+  return found
 }
