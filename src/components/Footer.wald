@@ -8,20 +8,20 @@ const { locale } = $$props
 const year = new Date().getFullYear()
 ---
 <footer class="footer">
-  <div class="footer__inner container">
-    <div class="footer__brand">
+  <div class="footer__inner container byz-grid byz-grid--12">
+    <div class="footer__brand byz-col-span-12 byz-col-span-md-6">
       <a class="footer__word" href={localePath('home', locale)}><Logo height={60} /></a>
       <p>{t('footer.text', locale)}</p>
       <p class="footer__copy">© {year} Stefan van der Kort · <a href="/licenses/byzantium.txt">Byzantium (MIT)</a></p>
     </div>
-    <nav class="footer__col" aria-label={t('footer.pages', locale)}>
+    <nav class="footer__col byz-col-span-6 byz-col-span-md-3" aria-label={t('footer.pages', locale)}>
       <p class="footer__head">{t('footer.pages', locale)}</p>
       <a href={localePath('work', locale)}>{t('nav.work', locale)}</a>
       <a href={localePath('blog', locale)}>{t('nav.blog', locale)}</a>
       <a href={localePath('about', locale)}>{t('nav.about', locale)}</a>
       <a href={localePath('contact', locale)}>{t('nav.contact', locale)}</a>
     </nav>
-    <nav class="footer__col" aria-label={t('footer.elsewhere', locale)}>
+    <nav class="footer__col byz-col-span-6 byz-col-span-md-3" aria-label={t('footer.elsewhere', locale)}>
       <p class="footer__head">{t('footer.elsewhere', locale)}</p>
       <a href={GITHUB_URL} rel="noopener">GitHub</a>
       <a href={LINKEDIN_URL} rel="noopener">LinkedIn</a>
@@ -48,26 +48,17 @@ const year = new Date().getFullYear()
   font-size: var(--text-sm);
 
   & .footer__inner {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-8) var(--space-6);
+    /* 12 kolommen: merk 6, twee linkkolommen van 3. Kolomafstand gelijk aan het raster. */
+    gap: var(--space-8) var(--byz-space-4);
     padding-block: var(--space-12);
-
-    @media (min-width: 48rem) {
-      grid-template-columns: 2fr 1fr 1fr;
-    }
   }
   & .footer__brand {
-    grid-column: 1 / -1;
     display: grid;
     gap: var(--space-2);
     align-content: start;
     max-width: 36ch;
     color: var(--muted);
 
-    @media (min-width: 48rem) {
-      grid-column: auto;
-    }
   }
   & .footer__word {
     display: inline-flex;

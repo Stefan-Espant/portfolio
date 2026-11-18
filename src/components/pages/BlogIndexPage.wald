@@ -8,9 +8,9 @@ const { locale } = $$props
 const posts = await getPosts(locale)
 // De nieuwste post staat breed bovenaan.
 const cards = await Promise.all(posts.map(async (post, index) =>
-  `<li class="${index === 0 ? 'blog__item blog__item--featured' : 'blog__item'}">${await PostCard.render({ post, locale, headingLevel: 2, featured: index === 0 })}</li>`))
+  `<li class="${index === 0 ? 'blog__item byz-col-span-12' : 'blog__item byz-col-span-12 byz-col-span-md-6 byz-col-span-lg-4'}">${await PostCard.render({ post, locale, headingLevel: 2, featured: index === 0 })}</li>`))
 const list = posts.length
-  ? `<ul class="blog__grid" role="list" data-motion="rise">${cards.join('')}</ul>`
+  ? `<ul class="blog__grid byz-grid byz-grid--12 byz-gap-md" role="list" data-motion="rise">${cards.join('')}</ul>`
   : renderTemplate`<p class="lead">${t('blog.empty', locale)}</p>`
 const alternates = routeAlternates('blog')
 ---
@@ -27,13 +27,7 @@ const alternates = routeAlternates('blog')
 <style>
 .blog {
   & .blog__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
-    gap: var(--space-4);
     list-style: none;
-  }
-  & .blog__item--featured {
-    grid-column: 1 / -1;
   }
 }
 </style>

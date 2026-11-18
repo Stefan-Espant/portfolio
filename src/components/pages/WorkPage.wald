@@ -10,7 +10,7 @@ const projects = await getProjects(locale)
 const cards = await Promise.all(projects.map(async (project, index) => {
   const wide = index === 0 && project.featured
   const card = await ProjectCard.render({ project, locale, headingLevel: 2, size: wide ? 'large' : 'normal' })
-  return renderTemplate`<li class="work__item${wide ? ' work__item--wide' : ''}" data-filter-item data-type="${project.type}">${new SafeHtml(card)}</li>`
+  return renderTemplate`<li class="work__item byz-col-span-12 ${wide ? 'byz-col-span-lg-8 work__item--wide' : 'byz-col-span-md-6 byz-col-span-lg-4'}" data-filter-item data-type="${project.type}">${new SafeHtml(card)}</li>`
 }))
 // Alleen types die echt voorkomen, in de vaste volgorde van PROJECT_TYPES.
 const types = PROJECT_TYPES.filter(type => projects.some(project => project.type === type))
@@ -27,7 +27,7 @@ const filters = types.length > 1
     </div>`
   : ''
 const list = projects.length
-  ? `<ul class="work__grid" role="list" data-motion="rise">${cards.join('')}</ul>`
+  ? `<ul class="work__grid byz-grid byz-grid--12 byz-gap-md" role="list" data-motion="rise">${cards.join('')}</ul>`
   : renderTemplate`<p class="lead">${t('home.empty', locale)}</p>`
 const alternates = routeAlternates('work')
 ---
@@ -81,15 +81,7 @@ const alternates = routeAlternates('work')
     vertical-align: super;
   }
   & .work__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
-    gap: var(--space-4);
     list-style: none;
-  }
-  @media (min-width: 48rem) {
-    & .work__item--wide {
-      grid-column: span 2;
-    }
   }
   & .work__item[hidden] {
     display: none;

@@ -76,15 +76,15 @@ const alternates = routeAlternates('about')
     <header class="page-head container" data-motion="intro">
       <h1 class="page-title">{new SafeHtml(accent(t('about.heading', locale)))}</h1>
     </header>
-    <section class="container about__intro" data-motion="rise">
-      <div class="card about__intro-text">
+    <section class="container about__intro byz-grid byz-grid--12 byz-gap-md" data-motion="rise">
+      <div class="card about__intro-text byz-col-span-12 byz-col-span-md-8">
         <p class="about__lead">{t('about.lead', locale)}</p>
         <div class="about__actions">
           {new SafeHtml(cvHtml)}
           <a class="btn btn--ghost btn--sm" href={GITHUB_URL} rel="noopener">GitHub ↗</a>
         </div>
       </div>
-      <img class="about__portrait" src="/images/stefan/webp/stefan-376.webp" srcset="/images/stefan/webp/stefan-200.webp 200w, /images/stefan/webp/stefan-299.webp 299w, /images/stefan/webp/stefan-376.webp 376w" sizes="(min-width: 48rem) 376px, 100vw" alt={t('about.portrait', locale)} width="376" height="376" decoding="async" />
+      <img class="about__portrait byz-col-span-12 byz-col-span-md-4" src="/images/stefan/webp/stefan-376.webp" srcset="/images/stefan/webp/stefan-200.webp 200w, /images/stefan/webp/stefan-299.webp 299w, /images/stefan/webp/stefan-376.webp 376w, /images/stefan/webp/stefan-752.webp 752w" sizes="(min-width: 48rem) 376px, 100vw" alt={t('about.portrait', locale)} width="376" height="376" decoding="async" />
     </section>
 
     <section class="container" aria-labelledby="what-title">
@@ -100,15 +100,8 @@ const alternates = routeAlternates('about')
 
 <style>
 .about {
-  & .about__intro {
-    display: grid;
-    gap: var(--space-4);
-
-    /* Het portret is maximaal 376 px breed: de kolom niet breder maken, dan blijft het scherp. */
-    @media (min-width: 48rem) {
-      grid-template-columns: 1fr minmax(0, 23.5rem);
-    }
-  }
+  /* about__intro: 8 + 4 kolommen vanaf md. Op volle breedte zijn 4 kolommen precies 376 px, de breedte
+     van het portret (max-width hieronder houdt het scherp). */
   & .about__intro-text {
     display: grid;
     align-content: space-between;

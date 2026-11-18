@@ -21,6 +21,7 @@ const dot = note ? ' · ' : ''
 .hscroll {
   /* Start van de strook gelijk met de container, ook op brede schermen. */
   --track-inset: max(var(--page-gutter), calc((100% - var(--page-width)) / 2));
+  container-type: inline-size;
 
   & .hscroll__counter {
     display: none;
@@ -31,7 +32,7 @@ const dot = note ? ' · ' : ''
   }
   & .hscroll__track {
     display: flex;
-    gap: var(--space-4);
+    gap: var(--byz-space-4);
     padding: 0 var(--track-inset) var(--space-4);
     list-style: none;
     overflow-x: auto;
@@ -41,6 +42,18 @@ const dot = note ? ' · ' : ''
   & .hscroll__item {
     flex: 0 0 min(78vw, 26rem);
     scroll-snap-align: start;
+  }
+  /* Vanaf md even breed als 6, vanaf lg als 4 kolommen van het 12-koloms raster (grid.css). 100cqi is de
+     breedte van .hscroll; daarvan de marges af geeft de breedte van .container. */
+  & .hscroll__item {
+    --hs-content: min(100cqi - 2 * var(--page-gutter), var(--page-width));
+    --hs-col: calc((var(--hs-content) - 11 * var(--byz-space-4)) / 12);
+  }
+  @media (min-width: 768px) {
+    & .hscroll__item { flex-basis: calc(6 * var(--hs-col) + 5 * var(--byz-space-4)); }
+  }
+  @media (min-width: 1024px) {
+    & .hscroll__item { flex-basis: calc(4 * var(--hs-col) + 3 * var(--byz-space-4)); }
   }
   & .hscroll__progress {
     display: none;

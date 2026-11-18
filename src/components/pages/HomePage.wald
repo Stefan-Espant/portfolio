@@ -41,7 +41,7 @@ const latest = posts.slice(0, 3)
 const blogHtml = latest.length
   ? renderTemplate`<section class="container" aria-labelledby="blog-title">
       <div class="section-head"><h2 class="section-title" id="blog-title" data-motion="reveal">${new SafeHtml(accent(t('home.blog', locale)))}</h2><a class="btn btn--ghost btn--sm" href="${localePath('blog', locale)}">${t('home.blogAll', locale)} →</a></div>
-      <ul class="home__posts" role="list" data-motion="rise">${new SafeHtml((await Promise.all(latest.map(post => PostCard.render({ post, locale })))).map(card => `<li>${card}</li>`).join(''))}</ul>
+      <ul class="home__posts byz-grid byz-grid--12 byz-gap-md" role="list" data-motion="rise">${new SafeHtml((await Promise.all(latest.map(post => PostCard.render({ post, locale })))).map(card => `<li class="byz-col-span-12 byz-col-span-md-6 byz-col-span-lg-4">${card}</li>`).join(''))}</ul>
     </section>`
   : ''
 const statusHtml = status ? await Availability.render({ status, locale }) : ''
@@ -66,13 +66,13 @@ const alternates = routeAlternates('home')
 
     <section class="container" aria-labelledby="about-title">
       <div class="section-head"><h2 class="section-title" id="about-title" data-motion="reveal">{new SafeHtml(accent(t('home.about', locale)))}</h2></div>
-      <div class="home__about" data-motion="rise">
-        <div class="card home__about-text">
+      <div class="home__about byz-grid byz-grid--12 byz-gap-md" data-motion="rise">
+        <div class="card home__about-text byz-col-span-12 byz-col-span-lg-6">
           <p class="home__about-lead">{t('home.aboutText', locale)}</p>
           <p class="home__muted">{t('home.aboutMore', locale)}</p>
           <a class="btn btn--ink btn--sm" href={localePath('about', locale)}>{t('home.aboutLink', locale)} →</a>
         </div>
-        <div class="card home__about-tech">
+        <div class="card home__about-tech byz-col-span-12 byz-col-span-lg-6">
           <p class="label">{t('home.skills', locale)}</p>
           <ul class="tags" role="list">{new SafeHtml(techHtml)}</ul>
         </div>
@@ -121,14 +121,6 @@ const alternates = routeAlternates('home')
       will-change: translate;
     }
   }
-  & .home__about {
-    display: grid;
-    gap: var(--space-4);
-
-    @media (min-width: 56rem) {
-      grid-template-columns: 1.1fr 1fr;
-    }
-  }
   & .home__about-text,
   & .home__about-tech {
     display: grid;
@@ -150,9 +142,6 @@ const alternates = routeAlternates('home')
     color: var(--muted);
   }
   & .home__posts {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
-    gap: var(--space-4);
     list-style: none;
   }
   & .home__cta {

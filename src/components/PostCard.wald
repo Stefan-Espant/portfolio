@@ -73,10 +73,15 @@ const meta = [tag, date, minutes].filter(Boolean).join('<span aria-hidden="true"
   }
 
   @media (min-width: 48rem) {
+    /* Uitgelicht staat de kaart over de volle breedte: zelf 12 kolommen met dezelfde kolomafstand, zodat
+       beeld (7) en tekst (5) op het paginaraster vallen. */
     &[data-featured='true'] {
-      grid-template-columns: 1.3fr 1fr;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
       grid-template-rows: none;
+      column-gap: var(--byz-space-4);
     }
+    &[data-featured='true'] .post-card__cover { grid-column: span 7; }
+    &[data-featured='true'] .post-card__body { grid-column: span 5; }
     &[data-featured='true'] .post-card__cover {
       aspect-ratio: auto;
       min-height: 21rem;
