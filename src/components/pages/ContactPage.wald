@@ -25,9 +25,9 @@ const alternates = routeAlternates('contact')
       <h1 class="page-title">{new SafeHtml(accent(t('contact.heading', locale)))}</h1>
       <p class="lead">{t('contact.lead', locale)}</p>
     </header>
-    <div class="container contact__grid" data-motion="rise">
-      <ContactForm locale={locale} />
-      <aside class="contact__side">
+    <div class="container contact__grid byz-grid byz-grid--12 byz-gap-md" data-motion="rise">
+      <div class="byz-col-span-12 byz-col-span-lg-7"><ContactForm locale={locale} /></div>
+      <aside class="contact__side byz-col-span-12 byz-col-span-lg-5">
         <div class="card contact__card">
           <p class="label">{t('contact.mail', locale)}</p>
           <a class="contact__big" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
@@ -49,13 +49,7 @@ const alternates = routeAlternates('contact')
 <style>
 .contact {
   & .contact__grid {
-    display: grid;
-    gap: var(--space-4);
     align-items: start;
-
-    @media (min-width: 56rem) {
-      grid-template-columns: 1.4fr 1fr;
-    }
   }
   & .contact__side {
     display: grid;

@@ -1,0 +1,45 @@
+/* 12-koloms grid van Byzantium (packages/byzantium/src/styles/layout/_grid.scss), dezelfde klassenamen,
+   maar alleen wat deze site gebruikt: 12 kolommen, spans 1–12 en de breakpoints sm/md/lg. Het origineel
+   maakt met Sass-loops 4–24 kolommen en 24 spans per breakpoint; dat zou honderden ongebruikte regels
+   opleveren. Gebruik: class="byz-grid byz-grid--12 byz-gap-md" met kinderen "byz-col-span-12
+   byz-col-span-md-6 byz-col-span-lg-4". Kolomafstand is overal 1rem, zodat alles op hetzelfde raster ligt. */
+.byz-grid { display: grid; width: 100%; }
+.byz-grid--12 { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+.byz-gap-md { gap: var(--byz-space-4, 1rem); }
+.byz-grid--dense { grid-auto-flow: dense; }
+
+.byz-col-span-3 { grid-column: span 3 / span 3; }
+.byz-col-span-4 { grid-column: span 4 / span 4; }
+.byz-col-span-5 { grid-column: span 5 / span 5; }
+.byz-col-span-6 { grid-column: span 6 / span 6; }
+.byz-col-span-7 { grid-column: span 7 / span 7; }
+.byz-col-span-8 { grid-column: span 8 / span 8; }
+.byz-col-span-9 { grid-column: span 9 / span 9; }
+.byz-col-span-12,
+.byz-col-span-full { grid-column: 1 / -1; }
+
+@media (min-width: 640px) {
+  .byz-col-span-sm-3 { grid-column: span 3 / span 3; }
+  .byz-col-span-sm-4 { grid-column: span 4 / span 4; }
+  .byz-col-span-sm-6 { grid-column: span 6 / span 6; }
+  .byz-col-span-sm-8 { grid-column: span 8 / span 8; }
+  .byz-col-span-sm-12 { grid-column: 1 / -1; }
+}
+@media (min-width: 768px) {
+  .byz-col-span-md-3 { grid-column: span 3 / span 3; }
+  .byz-col-span-md-4 { grid-column: span 4 / span 4; }
+  .byz-col-span-md-5 { grid-column: span 5 / span 5; }
+  .byz-col-span-md-6 { grid-column: span 6 / span 6; }
+  .byz-col-span-md-7 { grid-column: span 7 / span 7; }
+  .byz-col-span-md-8 { grid-column: span 8 / span 8; }
+  .byz-col-span-md-12 { grid-column: 1 / -1; }
+}
+@media (min-width: 1024px) {
+  .byz-col-span-lg-3 { grid-column: span 3 / span 3; }
+  .byz-col-span-lg-4 { grid-column: span 4 / span 4; }
+  .byz-col-span-lg-5 { grid-column: span 5 / span 5; }
+  .byz-col-span-lg-6 { grid-column: span 6 / span 6; }
+  .byz-col-span-lg-7 { grid-column: span 7 / span 7; }
+  .byz-col-span-lg-8 { grid-column: span 8 / span 8; }
+  .byz-col-span-lg-12 { grid-column: 1 / -1; }
+}

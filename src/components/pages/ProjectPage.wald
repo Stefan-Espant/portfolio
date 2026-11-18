@@ -57,13 +57,13 @@ const summaryHtml = project.summary ? renderTemplate`<p class="case__summary">${
 const index = all.findIndex(item => item.slug === project.slug)
 const next = all.length > 1 ? all[(index + 1) % all.length] : null
 const nextHtml = next
-  ? renderTemplate`<section class="container case__next" aria-label="${t('project.next', locale)}">
-      <a class="card case__next-link" href="${localePath('project', locale, next.slug)}">
+  ? renderTemplate`<section class="container case__next byz-grid byz-grid--12 byz-gap-md" aria-label="${t('project.next', locale)}">
+      <a class="card case__next-link byz-col-span-12 byz-col-span-lg-5" href="${localePath('project', locale, next.slug)}">
         <span class="label">${t('project.next', locale)}</span>
         <span class="case__next-title">${next.title}</span>
         ${new SafeHtml(next.summary ? renderTemplate`<span class="case__next-sum">${next.summary}</span>` : '')}
       </a>
-      ${new SafeHtml(next.cover ? renderTemplate`<span class="case__next-img" aria-hidden="true"><img src="${next.cover}" alt="" loading="lazy" decoding="async"></span>` : '')}
+      ${new SafeHtml(next.cover ? renderTemplate`<span class="case__next-img byz-col-span-12 byz-col-span-lg-7" aria-hidden="true"><img src="${next.cover}" alt="" loading="lazy" decoding="async"></span>` : '')}
     </section>`
   : ''
 ---
@@ -144,13 +144,7 @@ const nextHtml = next
     object-fit: cover;
   }
   & .case__next {
-    display: grid;
-    gap: var(--space-4);
     margin-top: var(--space-24);
-
-    @media (min-width: 56rem) {
-      grid-template-columns: 1fr 1.2fr;
-    }
   }
   & .case__next-link {
     display: grid;

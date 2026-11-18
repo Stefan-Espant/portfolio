@@ -8,19 +8,19 @@ import type { Project } from '../lib/content'
 type Props = { projects: Project[], locale: Locale }
 const { projects, locale } = $$props
 const [first, second, third, fourth] = projects
+// Byzantium 12-koloms grid: mobiel alles 12 breed, vanaf sm twee per rij (groot en breed over de volle
+// breedte), vanaf lg 6 + 3 + 3 met het grote project twee rijen hoog.
+const SPAN = { large: 'byz-col-span-12 byz-col-span-lg-6', normal: 'byz-col-span-12 byz-col-span-sm-6 byz-col-span-lg-3', wide: 'byz-col-span-12' }
 const card = async (project: Project | undefined, size: 'large' | 'normal' = 'normal', extra = '') =>
-  project ? `<li class="bento__item${size === 'large' && !extra ? ' bento__item--large' : ''}${extra}">${await ProjectCard.render({ project, locale, size })}</li>` : ''
-const stat = renderTemplate`<li class="bento__item bento__stat"><span>${t('home.statLabel', locale)}</span><strong>${t('home.statValue', locale)}</strong><span>${t('home.statNote', locale)}</span></li>`
-const note = renderTemplate`<li class="bento__item bento__note"><p class="accent">${new SafeHtml(accent(t('home.noteText', locale)))}</p><code>${t('home.noteCode', locale)}</code></li>`
+  project ? `<li class="bento__item ${extra ? SPAN.wide : SPAN[size]}${size === 'large' && !extra ? ' bento__item--large' : ''}${extra}">${await ProjectCard.render({ project, locale, size })}</li>` : ''
+const stat = renderTemplate`<li class="bento__item ${SPAN.normal} bento__stat"><span>${t('home.statLabel', locale)}</span><strong>${t('home.statValue', locale)}</strong><span>${t('home.statNote', locale)}</span></li>`
+const note = renderTemplate`<li class="bento__item ${SPAN.normal} bento__note"><p class="accent">${new SafeHtml(accent(t('home.noteText', locale)))}</p><code>${t('home.noteCode', locale)}</code></li>`
 const items = [await card(first, 'large'), await card(second), stat, await card(third), note, await card(fourth, 'large', ' bento__item--wide')].join('')
 ---
-<ul class="bento" role="list" data-motion="tiles">{new SafeHtml(items)}</ul>
+<ul class="bento byz-grid byz-grid--12 byz-gap-md" role="list" data-motion="tiles">{new SafeHtml(items)}</ul>
 
 <style>
 .bento {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-4);
   padding: 0;
   list-style: none;
 
@@ -64,17 +64,16 @@ const items = [await card(first, 'large'), await card(second), stat, await card(
     color: var(--muted);
   }
 
-  @media (min-width: 40rem) {
-    grid-template-columns: 1fr 1fr;
+  /* Kolommen komen uit de byz-col-span-klassen; hier alleen hoogtes. */
+  @media (min-width: 640px) {
     & .bento__item--large,
-    & .bento__item--wide { grid-column: 1 / -1; min-height: 24rem; }
+    & .bento__item--wide { min-height: 24rem; }
   }
-  @media (min-width: 64rem) {
-    grid-template-columns: 1.6fr 1fr 1fr;
+  @media (min-width: 1024px) {
     grid-auto-rows: 16.25rem;
     & .bento__item { min-height: 0; }
-    & .bento__item--large { grid-column: auto; grid-row: span 2; }
-    & .bento__item--wide { grid-column: 1 / -1; grid-row: span 2; min-height: 0; }
+    & .bento__item--large,
+    & .bento__item--wide { grid-row: span 2; min-height: 0; }
   }
 }
 </style>

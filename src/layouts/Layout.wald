@@ -71,6 +71,7 @@ const CSS_FILES = [
   'src/styles/byzantium/sr-only.css',
   'src/styles/byzantium/view-transitions.css',
   'src/styles/tokens.css',
+  'src/styles/grid.css',
   'src/styles/base.css'
 ]
 const inlineCss = `<style data-wald-no-hoist>${CSS_FILES
