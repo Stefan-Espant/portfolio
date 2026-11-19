@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, test } from 'vitest'
-import { buildRss, fillBuildStrip, formatKb, ogImagePath } from './extras'
+import { posix } from 'node:path'
+import { buildRss, collectScripts, fillBuildStrip, formatKb, moduleImports, ogImagePath } from './extras'
 import type { Post } from './content'
 
 afterEach(() => { delete process.env.SITE_URL })
@@ -41,11 +42,29 @@ describe('ogImagePath', () => {
 })
 
 describe('build-strip', () => {
-  test('formatKb rondt af op één decimaal, met komma in het Nederlands', () => {
+  test('formatKb rekent in decimale kB (1000 bytes) en rondt af op één decimaal, met komma in het Nederlands', () => {
     expect(formatKb(0, 'nl')).toBe('0 kB')
-    expect(formatKb(15_360, 'nl')).toBe('15 kB')
-    expect(formatKb(1_587, 'nl')).toBe('1,5 kB')
-    expect(formatKb(1_587, 'en')).toBe('1.5 kB')
+    expect(formatKb(15_000, 'nl')).toBe('15 kB')
+    expect(formatKb(15_360, 'nl')).toBe('15,4 kB')
+    expect(formatKb(1_549, 'nl')).toBe('1,5 kB')
+    expect(formatKb(1_549, 'en')).toBe('1.5 kB')
+  })
+  test('moduleImports vindt statische, kale en dynamische relatieve imports', () => {
+    const source = `import { a } from './a.js'\nimport './b.js'\nconst c = await import('../c.js')\nimport gsap from 'gsap'`
+    expect(moduleImports(source)).toEqual(['./a.js', './b.js', '../c.js'])
+  })
+  test('collectScripts volgt geneste imports, één keer per bestand', () => {
+    const files: Record<string, string> = {
+      '/motion/index.js': `import { a } from './count.js'\nimport { b } from './scroll.js'`,
+      '/motion/count.js': `import { u } from './utils.js'`,
+      '/motion/scroll.js': `import { u } from './utils.js'`,
+      '/motion/utils.js': 'export const u = 1',
+      '/theme.js': ''
+    }
+    const read = (path: string) => files[path] ?? null
+    const resolve = (from: string, spec: string) => posix.join(posix.dirname(from), spec)
+    expect(collectScripts(['/theme.js', '/motion/index.js', '/missing.js'], read, resolve))
+      .toEqual(['/theme.js', '/motion/index.js', '/motion/count.js', '/motion/scroll.js', '/motion/utils.js'])
   })
   test('fillBuildStrip vult alleen de gemarkeerde plekken in', () => {
     const html = '<p><span data-build="html">–</span> · <span data-build="js">–</span> · <b data-build="x">–</b></p>'

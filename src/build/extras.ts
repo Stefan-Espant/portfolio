@@ -5,7 +5,7 @@ import { mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'n
 import { dirname, join, relative } from 'node:path'
 import { gzipSync } from 'node:zlib'
 import { getLastContentUpdate, getPosts, getProjects } from '../lib/content'
-import { buildRss, feedPath, fillBuildStrip, formatKb } from '../lib/extras'
+import { buildRss, collectScripts, feedPath, fillBuildStrip, formatKb } from '../lib/extras'
 import { LOCALES, formatDate, isLocale, type Locale } from '../lib/i18n'
 import { SITE_NAME, absoluteUrl, siteUrl } from '../lib/site'
 import { buildLlms, buildRobots, buildSitemap, type SitemapPage } from '../lib/seo'
@@ -21,18 +21,28 @@ function htmlFiles(dir: string): string[] {
   })
 }
 
-/** Lokale scripts van een pagina, plus de modules die /motion/index.js importeert. */
+/** Lokale scripts van een pagina, plus alles wat ze (ook genest) importeren, zoals de modules van /motion. */
 function scriptFiles(html: string, outDir: string): string[] {
   const srcs = [
     ...html.matchAll(/<script\b[^>]*\ssrc="(\/[^"]+\.js)"/g),
     // Scripts die de loader in <head> pas na het load-event toevoegt (GSAP en /motion, Layout.wald).
     ...html.matchAll(/'(\/(?:vendor|motion)\/[\w.-]+\.js)'/g)
   ].map(match => match[1])
-  const files = srcs.map(src => join(outDir, src)).filter(file => { try { return statSync(file).isFile() } catch { return false } })
-  for (const file of [...files]) {
-    for (const [, spec] of readFileSync(file, 'utf8').matchAll(/from\s+'(\.\/[\w-]+\.js)'/g)) files.push(join(dirname(file), spec))
-  }
-  return [...new Set(files)]
+  const read = (file: string) => { try { return readFileSync(file, 'utf8') } catch { return null } }
+  return collectScripts(srcs.map(src => join(outDir, src)), read, (from, spec) => join(dirname(from), spec))
+}
+
+// Vercel Web Analytics (Layout.wald) staat niet in de build-output: Vercel serveert het onder /_vercel/insights/.
+// Het is hetzelfde bestand als op hun CDN; dat meten we één keer per build. Lukt dat niet, dan een waarschuwing.
+const INSIGHTS_PATH = '/_vercel/insights/script.js'
+const INSIGHTS_CDN = 'https://va.vercel-scripts.com/v1/script.js'
+let insightsBytes: Promise<number> | undefined
+function insightsSize(): Promise<number> {
+  insightsBytes ??= fetch(INSIGHTS_CDN, { signal: AbortSignal.timeout(5000) })
+    .then(response => { if (!response.ok) throw new Error(`HTTP ${response.status}`); return response.arrayBuffer() })
+    .then(body => gzipSync(Buffer.from(body)).length)
+    .catch(error => { console.warn(`  ⚠ Vercel Analytics-script niet gemeten (${error.message}); telt niet mee in "JS totaal"`); return 0 })
+  return insightsBytes
 }
 
 async function writeFeeds(outDir: string, builtAt: string) {
@@ -61,7 +71,7 @@ async function fillStrips(outDir: string, builtAt: string) {
       built: formatDate(new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Amsterdam' }).format(new Date(builtAt)), locale),
       content: contentDate ? formatDate(contentDate, locale) : '–',
       js: formatKb(framework.reduce((sum, script) => sum + gz(script), 0), locale),
-      'js-total': formatKb(scripts.reduce((sum, script) => sum + gz(script), 0), locale)
+      'js-total': formatKb(scripts.reduce((sum, script) => sum + gz(script), 0) + (html.includes(INSIGHTS_PATH) ? await insightsSize() : 0), locale)
     }
     // Eerst invullen, dan het HTML-gewicht meten van de pagina zoals hij verstuurd wordt.
     const filled = fillBuildStrip(html, values)
