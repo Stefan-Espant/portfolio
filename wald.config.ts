@@ -21,9 +21,10 @@ if (existsSync('.env')) {
 }
 
 // Cache-headers als echte routes in .vercel/output/config.json. De adapter zet ze onder `overrides`, maar
-// de Build Output API kent daar geen headers: Vercel stuurde overal max-age=0. Gehashte bestanden in
-// /assets mogen een jaar; fonts, GSAP en afbeeldingen hebben vaste namen (inhoud kan wijzigen), dus een week
-// met stale-while-revalidate. `continue: true` laat de filesystem-route daarna het bestand serveren.
+// de Build Output API kent daar geen headers: Vercel stuurde overal max-age=0. /assets mag een jaar
+// immutable, want src/build/extras.ts zet een inhoudshash in elke bestandsnaam (WaldJS doet dat zelf niet).
+// Fonts, GSAP en afbeeldingen hebben vaste namen (inhoud kan wijzigen), dus een week met
+// stale-while-revalidate. `continue: true` laat de filesystem-route daarna het bestand serveren.
 const CACHE_ROUTES = [
   { src: '^/assets/(.*)$', headers: { 'cache-control': 'public, max-age=31536000, immutable' }, continue: true },
   { src: '^/(fonts|vendor|images)/(.*)$', headers: { 'cache-control': 'public, max-age=604800, stale-while-revalidate=86400' }, continue: true }

@@ -1,11 +1,12 @@
 // Extra's na `wald build` (spec 2026-10-12, Extra's), aangeroepen vanuit de adapter in wald.config.ts:
 // RSS-feeds, de build-strip (gemeten op de echte output) en een social-afbeelding per pagina.
 // Faalt een social-afbeelding, dan komt er een waarschuwing en gaat de build door.
-import { mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs'
+import { createHash } from 'node:crypto'
+import { mkdirSync, readFileSync, readdirSync, renameSync, statSync, writeFileSync } from 'node:fs'
 import { dirname, join, relative } from 'node:path'
 import { gzipSync } from 'node:zlib'
 import { getLastContentUpdate, getPosts, getProjects } from '../lib/content'
-import { buildRss, collectScripts, feedPath, fillBuildStrip, formatKb } from '../lib/extras'
+import { buildRss, collectScripts, feedPath, fillBuildStrip, fingerprintName, formatKb } from '../lib/extras'
 import { LOCALES, formatDate, isLocale, type Locale } from '../lib/i18n'
 import { SITE_NAME, absoluteUrl, siteUrl } from '../lib/site'
 import { buildLlms, buildRobots, buildSitemap, type SitemapPage } from '../lib/seo'
@@ -167,6 +168,36 @@ async function writeCrawlerFiles(outDir: string, builtAt: string) {
   console.log(`  ✓ sitemap.xml (${pages.length} pagina's), robots.txt en llms.txt`)
 }
 
+/**
+ * WaldJS schrijft /assets/ zonder hash in de naam (wald-components.css). Omdat /assets/ een jaar immutable
+ * gecachet wordt (wald.config.ts), krijgt elk bestand hier een inhoudshash in de naam en worden de
+ * verwijzingen in HTML, CSS en JS aangepast. Anders houden terugkerende bezoekers oude CSS bij nieuwe HTML.
+ */
+function fingerprintAssets(outDir: string) {
+  const assetsDir = join(outDir, 'assets')
+  let names: string[]
+  try { names = readdirSync(assetsDir).filter(name => statSync(join(assetsDir, name)).isFile()) } catch { return }
+  const renames = new Map<string, string>()
+  for (const name of names) {
+    const hashed = fingerprintName(name, createHash('sha256').update(readFileSync(join(assetsDir, name))).digest('hex'))
+    if (hashed === name) continue
+    renameSync(join(assetsDir, name), join(assetsDir, hashed))
+    renames.set(`/assets/${name}`, `/assets/${hashed}`)
+  }
+  if (!renames.size) return
+  const textFiles = (dir: string): string[] => readdirSync(dir).flatMap(name => {
+    const path = join(dir, name)
+    return statSync(path).isDirectory() ? textFiles(path) : /\.(html|css|js|json|xml)$/.test(name) ? [path] : []
+  })
+  for (const file of textFiles(outDir)) {
+    const text = readFileSync(file, 'utf8')
+    let next = text
+    for (const [from, to] of renames) next = next.split(from).join(to)
+    if (next !== text) writeFileSync(file, next)
+  }
+  console.log(`  ✓ /assets met inhoudshash: ${[...renames.values()].map(path => path.slice(8)).join(', ')}`)
+}
+
 export async function writeExtras({ outDir }: Context): Promise<void> {
   const builtAt = new Date().toISOString()
   console.log('  Extra\'s')
@@ -174,4 +205,5 @@ export async function writeExtras({ outDir }: Context): Promise<void> {
   await writeCrawlerFiles(outDir, builtAt)
   await fillStrips(outDir, builtAt)
   await writeOgImages(outDir)
+  fingerprintAssets(outDir)
 }
