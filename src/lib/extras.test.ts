@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, test } from 'vitest'
 import { posix } from 'node:path'
-import { buildRss, collectScripts, fillBuildStrip, formatKb, moduleImports, ogImagePath } from './extras'
+import { buildRss, collectScripts, fillBuildStrip, fingerprintName, formatKb, moduleImports, ogImagePath } from './extras'
 import type { Post } from './content'
 
 afterEach(() => { delete process.env.SITE_URL })
@@ -69,5 +69,15 @@ describe('build-strip', () => {
   test('fillBuildStrip vult alleen de gemarkeerde plekken in', () => {
     const html = '<p><span data-build="html">–</span> · <span data-build="js">–</span> · <b data-build="x">–</b></p>'
     expect(fillBuildStrip(html, { html: '12 kB', js: '0 kB' })).toBe('<p><span data-build="html">12 kB</span> · <span data-build="js">0 kB</span> · <b data-build="x">–</b></p>')
+  })
+})
+
+describe('fingerprintName', () => {
+  test('zet een korte inhoudshash voor de extensie', () => {
+    expect(fingerprintName('wald-components.css', 'ef166fdf013a992b315c')).toBe('wald-components.ef166fdf01.css')
+    expect(fingerprintName('chunk.min.js', 'abcdef0123456789')).toBe('chunk.min.abcdef0123.js')
+  })
+  test('laat al gehashte namen staan', () => {
+    expect(fingerprintName('wald-components.ef166fdf01.css', '0000000000')).toBe('wald-components.ef166fdf01.css')
   })
 })

@@ -87,3 +87,14 @@ export function collectScripts(entries: string[], read: (path: string) => string
   }
   return found
 }
+
+/**
+ * Bestandsnaam met inhoudshash: `wald-components.css` wordt `wald-components.3f9a1c2b7d.css`. Alleen zo mag
+ * /assets/ een jaar `immutable` gecachet worden: nieuwe inhoud krijgt een nieuwe URL. Al gehashte namen blijven.
+ */
+export function fingerprintName(name: string, hash: string): string {
+  if (/\.[0-9a-f]{8,}\.\w+$/.test(name)) return name
+  const dot = name.lastIndexOf('.')
+  const short = hash.slice(0, 10)
+  return dot > 0 ? `${name.slice(0, dot)}.${short}${name.slice(dot)}` : `${name}.${short}`
+}
